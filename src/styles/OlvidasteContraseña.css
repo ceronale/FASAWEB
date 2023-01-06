@@ -1,0 +1,48 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(255, 255, 255);
+}
+
+.mainUnic {
+  max-width: 600px;
+  width: 100%;
+  margin: auto;
+  padding: 40px;
+}
+
+.leyenda {
+  padding-top: 10px;
+  padding-bottom: 30px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+
+.buttomRestablecerContraseña {
+  background-color: rgb(212, 0, 20);
+  width: 180px;
+  color: rgb(255, 255, 255);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  padding: 8px 18px;
+  cursor: pointer;
+  float: left;
+  border-top-style: solid;
+  border-radius: 8px;
+  background-clip: border-box;
+  border-color: rgb(212, 0, 20);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.central {
+  margin-top: 40px;
+  width: 80%;
+}
+
+.boxEmail {
+  display: grid;
+  padding-bottom: 20px;
+}

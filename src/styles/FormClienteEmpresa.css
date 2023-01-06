@@ -1,0 +1,36 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: rgb(255, 255, 255);
+}
+
+main {
+    max-width: 1000px;
+    width: 100%;
+    margin: auto;
+    padding: 30px;
+}
+
+.campoRequerido {
+    padding-top: 10px;
+    padding-bottom: 20px;
+    font-size: 13px;
+}
+
+.contenedorTitulo {
+    text-align: left;
+}
+
+.CrearEmpresa {
+    display: grid;
+    padding-top: 20px;
+}
+
+.CampoRequerido {
+    padding-top: 20px;
+    font-size: 12px;
+    padding-bottom: 15px;
+}
+

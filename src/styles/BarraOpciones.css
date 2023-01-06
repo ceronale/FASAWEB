@@ -1,0 +1,29 @@
+.Barra {
+    background-color: rgb(212, 0, 20);
+    background-clip: border-box;
+    background-size: auto;
+    box-sizing: border-box;
+    height: 30px;
+    width: 100%;
+    transition-duration: 0.32s; 
+    text-align: center;
+
+}
+
+.contenedorOpciones {
+    height: 100%;
+}
+
+.opcion {
+    font-family: Arial, Helvetica, sans-serif;      
+    font-size: 13px;
+    font-weight: 600;
+    padding-right: 15px;
+    padding-left: 15px;
+    color: rgb(232, 232, 232);
+    text-decoration-line: none;
+}
+
+.opcion:hover {
+    color: rgb(232, 232, 232);
+}

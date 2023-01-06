@@ -1,0 +1,31 @@
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgb(255, 255, 255);
+  padding: 4px 200px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+  align-content: center;
+  height: 80px;
+}
+.iconoNavbar {
+  padding-right: 30px;
+  padding-left: 20px;
+  height: 55px;
+  width: 105px;
+  text-align: center;
+  padding-top: 2px;
+  display: block;
+}
+
+.miCuenta {
+  color: rgb(128, 128, 128);
+  transition: 0.3s ease-in-out;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: Arial, Helvetica, sans-serif;
+  text-decoration: none;
+}
+.btn {
+  text-transform: none;
+}

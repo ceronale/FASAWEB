@@ -1,0 +1,31 @@
+
+.navlink {
+    font-size: 13px;
+    text-decoration: none;
+}
+
+#botonModificar Button{
+    background-clip: border-box;
+    background-color: rgb(25, 121, 195);
+    background-origin: padding-box;
+    width: 160px;
+    height: 38px;
+    text-decoration-style: solid;
+    padding: 0px 10px;
+    font-weight: 500;
+    font-style: normal;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    border-color: rgb(25, 121, 195);
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: Arial, Helvetica, sans-serif;
+    list-style-type: none;
+    color: rgb(232, 232, 232);
+    text-decoration: none;
+}
+

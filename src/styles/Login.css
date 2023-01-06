@@ -1,0 +1,182 @@
+#contenedor {
+    padding: 4% 16%;
+}
+
+#blockLogin {
+    width: 50%;
+    float: left;
+    padding-right: 40px;
+}
+
+#tituloLogin {
+    color: rgb(33, 37, 41);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 27px;
+    padding: 10px 0px;
+    margin-bottom: 10px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(232, 232, 232);
+    font-family: Arial, Helvetica, sans-serif;      
+}
+
+#notaLogin {
+    width: 400px;
+    color: rgb(33, 37, 41);
+    box-sizing: border-box;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    text-align: left;
+    line-height: 21px;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-bottom: 20px;
+}
+
+.inputLogin {
+    padding-left: 10px;
+    padding-right: 10px;
+    width: 85%;
+    margin-top: 12px;
+    font-size: 14px;
+    border: solid 1px gray;
+    box-sizing: border-box;
+    background-color: #fff;
+    height: 33px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.accionLogin {
+    padding-top: 10px;
+    display:grid;
+}
+
+.botonLogin Button{
+    background-color: rgb(212, 0, 20);
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    padding: 8px 18px;
+    cursor: pointer;
+    float: left;
+    border-top-style: solid;
+    border-radius: 12px;
+    background-clip: border-box;
+    border-color: rgb(212, 0, 20);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#li-contraseña {
+    list-style-type: none;
+}
+
+.olvidasteContraseña {
+    padding-top: 8px;
+}
+
+.olvidasteContraseña a{
+    text-decoration: none;
+    color: rgb(0, 123, 255);
+    box-sizing: border-box;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    text-align: center;
+    line-height: 50px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.olvidasteContraseña a:hover{
+    text-decoration:underline;
+    cursor: pointer;
+}
+
+#requerido {
+    color: rgb(224, 43, 39);
+    padding-top: 15px;
+    font-size: 12px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 400;
+}
+
+#blockRegistro {
+    width: 50%;
+    float: right;
+    padding-left: 20px;
+}
+
+#tituloRegistro {
+    color: rgb(33, 37, 41);
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 27px;
+    margin-bottom: 10px;
+    padding: 10px 0px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(232, 232, 232);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#notaRegistro {
+    color: rgb(33, 37, 41);
+    box-sizing: border-box;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    margin-bottom: 16px;
+    text-align: left;
+    line-height: 21px;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-top: 5px;
+}
+
+#botonRegistro Button{
+    background-clip: border-box;
+    background-color: rgb(25, 121, 195);
+    background-origin: padding-box;
+    width: 145px;
+    height: 40px;
+    text-decoration-style: solid;
+    padding: 5px 10px;
+    font-weight: 600;
+    font-style: normal;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    border-color: rgb(25, 121, 195);
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+    list-style-type: none;
+    color: rgb(232, 232, 232);
+    text-decoration: none;
+}
+
+.formulario .error{
+    color: rgb(224, 43, 39);
+    font-size: 12px;
+    font-weight:500;
+    line-height: 18px;
+    margin-top: 7px;
+    font-family: Arial, Helvetica, sans-serif;
+    border-bottom-color: red;
+}
+
+#inputCorreo :invalid {
+    border-style: solid;
+    border-color: red;
+    border-width: 1px;
+}
+
+.recaptcha {
+    margin-top: 20px;
+}
+
