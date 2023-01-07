@@ -29,7 +29,7 @@
     "node-sass": "^8.0.0",
     "node-xlsx": "^0.21.0",
     "primeicons": "^5.0.0",
-    "primereact": "^8.4.0",
+    "primereact": "^8.7.3",
     "react": "^17.0.2",
     "react-bootstrap": "^2.2.2",
     "react-csv": "^2.2.2",
