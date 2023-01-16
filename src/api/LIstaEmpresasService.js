@@ -4,7 +4,7 @@ export const LIstaEmpresasService = async () => {
 
     var config = {
         method: 'get',
-        url: 'http://localhost:8181/cxf/listaEmpresa/services/listarConvenios',
+        url: 'http://150.100.253.61:8181/cxf/listaEmpresa/services/listarConvenios',
         headers: {}
     };
 

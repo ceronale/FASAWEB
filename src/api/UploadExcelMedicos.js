@@ -6,7 +6,7 @@ export const UploadMedicos = async (data) => {
     formData.append('csv', data);
     var config = {
         method: 'post',
-        url: 'http://localhost:8181/cxf/cargaMedico/services/csv/medicos',
+        url: 'http://150.100.253.61:8181/cxf/cargaMedico/services/csv/medicos',
         data: formData
     };
     const response = axios(config)

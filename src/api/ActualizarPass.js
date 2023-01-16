@@ -2,7 +2,7 @@ const axios = require('axios');
 export const ActualizarPass = async (user, passwd) => {
 	const config = {
 		method: 'put',
-		url: 'http://localhost:8181/cxf/recuperar/services/actualizarPwd',
+		url: 'http://150.100.253.61:8181/cxf/recuperar/services/actualizarPwd',
 		headers: {
 			'Content-Type': 'application/json',
 			user: user,

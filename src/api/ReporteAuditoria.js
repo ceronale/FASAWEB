@@ -1,16 +1,16 @@
 const axios = require('axios');
 
 export const ReporteAuditoria = async () => {
-	
+
 	var config = {
-        method: 'get',
-        url: 'http://localhost:8181/cxf/reportar/services/reportar/auditoria',
-        headers: { 
-        }
-    };
-    
+		method: 'get',
+		url: 'http://150.100.253.61:8181/cxf/reportar/services/reportar/auditoria',
+		headers: {
+		}
+	};
+
 	const response = axios(config)
-		.then(({ data: outAuditoria}) => {
+		.then(({ data: outAuditoria }) => {
 			return outAuditoria;
 		})
 		.catch((error) => {

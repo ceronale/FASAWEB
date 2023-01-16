@@ -4,7 +4,7 @@ export const PacienteService = async (data) => {
 
 	const config = {
 		method: 'put',
-		url: 'http://localhost:8181/cxf/actualizar/services/actualizarPaciente',
+		url: 'http://150.100.253.61:8181/cxf/actualizar/services/actualizarPaciente',
 		headers: {
 			'Content-Type': 'application/json',
 			rut: data.rut,
@@ -37,7 +37,7 @@ export const Validate = async (rut, serie) => {
 	});
 	const config = {
 		method: 'POST',
-		url: 'http://localhost:8181/cxf/rut/services/validaRut',
+		url: 'http://150.100.253.61:8181/cxf/rut/services/validaRut',
 		headers: {
 			'Content-Type': 'application/json',
 		},
@@ -58,7 +58,7 @@ export const Validate = async (rut, serie) => {
 export const GenerarToken = async (data) => {
 	const config = {
 		method: 'post',
-		url: 'http://localhost:8181/cxf/generatoken/services/generatoken',
+		url: 'http://150.100.253.61:8181/cxf/generatoken/services/generatoken',
 		headers: {
 			'user': data,
 		}
@@ -77,7 +77,7 @@ export const GenerarToken = async (data) => {
 export const ValidarToken = async (token, user) => {
 	const config = {
 		method: 'post',
-		url: 'http://localhost:8181/cxf/validaToken/services/validartoken',
+		url: 'http://150.100.253.61:8181/cxf/validaToken/services/validartoken',
 		headers: {
 			'user': user,
 			'token': token

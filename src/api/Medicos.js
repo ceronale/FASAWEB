@@ -3,7 +3,7 @@ const axios = require('axios');
 export const getLista = async (data) => {
     const config = {
         method: 'get',
-        url: 'http://localhost:8181/cxf/listarCodigos/services/listar/listaCodigos',
+        url: 'http://150.100.253.61:8181/cxf/listarCodigos/services/listar/listaCodigos',
         headers: {
             'codigoConvenio': data
         }
@@ -22,7 +22,7 @@ export const getLista = async (data) => {
 export const getMedicos = async (data) => {
     const config = {
         method: 'get',
-        url: 'http://localhost:8181/cxf/listarMedicos/services/listar/listaMedicos',
+        url: 'http://150.100.253.61:8181/cxf/listarMedicos/services/listar/listaMedicos',
         headers: {
             'codigoLista': data
         }
@@ -44,7 +44,7 @@ export const updateMedico = async (data, user) => {
 
     const config = {
         method: 'post',
-        url: 'http://localhost:8181/cxf/actualizarMedic/services/act/actualizarListaMedic',
+        url: 'http://150.100.253.61:8181/cxf/actualizarMedic/services/act/actualizarListaMedic',
         headers: {
             'codigoLista': data.codigoLista,
             'rut': data.rut,

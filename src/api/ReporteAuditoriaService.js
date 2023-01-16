@@ -4,7 +4,7 @@ export const ReporteAuditoriaService = async (data) => {
     console.log(data)
     const config = {
         method: 'get',
-        url: 'http://localhost:8181/cxf/reportar/services/reportar/auditoria',
+        url: 'http://150.100.253.61:8181/cxf/reportar/services/reportar/auditoria',
         headers: {
             'user': data.user,
             'servicio': data.servicio,

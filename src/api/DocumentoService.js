@@ -7,7 +7,7 @@ export const UploadDocumentos = async (data, convenio) => {
     formData.append('convenio', convenio);
     var config = {
         method: 'post',
-        url: 'http://localhost:8181/cxf/mk/services/visualizar/documento',
+        url: 'http://150.100.253.61:8181/cxf/mk/services/visualizar/documento',
         data: formData
     };
 
@@ -26,7 +26,7 @@ export const getDocumento = async (data) => {
 
     var config = {
         method: 'post',
-        url: 'http://localhost:8181/cxf/up/services/upload/file',
+        url: 'http://150.100.253.61:8181/cxf/up/services/upload/file',
         headers: {
             'archivo': data.archivo,
             'convenio': data.convenio

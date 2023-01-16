@@ -4,7 +4,7 @@ export const EmpresaService = async (data, user) => {
 
 	const config = {
 		method: 'put',
-		url: 'http://localhost:8181/cxf/actualizarEmpresa/services/actualizarEmpresa',
+		url: 'http://150.100.253.61:8181/cxf/actualizarEmpresa/services/actualizarEmpresa',
 		headers: {
 			'Content-Type': 'application/json',
 			rut: data.rut,
@@ -35,7 +35,7 @@ export const ConvenioService = async (user, codigo, correo) => {
 
 	const config = {
 		method: 'put',
-		url: 'http://localhost:8181/cxf/convenios/services/actualizarConvenio',
+		url: 'http://150.100.253.61:8181/cxf/convenios/services/actualizarConvenio',
 		headers: {
 			'user': user,
 			'codigo': codigo,

@@ -6,7 +6,7 @@ export const UploadPolizas = async (data) => {
     formData.append('csv', data);
     var config = {
         method: 'post',
-        url: 'http://localhost:8181/cxf/carga/services/csv',
+        url: 'http://150.100.253.61:8181/cxf/carga/services/csv',
         data: formData
     };
     const response = axios(config)

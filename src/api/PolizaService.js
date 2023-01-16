@@ -4,7 +4,7 @@ export const PolizaService = async (data) => {
 
     const config = {
         method: 'get',
-        url: 'http://localhost:8181/cxf/buscarpolizas/services/buscarPoliza',
+        url: 'http://150.100.253.61:8181/cxf/buscarpolizas/services/buscarPoliza',
         headers: {
             'codigo': data
         }
@@ -23,7 +23,7 @@ export const PolizaServiceUpdate = async (grupo, nombre, codigo, rut, fecha, bio
     console.log(user)
     const config = {
         method: 'put',
-        url: 'http://localhost:8181/cxf/act/services/actualizarP',
+        url: 'http://150.100.253.61:8181/cxf/act/services/actualizarP',
         headers: {
             'grupo': grupo,
             'nombre': nombre,
