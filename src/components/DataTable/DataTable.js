@@ -1,7 +1,5 @@
-import React, { useState, useCallback } from "react";
-import MaterialReactTable, {
-    MRT_FullScreenToggleButton, MRT_ToggleGlobalFilterButton, MRT_ToggleFiltersButton
-} from 'material-react-table';
+import React from "react";
+import MaterialReactTable from 'material-react-table';
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
 
 

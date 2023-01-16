@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Label, LabelReq, RestriccionPass, Inputc, ContenedorTitulo, Titulo } from "./Formularios";
-import ModalTest from "./ModalTest";
+import React, { useState } from "react";
+import { Label, LabelReq, RestriccionPass, Inputp, ContenedorTitulo, Titulo } from "../Formularios";
+import ModalAlert from "../Modals/ModalAlert";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ActualizarPass } from "../api/ActualizarPass";
-import { LoginService } from "../api/LoginService";
-import "../styles/ModificarPass.css";
+import { ActualizarPass } from "../../api/ActualizarPass";
+import { LoginService } from "../../api/LoginService";
+import "../../styles/ModificarPass.css";
+import { Button } from "@mui/material";
 
 const initialForm = {
     passwdActual: '',
@@ -21,7 +22,7 @@ const FormModificarPass = (user) => {
     const [showModal, setShowModal] = useState(false);
     const [usuario, setUsuario] = useState(JSON.parse(user.user))
     const [IsValid, setIsValid] = useState(false);
-    //const handleClose = () => setShowModal(false);
+
 
     const handleClose = () => {
         setShowModal(false);
@@ -41,8 +42,7 @@ const FormModificarPass = (user) => {
 
     const { passwdActual, passwd, passwd2 } = registerData;
 
-    //User
-    const location = useLocation();
+
 
 
     //Validaciones
@@ -64,7 +64,7 @@ const FormModificarPass = (user) => {
 
             if (r.login[0].codigoResultadoLogin === 0) {
                 const respActualizar = await ActualizarPass(usuario.correo, registerData.passwd);
-                console.log(respActualizar);
+
                 if (respActualizar['respuesta'].length === 1) {
                     setIsValid(true);
                     setShowModal(true)
@@ -137,8 +137,8 @@ const FormModificarPass = (user) => {
             <form onSubmit={onSubmit}>
                 <div className="boxCentral">
                     <ContenedorTitulo>
-						<Titulo>Modificar Contraseña</Titulo>
-					</ContenedorTitulo>
+                        <Titulo>Modificar Contraseña</Titulo>
+                    </ContenedorTitulo>
                     <div className="leyenda">
                         <label>
                             Para poder modificar su contraseña ingrese la clave anterior
@@ -147,7 +147,7 @@ const FormModificarPass = (user) => {
                     </div>
                     <div className="boxEmail">
                         <Label htmlFor="">Contraseña Actual <LabelReq htmlFor=""> *</LabelReq></Label>
-                        <Inputc
+                        <Inputp
                             type="password"
                             placeholder=""
                             name="passwdActual"
@@ -163,7 +163,7 @@ const FormModificarPass = (user) => {
                     </div>
                     <div className="boxEmail">
                         <Label htmlFor="">Nueva Contraseña <LabelReq htmlFor=""> *</LabelReq></Label>
-                        <Inputc
+                        <Inputp
                             type="password"
                             placeholder=""
                             name="passwd"
@@ -180,7 +180,7 @@ const FormModificarPass = (user) => {
                     </div>
                     <div className="boxEmail">
                         <Label htmlFor="">Confirmar Contraseña <LabelReq htmlFor=""> *</LabelReq></Label>
-                        <Inputc
+                        <Inputp
                             type="password"
                             placeholder=""
                             name="passwd2"
@@ -195,19 +195,19 @@ const FormModificarPass = (user) => {
                         <div className="campoRequerido">
                             <span className="obligatorio">* Campos requeridos</span>
                         </div>
-                        <div className="blockCrearCuenta">
-                            <button className="buttomActualizar" onClick={handleClose} >Actualizar</button>
+                        <div >
+                            <Button type="submit" variant="contained" color="error" onClick={handleClose} >Actualizar</Button>
                         </div>
                     </div>
                 </div>
             </form>
-            <ModalTest
+            <ModalAlert
                 title={title}
                 show={showModal}
                 handleClose={handleClose}
                 msj={msj}
             />
-        </main>
+        </main >
     );
 }
 

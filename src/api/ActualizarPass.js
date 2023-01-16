@@ -7,6 +7,7 @@ export const ActualizarPass = async (user, passwd) => {
 			'Content-Type': 'application/json',
 			user: user,
 			passwd: passwd,
+			userRep: user,
 		},
 	};
 	const response = axios(config)

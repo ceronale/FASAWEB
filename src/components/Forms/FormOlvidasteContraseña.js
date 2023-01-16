@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Label, LabelReq, RestriccionPass, Inputc, ContenedorTitulo, Titulo } from "./Formularios";
-import "../styles/OlvidasteContraseña.css";
-import { GenerarToken, ValidarToken } from "../api/PacienteService";
-import { HomeServiceEmpresa } from "../api/HomeEmpresaService";
-import ModalTest from "./ModalTest";
+import { Label, LabelReq, RestriccionPass, Inputc, ContenedorTitulo, Titulo } from "../Formularios";
+import "../../styles/OlvidasteContraseña.css";
+import { GenerarToken, ValidarToken } from "../../api/PacienteService";
+import ModalAlert from "../Modals/ModalAlert";
 
 
 const initialForm = {
@@ -28,7 +27,7 @@ const FormOlvidasteContraseña = () => {
 		setShowModal(false);
 		if (tokenIsValid) {
 			//Redireccionar a restaurar contraseña.
-			localStorage.setItem("user", JSON.stringify(registerData.user));
+			localStorage.setItem("userRestaurar", JSON.stringify(registerData.user));
 			navigate(`/RestaurarPass`);
 			handleClear();
 		}
@@ -135,7 +134,7 @@ const FormOlvidasteContraseña = () => {
 					)}
 				</div>
 			</form>
-			<ModalTest title={title} show={showModal} handleClose={handleCloseToken} msj={msj} />
+			<ModalAlert title={title} show={showModal} handleClose={handleCloseToken} msj={msj} />
 		</main>
 	);
 }

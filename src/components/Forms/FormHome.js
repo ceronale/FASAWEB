@@ -1,66 +1,61 @@
 import React, { useEffect, useState } from "react";
-import { Label, GrupoInput, InputH } from "./Formularios";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { HomeService } from "../api/HomeService";
-import { HomeServiceEmpresa } from "../api/HomeEmpresaService";
-import "../styles/Home.css";
-//import { LoginService } from "../api/LoginService";
+import { Label, GrupoInput, InputH } from "../Formularios";
+import { useNavigate } from "react-router-dom";
+import "../../styles/Home.css";
+import { Button } from "@mui/material";
 
+// Function that returns the form for the home page
 const FormHome = (user) => {
 
-	const [initialState, setInitialState] = useState({
-		nombre: '',
-		rut: '',
-		apellido: '',
-		apellido2: '',
+	// Initialize the state for the form fields
+	const [formState, setFormState] = useState({
+		firstName: '',
+		id: '',
+		lastName1: '',
+		lastName2: '',
 		email: '',
-		celular: '',
+		phone: '',
 		kamConvenios: '',
-		kamCorreo: '',
-		cargo: '',
-
+		kamEmail: '',
+		position: '',
 	})
-	const [usuario, setUsuario] = useState(JSON.parse(user.user))
+	// Initialize the state for the current user
+	const [currentUser, setCurrentUser] = useState(JSON.parse(user.user))
+
+	// Initialize the navigate hook for navigation
 	const navigate = useNavigate();
-	const location = useLocation();
-	const emailparam = location.pathname.split("/")
 
-	console.log(usuario);
-
+	// Function to handle a click event (not specified in the original code)
 	const handleClick = () => {
-		//Redireccionar al home usuario cliente recien creado
-		navigate(`/ModificarPass`);
+		// Redirect to the ModificarPass page
+		navigate('/ModificarPass');
 	}
 
-	const home = async (email) => {
-		var datosUsuarios = "";
-		//console.log(usuario.rol);
-		if (usuario.rol === "Paciente") {
-			const response = await HomeService(email)
-			datosUsuarios = JSON.parse(response)
-			datosUsuarios = datosUsuarios.usuario[0]
-		} else if (usuario.rol === "Empresa") {
-			const response2 = await HomeServiceEmpresa(email)
-			datosUsuarios = response2.usuarioEmpresa[0];
-		}
+	// Async function to retrieve the user data from the backend
+	const getUserData = () => {
 
-		const { rut, nombre, apellido, apellido2, correo, celular, kamConvenios, kamCorreo, cargo } = datosUsuarios;
+		let userData = currentUser;
 
-		setInitialState({
-			rut: rut,
-			nombre: nombre,
-			apellido: apellido,
-			apellido2: apellido2,
+		// Destructure the user data from the response
+		const { rut, nombre, apellido, apellido2, correo, celular, kamConvenios, kamCorreo, cargo } = userData;
+
+		// Set the form state with the retrieved data
+		setFormState({
+			id: rut,
+			firstName: nombre,
+			lastName1: apellido,
+			lastName2: apellido2,
 			email: correo,
-			celular: celular,
+			phone: celular,
 			kamConvenios: kamConvenios,
-			kamCorreo: kamCorreo,
-			cargo: cargo,
-		})
-	}
+			kamEmail: kamCorreo,
+			position: cargo,
+		});
+	};
 
+	// Use the effect hook to retrieve the user data on component mount
 	useEffect(() => {
-		home(usuario.correo)
+		getUserData()
 	}, [])
 
 	return (
@@ -77,7 +72,7 @@ const FormHome = (user) => {
 									<Label>RUT</Label>
 									<InputH
 										className="inputForm"
-										value={initialState.rut}
+										value={formState.id}
 										type="text"
 										readOnly
 									/>
@@ -87,7 +82,7 @@ const FormHome = (user) => {
 									<InputH
 										className="inputForm"
 										type="text"
-										value={initialState.nombre}
+										value={formState.firstName}
 										readOnly
 									/>
 								</GrupoInput>
@@ -96,7 +91,7 @@ const FormHome = (user) => {
 									<InputH
 										className="inputForm"
 										type="text"
-										value={initialState.apellido}
+										value={formState.lastName1}
 										readOnly
 									/>
 								</GrupoInput>
@@ -105,12 +100,12 @@ const FormHome = (user) => {
 									<InputH
 										className="inputForm"
 										type="text"
-										value={initialState.apellido2}
+										value={formState.lastName2}
 										readOnly
 									/>
 								</GrupoInput>
 								{
-									(usuario.rol === "Paciente")
+									(currentUser.rol === "Paciente")
 										?
 										<GrupoInput>
 											<Label className="labelForm" htmlFor="">
@@ -119,7 +114,7 @@ const FormHome = (user) => {
 											<InputH
 												className="inputForm"
 												type="text"
-												value={initialState.celular}
+												value={formState.phone}
 												readOnly
 											/>
 										</GrupoInput>
@@ -139,21 +134,22 @@ const FormHome = (user) => {
 										<InputH
 											className="inputForm"
 											type="text"
-											value={initialState.email}
+											value={formState.email}
 											readOnly
 										/>
 									</GrupoInput>
 									<div id="accionRegistro">
-										<div id="botonModificar">
-											<button onClick={handleClick} >Modificar Contraseña</button>
-										</div>
+
+										<Button variant="contained" onClick={handleClick} >Modificar Contraseña</Button>
+
+
 									</div>
 								</GrupoInput>{" "}
 							</div>
 
 						</div>
 						{
-							(usuario.rol === "Paciente")
+							(currentUser.rol === "Paciente")
 								?
 								null
 								: <div className="row">
@@ -162,20 +158,20 @@ const FormHome = (user) => {
 											<label className="titulo">Informacion KAM</label>
 										</div>
 										<GrupoInput>
-											<Label>Nombre Kam </Label>
+											<Label>KAM Correo</Label>
 											<InputH
 												className="inputForm"
+												value={formState.kamEmail}
 												type="text"
-												value={initialState.kamConvenios}
 												readOnly
 											/>
 										</GrupoInput>
 										<GrupoInput>
-											<Label>Correo Electronico Kam </Label>
+											<Label>KAM Correo</Label>
 											<InputH
 												className="inputForm"
+												value={formState.kamEmail}
 												type="text"
-												value={initialState.kamCorreo}
 												readOnly
 											/>
 										</GrupoInput>
@@ -185,11 +181,11 @@ const FormHome = (user) => {
 											<label className="titulo">Informacion Empresa</label>
 										</div>
 										<GrupoInput>
-											<Label>Cargo </Label>
+											<Label>Cargo</Label>
 											<InputH
 												className="inputForm"
+												value={formState.position}
 												type="text"
-												value={initialState.cargo}
 												readOnly
 											/>
 										</GrupoInput>
@@ -205,6 +201,3 @@ const FormHome = (user) => {
 };
 
 export default FormHome;
-
-
-// <NavLink to="/ModificarPass/" className="navlink" >Modificar Contraseña</NavLink>

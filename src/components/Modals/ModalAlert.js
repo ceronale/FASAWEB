@@ -1,9 +1,9 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
+import Button from '@mui/material/Button';
 import Modal from 'react-bootstrap/Modal';
 
 
-const ModalConfirmar = ({ show, handleClose, handleYes, msj, title }) => {
+const ModalAlert = ({ show, handleClose, msj, title }) => {
     return (
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
@@ -11,15 +11,12 @@ const ModalConfirmar = ({ show, handleClose, handleYes, msj, title }) => {
             </Modal.Header>
             <Modal.Body>{msj}</Modal.Body>
             <Modal.Footer>
-                <Button variant="primary" onClick={handleYes}>
-                    Confirmar
-                </Button>
-                <Button variant="secondary" onClick={handleClose}>
-                    Cancelar
+                <Button variant='contained' onClick={handleClose}>
+                    Aceptar
                 </Button>
             </Modal.Footer>
         </Modal>
     );
 };
 
-export default ModalConfirmar;
+export default ModalAlert;

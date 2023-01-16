@@ -14,14 +14,13 @@ export const PolizaService = async (data) => {
             return out;
         })
         .catch((error) => {
-            throw new error(error);
+            return error;
         });
-
     return response;
 }
 
-export const PolizaServiceUpdate = async (grupo, nombre, codigo, rut, fecha, bio) => {
-
+export const PolizaServiceUpdate = async (grupo, nombre, codigo, rut, fecha, bio, user) => {
+    console.log(user)
     const config = {
         method: 'put',
         url: 'http://localhost:8181/cxf/act/services/actualizarP',
@@ -31,7 +30,8 @@ export const PolizaServiceUpdate = async (grupo, nombre, codigo, rut, fecha, bio
             'codigo': codigo,
             'rut': rut,
             'fecha': fecha,
-            'bio': bio
+            'bio': bio,
+            'userRep': user
         }
     };
     const response = axios(config)
@@ -39,8 +39,11 @@ export const PolizaServiceUpdate = async (grupo, nombre, codigo, rut, fecha, bio
             return out;
         })
         .catch((error) => {
-            throw new error(error);
+            console.log(error);
+            return error;
+
         });
+
 
     return response;
 }

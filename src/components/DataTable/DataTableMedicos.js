@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import MaterialReactTable from 'material-react-table';
 import Button from '@mui/material/Button';
-import ModalConfirmar from "../ModalConfirmar";
-import ModalTest from "../ModalTest";
+import ModalConfirmar from "../Modals/ModalConfirmar";
+import ModalAlert from "../Modals/ModalAlert";
 
 
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
@@ -181,7 +181,7 @@ const DataTableMedicos = props => {
                 handleYes={handleConfirmar}
             />
 
-            <ModalTest title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
+            <ModalAlert title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
 
             <ModalUploadFileMedicos
                 title={"Cargar datos masivos"}

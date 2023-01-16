@@ -1,5 +1,5 @@
 import BarraOpciones from "../components/BarraOpciones";
-import FormHome from "../components/FormHome";
+import FormHome from "../components/Forms/FormHome";
 
 const Home = () => {
     var user = localStorage.getItem("user");

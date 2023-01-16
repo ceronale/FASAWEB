@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import Button from 'react-bootstrap/Button';
+import Button from '@mui/material/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
@@ -70,7 +70,7 @@ class UploadFilePolizas extends Component {
                             <Form.Control required onChange={this.onFileChange} onClick={this.handleClick} type="file" />
                         </Col>
                         <Col>
-                            <Button type="submit" style={{ marginTop: 5 }}>
+                            <Button type="submit" variant='contained' style={{ marginTop: 5 }}>
                                 Subir archivo
                             </Button>
                         </Col>

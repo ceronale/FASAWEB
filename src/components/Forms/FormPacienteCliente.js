@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { PacienteService, GenerarToken, ValidarToken, Validate } from "../api/PacienteService";
+import { PacienteService, GenerarToken, ValidarToken, Validate } from "../../api/PacienteService";
 import { useNavigate } from 'react-router-dom';
-import { Label, LabelReq, Inputs, Inputp, GrupoInput, RestriccionPass, DivTitulos, Titulo, } from "../components/Formularios";
+import { Label, LabelReq, Inputs, Inputp, GrupoInput, RestriccionPass, DivTitulos, Titulo, } from "../Formularios";
 import { NavLink } from "react-router-dom";
-import ModalTest from './ModalTest';
-import "../styles/FormPacienteCliente.css";
+import ModalAlert from '../Modals/ModalAlert';
+import "../../styles/FormPacienteCliente.css";
 
 const initialForm = {
 	rut: '',
@@ -43,8 +43,7 @@ const FormPacienteCliente = () => {
 	const handleCloseToken = () => {
 		setShowModal(false);
 		if (tokenIsValid) {
-			//Redireccionar al home usuario cliente recien creado
-			navigate(`/Home/${registerData.user}`);
+			navigate(`/`);
 			handleClear();
 		}
 	}
@@ -59,7 +58,7 @@ const FormPacienteCliente = () => {
 		//Validacion de campos de formulario solo letras
 		if (event.target.name === "nombre" || event.target.name === "apellido" || event.target.name === "apellido2") {
 			aux = event.target.value
-			aux = aux.replace(/ [^A-Za-z-Ñ-ñ]+/g, '');
+			aux = aux.replace(/[^A-Za-z-Ñ-ñ\s]+/g, '');
 			updateStateOnchange(event, aux);
 		}
 		//Validacion de campos de formulario solo numeros
@@ -105,6 +104,18 @@ const FormPacienteCliente = () => {
 			setTokenIsValid(true);
 			setTitle("Verificacion de token")
 			setMsj("Token ingresado correctamente.")
+			const resp = await PacienteService(registerData)
+			var aux = resp['outActualizar'][0]['outSeq'];
+			if (aux === 0) {
+				setShowModal(true)
+				setTitle("Error al crear usuario")
+				setMsj("El usuario ingresado ya existe.")
+			} else {
+				setShowModal(true)
+				setTitle("Creación de usuario")
+				setMsj("Usuario creado de manera exitosa.")
+			}
+
 		}
 	};
 
@@ -118,28 +129,17 @@ const FormPacienteCliente = () => {
 		var isValidarRut = validarRut(respValidar);
 		var isPassValid = contraseñaValidar();
 		if (isPassValid && isValidarRut) {
-			const resp = await PacienteService(registerData)
-			var aux = resp['outActualizar'][0]['outSeq'];
-			if (aux === 0) {
-				setShowModal(true)
-				setTitle("Error al crear usuario")
-				setMsj("El usuario ingresado ya existe.")
-			} else {
-				setShowModal(true)
-				setTitle("Creación de usuario")
-				setMsj("Usuario creado de manera exitosa.")
-				//Envio de token 
-				const respToken = await GenerarToken(registerData.user);
-				console.log(respToken);
-				setcheckToken(true);
-			}
+			setShowModal(true)
+			setTitle("Codigo de confirmación")
+			setMsj("Se ha enviado un token de verificación a tu correo.")
+			const respToken = await GenerarToken(registerData.user);
+			console.log(respToken);
+			setcheckToken(true);
 		}
-
 	};
 
 	// Validar RUT y N° Documento
 	function validarRut(respValidar) {
-
 		var aux = respValidar['success'];
 		if (aux === true) {
 			return true;
@@ -372,7 +372,7 @@ const FormPacienteCliente = () => {
 					</div>
 				</div>
 			</form>
-			<ModalTest title={title} show={showModal} handleClose={handleCloseToken} msj={msj} />
+			<ModalAlert title={title} show={showModal} handleClose={handleCloseToken} msj={msj} />
 		</main >
 	);
 }

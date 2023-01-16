@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import "../styles/FormClienteEmpresa.css";
-import { EmpresaService, ConvenioService } from "../api/EmpresaService";
-import { LIstaEmpresasService, } from "../api/LIstaEmpresasService";
+import "../../styles/FormClienteEmpresa.css";
+import { EmpresaService, ConvenioService } from "../../api/EmpresaService";
+import { LIstaEmpresasService, } from "../../api/LIstaEmpresasService";
 import {
 	Label,
 	LabelReq,
@@ -11,10 +11,12 @@ import {
 	Inputp,
 	ContenedorTitulo,
 	Titulo
-} from "../components/Formularios";
-import ModalTest from './ModalTest';
+} from "../Formularios";
+import ModalAlert from '../Modals/ModalAlert';
 import BaseSelect from "react-select";
-import FixRequiredSelect from "../FixRequiredSelect";
+import FixRequiredSelect from "../../FixRequiredSelect";
+import { Button } from "@mui/material";
+import { Margin } from "@mui/icons-material";
 
 
 const initialForm = {
@@ -30,9 +32,10 @@ const initialForm = {
 	passwd2: '',
 };
 
-const FormClienteEmpresa = () => {
+const FormClienteEmpresa = (usuario) => {
 	const [options, setOptions] = useState([]);
 	const [selectedOptions, setSelectedOptions] = useState([]);
+	const correoUsuario = JSON.parse(usuario.usuario).correo;
 
 	useEffect(() => {
 		fetchDataSelect();
@@ -95,7 +98,8 @@ const FormClienteEmpresa = () => {
 		e.preventDefault();
 		var isPassValid = contraseñaValidar();
 		if (isPassValid) {
-			const resp = await EmpresaService(registerData)
+			const resp = await EmpresaService(registerData, correoUsuario)
+			console.log(registerData)
 			var aux = resp['outActualizar'][0]['outSeq'];
 			if (aux === 0) {
 				setShowModal(true)
@@ -106,8 +110,8 @@ const FormClienteEmpresa = () => {
 				setShowModal(true)
 				setTitle("Creación de usuario")
 				setMsj("Cliente Empresa creado de manera exitosa.")
-				const respConvenio = await ConvenioService(registerData.user, selectedOptions.toString());
-				console.log(respConvenio);
+				const respConvenio = await ConvenioService(registerData.user, selectedOptions.toString(), correoUsuario);
+
 				handleClear();
 			}
 		}
@@ -152,6 +156,7 @@ const FormClienteEmpresa = () => {
 
 	async function fetchDataSelect() {
 		const resp2 = await LIstaEmpresasService();
+
 		var aux = resp2['empresa'];
 		let data = aux.map(function (element) {
 			return { value: `${element.idEmpresa}`, label: `${element.nombreEmpresa}` };
@@ -309,8 +314,8 @@ const FormClienteEmpresa = () => {
 											onChange={onchange}
 											required
 										/>
-										<div className="CrearEmpresa">
-											<button className="buttomCrearCuenta" type="submit" >Crear Nuevo Usuario</button>
+										<div>
+											<Button variant="contained" color="error" type="submit" sx={{ marginTop: 2 }} >Crear Nuevo Usuario</Button>
 											<div className="CampoRequerido">
 												<span>* Campos requeridos</span>
 											</div>
@@ -346,7 +351,7 @@ const FormClienteEmpresa = () => {
 					</div>
 				</div>
 			</form>
-			<ModalTest title={title} show={showModal} handleClose={handleClose} msj={msj} />
+			<ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
 		</main>
 	);
 }

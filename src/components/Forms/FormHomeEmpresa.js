@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Label, GrupoInput, InputH, ContenedorTitulo, Titulo } from "./Formularios";
+import { Label, GrupoInput, InputH, ContenedorTitulo, Titulo } from "../Formularios";
 import { useLocation } from "react-router-dom";
-import { HomeServiceEmpresa } from "../api/HomeEmpresaService";
-//import { LoginService } from "../api/LoginService";
+import { HomeServiceEmpresa } from "../../api/HomeEmpresaService";
 
 const FormHome = () => {
 	const [initialState, setInitialState] = useState({

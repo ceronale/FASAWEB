@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-import Button from 'react-bootstrap/Button';
+import Button from '@mui/material/Button';
 import Modal from 'react-bootstrap/Modal';
-import Switch from '@mui/material/Switch';
+
 import {
     Label,
-    LabelReq,
     Inputs,
     GrupoInput,
-    RestriccionPass,
-    Inputp,
     ContenedorTitulo,
     Titulo
 } from "../Formularios";
 import FormAdministrarRoles from '../Forms/FormAdministrarRoles';
-import ModalConfirmar from "../ModalConfirmar";
+import ModalConfirmar from "./ModalConfirmar";
 
 const ModalRoles = ({ show, handleClose, msj, title, name, description, propLeft, propRight }) => {
     const [showModalConfirmar, setShowModalConfirmar] = useState(false);
@@ -106,7 +103,8 @@ const ModalRoles = ({ show, handleClose, msj, title, name, description, propLeft
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={handleShowConfirmar}>
+
+                    <Button variant="contained" onClick={handleShowConfirmar}>
                         Aceptar
                     </Button>
                 </Modal.Footer>

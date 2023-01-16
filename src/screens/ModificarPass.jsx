@@ -1,5 +1,5 @@
 import React from "react";
-import FormModificarPass from "../components/FormModificarPass";
+import FormModificarPass from "../components/Forms/FormModificarPass";
 
 const ModificarPass = () => {
     var user = localStorage.getItem("user");

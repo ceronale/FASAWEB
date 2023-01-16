@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { ContenedorTitulo, Titulo } from "./Formularios";
 import { EliminarUsuario } from "../api/EliminarUsuario";
-
 import DataTableDeleteAndExport from "./DataTable/DataTableDeleteAndExport";
 import "../styles/AdminUsuarios.css";
-import ModalTest from "./ModalTest";
-import ModalConfirmar from "./ModalConfirmar";
+import ModalAlert from "./Modals/ModalAlert";
+import ModalConfirmar from "./Modals/ModalConfirmar";
 import { ListarUsuarios } from "../api/ListarUsuarios";
+import CircularProgress from '@mui/material/CircularProgress';
 
 
-const FormAdminUsuarios = (user) => {
+const AdministrarUsuarios = (user) => {
+    const [loading, setLoading] = useState(false);
     const [usuario, setUsuario] = useState(JSON.parse(user.user))
     const [title, setTitle] = useState();
     const [msj, setMsj] = useState();
@@ -24,6 +25,8 @@ const FormAdminUsuarios = (user) => {
     }
 
     const handleConfirmar = async () => {
+
+
         const resp = await EliminarUsuario(idElminar, usuario.correo)
         var codigoRespuesta = resp['eliminar'][0]['codigoRespuesta'];
         var detalleRespuesta = resp['eliminar'][0]['detalleRespuesta'];
@@ -39,13 +42,18 @@ const FormAdminUsuarios = (user) => {
 
     // DataTable
     // 1.-Configurar Hooks
-    const [users, setUsers] = useState()
+    const [data, setData] = useState({})
 
 
     // 2.-Funcion para mostrar los datos
     const showData = async () => {
+        setLoading(true);
         const response = await ListarUsuarios()
-        setUsers(response.usuario)
+        console.log(response);
+        setLoading(true)
+        setData(undefined)
+        setData(response.usuario)
+        setLoading(false);
     }
 
     useEffect(() => {
@@ -95,7 +103,12 @@ const FormAdminUsuarios = (user) => {
 
     return (
         <main>
-            <div className="container text-center">
+            <div style={{ position: 'relative' }}>
+                {loading && (
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+                        <CircularProgress />
+                    </div>
+                )}
                 <div className="row">
                     <div className="col">
                         <ContenedorTitulo>
@@ -104,34 +117,31 @@ const FormAdminUsuarios = (user) => {
                         <div id="notaLogin">
                             En esta sección podras agregar un nuevo usuario al sistema.
                         </div>
-
-                        <div className="boxTabla">
-                            {
-                                (users === undefined)
-                                    ?
-                                    null
-                                    : <DataTableDeleteAndExport
-                                        data={users}
-                                        columns={columns}
-                                        export={false}
-                                        delete={true}
-                                    />
-                            }
-
-                        </div>
+                        {
+                            (data === undefined)
+                                ?
+                                null
+                                : <DataTableDeleteAndExport
+                                    data={data}
+                                    columns={columns}
+                                    export={false}
+                                    delete={true}
+                                    usuario={usuario.correo}
+                                />
+                        }
                     </div>
                 </div>
+                <ModalConfirmar
+                    title={title}
+                    msj={msj}
+                    show={showModalConfirmar}
+                    handleClose={handleCloseConfirmar}
+                    handleYes={handleConfirmar}
+                />
             </div>
-            <ModalConfirmar
-                title={title}
-                msj={msj}
-                show={showModalConfirmar}
-                handleClose={handleCloseConfirmar}
-                handleYes={handleConfirmar}
-            />
-            <ModalTest title={title} show={showModal} handleClose={handleClose} msj={msj} />
+            <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
         </main>
     );
 }
 
-export default FormAdminUsuarios;
+export default AdministrarUsuarios;

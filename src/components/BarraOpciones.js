@@ -3,9 +3,15 @@ import "../styles/BarraOpciones.css";
 import { NavLink } from "react-router-dom";
 
 const BarraOpciones = (user) => {
+    let usuario;
+    if (user && user.user) {
+        usuario = JSON.parse(user.user);
 
-    const usuario = (JSON.parse(user.user));
-    console.log(usuario)
+        // ...
+    } else {
+        usuario = {};
+        usuario.rol = "norol"
+    }
     return (
         <div className="Barra">
 

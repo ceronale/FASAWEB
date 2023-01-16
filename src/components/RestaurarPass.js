@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Label, LabelReq, RestriccionPass, Inputc, ContenedorTitulo, Titulo } from "./Formularios";
-import ModalTest from "./ModalTest";
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from "react";
+import { Label, LabelReq, RestriccionPass, Inputc, Inputp, ContenedorTitulo, Titulo } from "./Formularios";
+import ModalAlert from "./Modals/ModalAlert";
+import { useNavigate } from 'react-router-dom';
 import { ActualizarPass } from "../api/ActualizarPass";
 import "../styles/RestaurarPass.css";
 
@@ -11,6 +11,7 @@ const initialForm = {
 };
 
 const FormRestaurarPass = (user) => {
+    console.log(user)
 
     const navigate = useNavigate();
     const [title, setTitle] = useState();
@@ -36,8 +37,6 @@ const FormRestaurarPass = (user) => {
 
     const { passwd, passwd2 } = registerData;
 
-    const location = useLocation();
-    const emailparam = location.pathname.split("/")
 
     //Validaciones
     const onSubmit = async (e) => {
@@ -53,6 +52,7 @@ const FormRestaurarPass = (user) => {
                 setShowModal(true)
                 setTitle("Restaurar Contraseña")
                 setMsj("Su contraseña ha sido modificada correctamente.")
+                localStorage.removeItem("userRestaurar");
             } else {
                 setShowModal(true)
                 setTitle("Error de restauración")
@@ -123,7 +123,7 @@ const FormRestaurarPass = (user) => {
                     </div>
                     <div className="boxEmail">
                         <Label htmlFor="">Nueva Contraseña <LabelReq htmlFor=""> *</LabelReq></Label>
-                        <Inputc
+                        <Inputp
                             type="password"
                             placeholder=""
                             name="passwd"
@@ -142,7 +142,7 @@ const FormRestaurarPass = (user) => {
                     </div>
                     <div className="boxEmail">
                         <Label htmlFor="">Confirmar Contraseña <LabelReq htmlFor=""> *</LabelReq></Label>
-                        <Inputc
+                        <Inputp
                             type="password"
                             placeholder=""
                             name="passwd2"
@@ -163,7 +163,7 @@ const FormRestaurarPass = (user) => {
                     </div>
                 </div>
             </form>
-            <ModalTest
+            <ModalAlert
                 title={title}
                 show={showModal}
                 handleClose={handleClose}

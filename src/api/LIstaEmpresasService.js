@@ -4,13 +4,13 @@ export const LIstaEmpresasService = async () => {
 
     var config = {
         method: 'get',
-        url: 'http://localhost:8181/cxf/listaEmpresa/services/listarEmpresa',
+        url: 'http://localhost:8181/cxf/listaEmpresa/services/listarConvenios',
         headers: {}
     };
 
     const response = axios(config)
         .then(({ data: response }) => {
-            
+
             return response;
         })
         .catch(function (error) {

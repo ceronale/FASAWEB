@@ -1,15 +1,16 @@
 import React from "react";
 
 import BarraOpciones from "../components/BarraOpciones";
-import FormClienteEmpresa from "../components/FormClienteEmpresa";
+import FormClienteEmpresa from "../components/Forms/FormClienteEmpresa";
 
 const NuevoClienteEmpresa = () => {
-    return (  
+    var user = localStorage.getItem("user");
+    return (
         <div>
-            <BarraOpciones />
-            <FormClienteEmpresa />
+            <BarraOpciones user={user} />
+            <FormClienteEmpresa usuario={user} />
         </div>
     );
 }
- 
+
 export default NuevoClienteEmpresa;

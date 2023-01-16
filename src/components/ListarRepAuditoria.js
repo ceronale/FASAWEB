@@ -15,7 +15,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import ModalTest from './ModalTest';
+import ModalAlert from './Modals/ModalAlert';
 
 const ListarRepAuditoria = (user) => {
   const columns = [
@@ -54,10 +54,8 @@ const ListarRepAuditoria = (user) => {
     setShowModal(false);
   }
 
-  const [filtrarValue, setFiltrarValue] = useState()
-
   // 1.-Configurar Hooks
-  const [dataTable, setDataTable] = useState()
+  const [dataTable, setDataTable] = useState({})
 
   // 2.-Funcion para mostrar los datos
   const showData = async () => {
@@ -104,34 +102,34 @@ const ListarRepAuditoria = (user) => {
 
   const eliminar = [
     {
-      value: 'Eliminar rut Lista Medicos',
+      value: 'eliminarRutListaMedicos',
       label: 'Eliminar Rut Lista Medicos',
     },
     {
-      value: 'Actualizar Lista Medicos',
+      value: 'actualizarListaMedicos',
       label: 'Eliminar Lista Medicos',
     },
     {
-      value: 'Eliminar usuario',
+      value: 'eliminarUsuario',
       label: 'Eliminar Usuario',
     },
   ];
 
   const actualizar = [
     {
-      value: 'Actualizar passwd',
+      value: 'actualizarPwd',
       label: 'Actualizar Password',
     },
     {
-      value: 'actualizar Convenio',
+      value: 'actualizarConvenio',
       label: 'Actualizar Convenio',
     },
     {
-      value: 'Actualizar Lista Medicos',
+      value: 'actualizarListaMedicos',
       label: 'Actualizar Lista Medicos',
     },
     {
-      value: 'Actualizar Poliza',
+      value: 'actualizarPoliza',
       label: 'Actualizar Poliza',
     },
 
@@ -139,12 +137,12 @@ const ListarRepAuditoria = (user) => {
 
   const crear = [
     {
-      value: 'Actualizar Paciente',
-      label: 'Crear Paciente',
+      value: 'insertarPaciente',
+      label: 'Insertar Paciente',
     },
     {
-      value: 'Actualizar Empresa',
-      label: 'Crear Empresa',
+      value: 'insertarEmpresa',
+      label: 'Insertar Empresa',
     },
   ];
 
@@ -199,7 +197,7 @@ const ListarRepAuditoria = (user) => {
 
   return (
     <main>
-      <ModalTest title={title} show={showModal} handleClose={handleClose} msj={msj} />
+      <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
       <div>
         <ContenedorTitulo>
           <Titulo>Visualización de reporte y auditoria</Titulo>

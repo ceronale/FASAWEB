@@ -8,7 +8,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { ExportToCsv } from 'export-to-csv-fix-source-map';
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
 import { EliminarUsuario } from "../../api/EliminarUsuario";
-import ModalConfirmar from "../ModalConfirmar";
+import ModalConfirmar from "../Modals/ModalConfirmar";
 import { useNavigate } from "react-router-dom";
 
 const DataTableDeleteAndExport = props => {
@@ -42,7 +42,7 @@ const DataTableDeleteAndExport = props => {
     (row) => {
       setValues(row);
       setTitle("¿Desea continuar?")
-      setMsj("Seleccione confirmar si desea eliminar el campo")
+      setMsj("Seleccione confirmar si desea eliminar el usuario")
       setShowModalConfirmar(true)
     },
     [tableData],
@@ -50,7 +50,8 @@ const DataTableDeleteAndExport = props => {
 
   //Modal Confirmar
   const handleConfirmar = async () => {
-    const resp = await EliminarUsuario(values.original.correo)
+
+    const resp = await EliminarUsuario(values.original.correo, props.usuario)
     tableData.splice(values.index, 1);
     setTableData([...tableData]);
     setShowModalConfirmar(false);

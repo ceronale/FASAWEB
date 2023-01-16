@@ -3,12 +3,13 @@ import BarraOpciones from "../components/BarraOpciones";
 import ListarBeneficiarios from "../components/ListarBeneficiarios";
 
 const Beneficiarios = () => {
-    return (  
+    var user = localStorage.getItem("user");
+    return (
         <div>
-            <BarraOpciones />
-            <ListarBeneficiarios />
+            <BarraOpciones user={user} />
+            <ListarBeneficiarios user={user} />
         </div>
     );
 }
- 
+
 export default Beneficiarios;

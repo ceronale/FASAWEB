@@ -7,7 +7,7 @@ const PacienteRoutes = () => {
     if (user !== null) {
         if (user.rol !== "Paciente") {
             user = null;
-            var path = "/home"
+            path = "/home"
         }
     }
 

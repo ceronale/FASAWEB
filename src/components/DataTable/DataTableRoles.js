@@ -1,13 +1,10 @@
 import React, { useState, useCallback, useEffect } from "react";
-import MaterialReactTable, {
-    MRT_FullScreenToggleButton, MRT_ToggleGlobalFilterButton, MRT_ToggleFiltersButton
-} from 'material-react-table';
+import MaterialReactTable from 'material-react-table';
 import { Box, Button, IconButton, Tooltip } from '@mui/material';
 import Delete from '@mui/icons-material/Delete';
 import CreateIcon from '@mui/icons-material/Create';
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
-import ModalConfirmar from "../ModalConfirmar";
-import { useNavigate } from "react-router-dom";
+import ModalConfirmar from "../Modals/ModalConfirmar";
 import ModalRoles from "../Modals/ModalRoles";
 
 const DataTableRoles = props => {
@@ -18,10 +15,6 @@ const DataTableRoles = props => {
     const [showModalConfirmar, setShowModalConfirmar] = useState(false);
     const [showModalRoles, setShowModalRoles] = useState(false);
     const [values, setValues] = useState();
-    const history = useNavigate();
-    const [name, setName] = useState()
-    const [description, setDescription] = useState()
-
     const [left, setLeft] = useState([]);
     const [right, setRight] = useState([]);
 

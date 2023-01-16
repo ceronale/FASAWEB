@@ -16,6 +16,7 @@ export const LoginService = async (data) => {
 			user: data.email,
 			passwd: data.password
 		},
+
 	};
 	const response = axios(config)
 		.then(({ data: outLogin }) => {

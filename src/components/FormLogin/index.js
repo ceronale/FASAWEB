@@ -3,6 +3,7 @@ import { LoginService } from '../../api/LoginService';
 import { useNavigate, } from 'react-router-dom';
 import styles from './styles.module.css';
 import ReCAPTCHA from "react-google-recaptcha";
+import Button from '@mui/material/Button';
 import { NavLink } from "react-router-dom";
 import "../../styles/Login.css";
 import {
@@ -15,12 +16,12 @@ import {
 	DivTitulos
 } from "../Formularios";
 
-import ModalTest from '../ModalTest';
+import ModalAlert from '../Modals/ModalAlert';
 import { HomeServiceEmpresa } from "../../api/HomeEmpresaService";
+import { HomeService } from "../../api/HomeService";
 
 
 const FormLogin = () => {
-
 
 	useEffect(() => {
 		const loggedInUser = localStorage.getItem("user");
@@ -71,32 +72,51 @@ const FormLogin = () => {
 	const onSubmit = async (e) => {
 		// Previene la recarga de la página al enviar el formulario
 		e.preventDefault();
-
+		let user;
+		let usuario;
+		let convenios = {};
 		try {
 			// Realiza una llamada a la API de inicio de sesión y obtiene la respuesta
 			const resp = await LoginService(registerData);
 			// Extrae la información relevante de la respuesta
 			const { login } = JSON.parse(resp);
 			const [{ codigoResultadoLogin }] = login;
+			console.log(login)
 
 			// Si el código de resultado es 0 (ok), se procede a obtener los datos del usuario y a almacenarlos en el almacenamiento local
 			if (codigoResultadoLogin === 0) {
-				const user = await HomeServiceEmpresa(registerData.email);
-				const [usuario] = user.usuarioEmpresa;
-				usuario.rol = login[0].tipo;
 
-				// Crea un objeto para almacenar los convenios del usuario
-				const convenios = {};
-				// Recorre el array de usuarioEmpresa y agrega cada convenio al objeto convenios
-				user.usuarioEmpresa.forEach(obj => {
-					if (obj.convenio) {
-						if (convenios.convenio) {
-							convenios.convenio += `,${obj.convenio}`;
-						} else {
-							convenios.convenio = obj.convenio;
+				//Create a function to get user data depending on the role
+				//Create a function to get user data depending on the role
+				if (login[0].tipo === "Empresa") {
+					user = await HomeServiceEmpresa(registerData.email);
+					[usuario] = user.usuarioEmpresa;
+					usuario.rol = login[0].tipo;
+					// Crea un objeto para almacenar los convenios del usuario
+
+					// Recorre el array de usuarioEmpresa y agrega cada convenio al objeto convenios
+					user.usuarioEmpresa.forEach(obj => {
+						if (obj.convenio) {
+							if (convenios.convenio) {
+								convenios.convenio += `,${obj.convenio}`;
+							} else {
+								convenios.convenio = obj.convenio;
+							}
 						}
-					}
-				});
+					});
+
+				} else if (login[0].tipo === "Paciente") {
+					user = await HomeService(registerData.email);
+					console.log(user);
+					[usuario] = user.usuario;
+					usuario.rol = login[0].tipo;
+
+				}
+
+
+
+
+
 
 				// Combina los datos del usuario y los convenios en un nuevo objeto
 				const userFormated = { ...usuario, ...convenios };
@@ -115,7 +135,7 @@ const FormLogin = () => {
 			else if (codigoResultadoLogin === 2) {
 				setShowModal(true);
 				setTitle("Error al iniciar sesión");
-				setMsj("El usuario ingresado es invalido.");
+				setMsj("Clave invalida");
 
 			}
 			// Si el código de resultado es 3 (Pass Expirada), se muestra un modal con un mensaje de error
@@ -173,9 +193,9 @@ const FormLogin = () => {
 							/>
 						</div>
 						<div className='accionLogin'>
-							<div className='botonLogin'>
+							<div >
 								{btnValid === !false && (
-									<button type="submit">Inicio Sesion</button>
+									<Button variant="contained" color="error" type="submit">Inicio Sesion</Button>
 								)}
 							</div>
 							<div className="olvidasteContraseña">
@@ -190,7 +210,7 @@ const FormLogin = () => {
 							</div>
 						</div>
 					</form>
-					<ModalTest title={title} show={showModal} handleClose={handleClose} msj={msj} />
+					<ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
 				</div>
 			</div>
 		</div>

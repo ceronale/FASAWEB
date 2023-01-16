@@ -32,9 +32,11 @@ export const getMedicos = async (data) => {
 
             return out;
         })
-        .catch(function (error) {
+        .catch((error) => {
+            console.log(error);
             return error;
         });
+
     return response;
 }
 

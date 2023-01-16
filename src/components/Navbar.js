@@ -1,7 +1,6 @@
 import React from 'react'
 import 'primeicons/primeicons.css';
 import "../styles/Navbar.css";
-import { NavLink } from "react-router-dom";
 import Popover from '@mui/material/Popover';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -15,7 +14,7 @@ import { useNavigate, } from 'react-router-dom';
 
 
 function Navbar() {
-
+  const user = localStorage.getItem("user");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigate = useNavigate();
   const handleClick = (event) => {
@@ -37,7 +36,9 @@ function Navbar() {
     <>
       <nav>
         <div>
-          <img src={logoFarmaciasAhumada} height={53} alt="logo"></img>
+          <a href="/" onClick={() => navigate("/")}>
+            <img src={logoFarmaciasAhumada} height={53} alt="logo"></img>
+          </a>
         </div>
         <div className="iconoNavbar">
 
@@ -47,35 +48,44 @@ function Navbar() {
           </div>
 
           <ul className="navbar">
-            <Popover
-              id={id}
-              open={open}
-              anchorEl={anchorEl}
-              onClose={handleClose}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-            >
-              <List
-                sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-                aria-label="contacts"
-              >
-                <ListItem disablePadding>
-                  <ListItemButton onClick={handleLogOut}>
-                    <ListItemIcon>
-                      <ExitToApp />
-                    </ListItemIcon>
-                    <ListItemText primary="Log out" />
-                  </ListItemButton>
-                </ListItem>
-              </List>
-            </Popover>
+            {
+              (user === null)
+                ?
+                null
+                :
+                <Popover
+                  id={id}
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={handleClose}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}
+                >
+                  <List
+                    sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+                    aria-label="contacts"
+                  >
+                    <ListItem disablePadding>
+                      <ListItemButton onClick={handleLogOut}>
+                        <ListItemIcon>
+                          <ExitToApp />
+                        </ListItemIcon>
+                        <ListItemText primary="Log out" />
+                      </ListItemButton>
+                    </ListItem>
+                  </List>
+
+
+                </Popover>
+            }
           </ul>
+
         </div>
       </nav>
     </>
