@@ -27,14 +27,14 @@ const ListaDocumentos = (user) => {
             { id: 12, primary: 'Item 13', secondary: 'Secondary text 13' },
             { id: 13, primary: 'Item 14', secondary: 'Secondary text 14' },
             { id: 14, primary: 'Item 15', secondary: 'Secondary text 15' },
-            // ...
+
         ];
 
         //create different array depending of the value of convenioValue
         if (convenioValue === 'VALP') {
             return data = data.filter(item => item.primary.includes('1'));
         }
-        if (convenioValue === 'INNA') {
+        if (convenioValue === 'ASDC') {
             return data = data.filter(item => item.primary.includes('2'));
         }
         if (convenioValue === 'GERV') {

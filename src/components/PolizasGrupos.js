@@ -38,6 +38,7 @@ const PolizasGrupos = ({ user }) => {
             //call the service to get the data
             setLoading(true);
             console.log(filtrarValue)
+            // const response = await PolizaService(filtrarValue);
             const response = await PolizaService("EURA");
             console.log(response)
 

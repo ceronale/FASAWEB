@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { ContenedorTitulo, Titulo } from './Formularios';
-import { getLista, getMedicos } from "../api/Medicos";
+import { getLista, getMedicos } from "../api/MedicosService";
 import Grid from '@mui/material/Unstable_Grid2';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
@@ -35,6 +35,8 @@ const ListarMedicos = (user) => {
   const [showModal, setShowModal] = useState(false);
   //State of the loading
   const [loading, setLoading] = useState(false);
+  //State to handle the disable/enable of the button
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   //Function to handle the close of the modal
   const handleClose = () => {
@@ -47,14 +49,16 @@ const ListarMedicos = (user) => {
       {
         accessorKey: 'rutMedico',
         header: 'Rut Medico',
+        enableEditing: false,
       },
       {
         accessorKey: 'nombre',
         header: 'Nombre',
+        enableEditing: false,
       },
       {
         accessorKey: 'fechaDesde',
-        header: 'fechaDesde',
+        header: 'Fecha Desde',
       },
       {
         accessorKey: 'exc_Inc', //normal accessorKey
@@ -109,7 +113,37 @@ const ListarMedicos = (user) => {
         //Reset the dataTable state
         setDataTable(undefined);
         //Update the dataTable state with the medicos data
+        setIsButtonDisabled(false);
         setDataTable(response.medicos);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        //Show modal with error message
+        setTitle("Error");
+        setMsj("Error al obtener los medicos");
+        setShowModal(true);
+      }
+    }
+  }
+  //Function to handle the click of the show data button
+  const showData2 = async () => {
+    //Validate all inputs are filled before sending the request
+    if (!convenioSelected || !listaSelected) {
+      //Show modal with error message
+      setTitle("Error");
+      setMsj("Debe seleccionar un convenio y una lista");
+      setShowModal(true);
+    } else {
+      //create a try and catrch block to handle the error of the request and show the modal with the error message
+      try {
+        const response = await getMedicos(listaSelected);
+        //Reset the dataTable state
+        setDataTable(undefined);
+        //Update the dataTable state with the medicos data
+        setDataTable(response.medicos);
+        setTitle("Exito");
+        setMsj("Se ha ingresado con exito el registro");
+        setShowModal(true);
         setLoading(false);
       } catch (error) {
         setLoading(false);
@@ -128,75 +162,77 @@ const ListarMedicos = (user) => {
 
   return (
     <>
-      <div style={{ position: 'relative' }}>
-        {loading && (
-          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
-            <CircularProgress />
-          </div>
-        )}
-        <div className="boxTabla">
-          <ContenedorTitulo>
-            <Titulo>Visualizacion de Medicos</Titulo>
-          </ContenedorTitulo>
-          <div id="notaLogin">
-            En esta sección se muestran todos los medicos asociados a un convenio.
-          </div>
-          <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
-            <Grid container spacing={2}>
-              <Grid xs={3}>
-                <FormControl fullWidth  >
-                  <InputLabel id="demo-simple-select-label">Convenio</InputLabel>
-                  <Select
-                    labelId="accion-label"
-                    id="accion-id"
-                    label="Convenio"
-                    value={convenioSelected}
-                    onChange={handleChangeConvenio}
-                  >
-                    {convenios.map((convenio) => (
-                      <MenuItem key={convenio.value} value={convenio.value}>
-                        {convenio.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+      <main>
+        <div style={{ position: 'relative' }}>
+          {loading && (
+            <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+              <CircularProgress />
+            </div>
+          )}
+          <div className="boxTabla">
+            <ContenedorTitulo>
+              <Titulo>Visualizacion de Medicos</Titulo>
+            </ContenedorTitulo>
+            <div id="notaLogin">
+              En esta sección se muestran todos los medicos asociados a un convenio.
+            </div>
+            <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
+              <Grid container spacing={2}>
+                <Grid xs={3}>
+                  <FormControl fullWidth  >
+                    <InputLabel id="demo-simple-select-label">Convenio</InputLabel>
+                    <Select
+                      labelId="accion-label"
+                      id="accion-id"
+                      label="Convenio"
+                      value={convenioSelected}
+                      onChange={handleChangeConvenio}
+                    >
+                      {convenios.map((convenio) => (
+                        <MenuItem key={convenio.value} value={convenio.value}>
+                          {convenio.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
 
+                </Grid>
+                <Grid xs={3}>
+                  <FormControl fullWidth disabled={isListaDisabled}>
+                    <InputLabel id="demo-simple-select-label">Listas</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      label="Listas"
+                      value={listaSelected}
+                      onChange={handleChangeLista}
+                    >
+                      {listas.map((lista) => (
+                        <MenuItem key={lista.codigoLista} value={lista.codigoLista}>
+                          {lista.codigoLista}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid xs={2}>
+                  <Button size="large" variant="contained" onClick={showData} style={{ marginTop: 5 }}>
+                    Filtrar
+                  </Button>
+                </Grid>
               </Grid>
-              <Grid xs={3}>
-                <FormControl fullWidth disabled={isListaDisabled}>
-                  <InputLabel id="demo-simple-select-label">Listas</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Listas"
-                    value={listaSelected}
-                    onChange={handleChangeLista}
-                  >
-                    {listas.map((lista) => (
-                      <MenuItem key={lista.codigoLista} value={lista.codigoLista}>
-                        {lista.codigoLista}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid xs={2}>
-                <Button size="large" variant="contained" onClick={showData} style={{ marginTop: 5 }}>
-                  Filtrar
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-          {
-            (dataTable === undefined)
-              ?
-              null
-              : <DataTableMedicos data={dataTable} columns={columns} user={usuario.correo} codigoLista={listaSelected} />
-          }
+            </Box>
+            {
+              (dataTable === undefined)
+                ?
+                null
+                : <DataTableMedicos data={dataTable} columns={columns} user={usuario.correo} codigoLista={listaSelected} showData={showData2} isButtonDisabled={isButtonDisabled} />
+            }
 
-          <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
+            <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
+          </div>
         </div>
-      </div>
+      </main>
     </>
   );
 };

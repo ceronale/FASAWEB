@@ -61,7 +61,7 @@ const Lista = props => {
             const response = await UploadDocumentos(file, props.convenio);
             console.log(response)
             setTitle('Información');
-            setMsj(response);
+            setMsj("Documento subido correctamente");
             setShowModal(true);
             return;
         }
@@ -93,6 +93,7 @@ const Lista = props => {
     }
     function generate(data) {
         // Filter the data array based on the search term
+        console.log(data);
         const filteredData = data.filter(item =>
             item.primary.toLowerCase().includes(searchTerm.toLowerCase())
         );

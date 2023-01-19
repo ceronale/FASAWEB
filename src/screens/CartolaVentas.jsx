@@ -2,12 +2,13 @@ import BarraOpciones from "../components/BarraOpciones";
 import ListarCartolaVentas from "../components/ListarCartolaVentas";
 
 const CartolaVentas = () => {
-    return (  
+    var user = localStorage.getItem("user");
+    return (
         <div>
-            <BarraOpciones />
-            <ListarCartolaVentas />
+            <BarraOpciones user={user} />
+            <ListarCartolaVentas user={user} />
         </div>
     );
 }
- 
+
 export default CartolaVentas;

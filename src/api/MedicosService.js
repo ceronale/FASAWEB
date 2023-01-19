@@ -41,7 +41,7 @@ export const getMedicos = async (data) => {
 }
 
 export const updateMedico = async (data, user) => {
-
+    console.log(data, user)
     const config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/actualizarMedic/services/act/actualizarListaMedic',
@@ -49,8 +49,54 @@ export const updateMedico = async (data, user) => {
             'codigoLista': data.codigoLista,
             'rut': data.rut,
             'fecha': data.fecha,
+            'exc_inc': data.exc_Inc,
+            'userRep': user
+        }
+    };
+    const response = axios(config)
+        .then(({ data: out }) => {
+
+            return out;
+        })
+        .catch((error) => {
+            return error;
+        });
+    return response;
+}
+
+export const deleteMedico = async (data, user) => {
+
+    const config = {
+        method: 'delete',
+        url: 'http://150.100.253.61:8181/cxf/drlm/services/del/eliminarRut',
+        headers: {
+            'codigoLista': data.codigoLista,
+            'rut': data.rut,
+            'userRep': user
+        }
+    };
+    const response = axios(config)
+        .then(({ data: out }) => {
+
+            return out;
+        })
+        .catch((error) => {
+            return error;
+        });
+
+    return response;
+}
+
+export const addMedico = async (data, user) => {
+    console.log(data, user)
+    const config = {
+        method: 'post',
+        url: 'http://150.100.253.61:8181/cxf/agregar/services/Ins/agregarRut',
+        headers: {
+            'codigoLista': data.codigoLista,
+            'rut': data.rut,
+            'fecha': data.fecha,
             'exc_inc': data.exc_inc,
-            'operacion': data.operacion,
             'userRep': user
         }
     };

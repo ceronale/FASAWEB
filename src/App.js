@@ -39,7 +39,7 @@ export default function App() {
         <Route exact path="/NuevoPacienteCliente" element={<NuevoPacienteCliente />} />
 
         <Route element={<PacienteRoutes />}>
-          <Route exact path="/CartolaVentas" element={<CartolaVentas />} />
+
         </Route>
 
         <Route element={<EmpresaRoutes />}>
@@ -55,6 +55,7 @@ export default function App() {
           <Route exact path="/Home" element={<Home />} />
           <Route exact path="/Medicos" element={<Medicos />} />
           <Route exact path="/ReporteAuditoria" element={<ReporteAuditoria />} />
+          <Route exact path="/CartolaVentas" element={<CartolaVentas />} />
         </Route>
 
         <Route element={<RestaurarRoutes />}>
