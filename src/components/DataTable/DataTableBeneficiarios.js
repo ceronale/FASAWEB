@@ -678,7 +678,6 @@ const DataTableBeneficiarios = props => {
             table.setEditingRow(row)
             setValidationErrors({});
             setValues(row.original);
-            console.log("hellow");
         },
         [tableData],
     );
@@ -764,4 +763,6 @@ const DataTableBeneficiarios = props => {
     );
 
 };
+
+
 export default DataTableBeneficiarios;

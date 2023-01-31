@@ -18,6 +18,21 @@ class UploadFileBeneficiarios extends Component {
         msj: " "
     };
 
+    formatDate(date) {
+        if (!date) return null;
+
+        if (!/^\d{2}[\/-]\d{2}[\/-]\d{4}$/.test(date)) {
+            return null;
+        }
+
+        let dateArray = date.split(/[\/-]/);
+        let year = dateArray[2];
+        let month = dateArray[1];
+        let day = dateArray[0];
+
+        return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
+
     // On file select (from the pop up)
     onFileChange = event => {
         // Update the state
@@ -25,16 +40,25 @@ class UploadFileBeneficiarios extends Component {
         const file = files;
         const reader = new FileReader();
         reader.onload = (event) => {
-            const wb = XLSX.read(event.target.result);
+            const wb = XLSX.read(event.target.result, { type: 'binary', dateNF: 'dd/mm/yyyy;@', cellDates: true });
             const sheets = wb.SheetNames;
-            if (sheets.length) {
-                const jsonRows = XLSX.utils.sheet_to_json(wb.Sheets[sheets[0]], { raw: false });
-                const properties = ['apellido1', 'apellido2', 'ciudad', 'codigoCarga', 'codigoConvenio', 'codigoRelacion', 'comuna', 'credenciales', 'direccion', 'fechaNacimiento', 'genero', 'grupo', 'id', 'mail', 'nombre', 'poliza', 'rutBeneficiario', 'rutTitular', 'termino', 'vigencia'];
-                console.log(jsonRows)
-                const dateVariables = ['fechaNacimiento', 'termino', 'vigencia'];
+            var XL_row_object = XLSX.utils.sheet_to_row_object_array(wb.Sheets[sheets[0]], { raw: false });
+            var json_object = JSON.stringify(XL_row_object);
 
-                jsonRows.forEach(row => {
-                    //check if row.genero is undefined
+            if (sheets.length) {
+                const properties = ['apellido1', 'apellido2', 'ciudad', 'codigoCarga', 'codigoConvenio', 'codigoRelacion', 'comuna', 'credenciales', 'direccion', 'fechaNacimiento', 'genero', 'grupo', 'id', 'mail', 'nombre', 'poliza', 'rutBeneficiario', 'rutTitular', 'termino', 'vigencia'];
+                const dateVariables = ['fechaNacimiento', 'termino', 'vigencia'];
+                let justJson = XL_row_object;
+
+                justJson.forEach(row => {
+                    if (row.rutTitular !== undefined) {
+                        row.rutTitular = row.rutTitular.replace(/[^0-9kK]/g, '');
+                    }
+
+                    if (row.rutBeneficiario !== undefined) {
+                        row.rutBeneficiario = row.rutBeneficiario.replace(/[^0-9kK]/g, '');
+                    }
+
                     if (row.genero !== undefined) {
                         if (row.genero === 'masculino') {
                             row.genero = 1;
@@ -42,22 +66,15 @@ class UploadFileBeneficiarios extends Component {
                             row.genero = 2;
                         }
                     }
-                    dateVariables.forEach(key => {
-                        if (row[key]) {
-                            let date;
-                            if (row[key].includes('/')) {
-                                date = moment(row[key], 'DD/MM/YYYY');
-                            } else if (row[key].includes('-')) {
-                                date = moment(row[key], 'DD-MM-YYYY');
-                            }
-                            const formattedDate = date.format('YYYYMMDD');
-                            row[key] = formattedDate;
+
+                    dateVariables.forEach(dateVariable => {
+                        if (row[dateVariable] !== undefined) {
+                            row[dateVariable] = this.formatDate(row[dateVariable]);
                         }
                     });
                 });
 
-
-                const out = this.jsonToCsv(jsonRows, properties);
+                const out = this.jsonToCsv(justJson, properties);
                 console.log(out);
                 this.setState({ selectedFile: out });;
             }
