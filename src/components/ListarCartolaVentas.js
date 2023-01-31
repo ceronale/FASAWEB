@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "../styles/PolizasGrupos.css";
 import { ContenedorTitulo, Titulo } from "./Formularios";
-import { ReporteAuditoriaService } from "../api/ReporteAuditoriaService";
 import DataTable from "./DataTable/DataTable";
 import Form from 'react-bootstrap/Form';
 import Button from '@mui/material/Button';
@@ -14,7 +13,7 @@ import Box from '@mui/material/Box';
 import ModalAlert from './Modals/ModalAlert';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getCartola } from "../api/CartolaBeneficiario";
-import circularProgress from '@mui/material/CircularProgress';
+
 
 
 
@@ -87,10 +86,10 @@ const CartolaVentas = (user) => {
         fechaFin: formattedHasta,
         tipo: tipo.value
       };
-      console.log(data)
+
       setLoading(true);
       const response = await getCartola(data);
-      console.log(response)
+
       setDataTable(undefined);
       setDataTable(response.response);
       setLoading(false);

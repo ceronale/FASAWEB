@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Label, LabelReq, RestriccionPass, Inputc, Inputp, ContenedorTitulo, Titulo } from "./Formularios";
+import { Label, LabelReq, RestriccionPass, Inputp, ContenedorTitulo, Titulo } from "./Formularios";
 import ModalAlert from "./Modals/ModalAlert";
 import { useNavigate } from 'react-router-dom';
 import { ActualizarPass } from "../api/ActualizarPass";
@@ -11,13 +11,12 @@ const initialForm = {
 };
 
 const FormRestaurarPass = (user) => {
-    console.log(user)
 
     const navigate = useNavigate();
     const [title, setTitle] = useState();
     const [msj, setMsj] = useState();
     const [showModal, setShowModal] = useState(false);
-    const [usuario, setUsuario] = useState(JSON.parse(user.user))
+    const usuario = JSON.parse(user.user);
     const [isValid, setIsValid] = useState(false);
 
     const handleClose = () => {
@@ -43,9 +42,9 @@ const FormRestaurarPass = (user) => {
         e.preventDefault();
         var isPassValid = contraseñaValidar();
         if (isPassValid) {
-            console.log(usuario);
+
             const respActualizar = await ActualizarPass(usuario, registerData.passwd);
-            console.log(respActualizar);
+
             //var mensaje = respActualizar['respuesta'][0]['detalleResultado'];
             if (respActualizar['respuesta'].length === 1) {
                 setIsValid(true);

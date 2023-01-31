@@ -1,13 +1,6 @@
 const axios = require('axios');
 
 export const HomeServiceEmpresa = async (data) => {
-
-	// const data = JSON.stringify({
-	// 	//"user":"user@email.com",
-	// 	//"password":"password"
-	// 	user,
-	// 	passwd
-	// });
 	const config = {
 		method: 'get',
 		url: 'http://150.100.253.61:8181/cxf/Empresa/services/leerEmpresa',

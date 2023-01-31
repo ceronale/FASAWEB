@@ -65,9 +65,7 @@ const FormOlvidasteContraseña = () => {
 
 	const onSubmit = async (e) => {
 		e.preventDefault();
-		//Envio de token 
 		const respToken = await GenerarToken(registerData.user);
-		console.log(respToken);
 		setcheckToken(true);
 	};
 

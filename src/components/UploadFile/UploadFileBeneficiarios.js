@@ -6,9 +6,11 @@ import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
-import { UploadPolizas } from "../../api/UploadExcelPolizas";
+import { UploadExcelBeneficiarios } from '../../api/UploadExcelBeneficiarios';
+import moment from 'moment';
 
-class UploadFilePolizas extends Component {
+
+class UploadFileBeneficiarios extends Component {
 
     state = {
         // Initially, no file is selected
@@ -27,29 +29,36 @@ class UploadFilePolizas extends Component {
             const sheets = wb.SheetNames;
             if (sheets.length) {
                 const jsonRows = XLSX.utils.sheet_to_json(wb.Sheets[sheets[0]], { raw: false });
-                const properties = ['codigoPoliza', 'estadoPolizaAhumada', 'grupoAhumada', 'nombrePoliza', 'polizaAceptaBioequivalente', 'rutEmpresa', 'terminoBeneficio', 'cuentaLiquidador'];
-                for (let i = 0; i < jsonRows.length; i++) {
+                const properties = ['apellido1', 'apellido2', 'ciudad', 'codigoCarga', 'codigoConvenio', 'codigoRelacion', 'comuna', 'credenciales', 'direccion', 'fechaNacimiento', 'genero', 'grupo', 'id', 'mail', 'nombre', 'poliza', 'rutBeneficiario', 'rutTitular', 'termino', 'vigencia'];
+                console.log(jsonRows)
+                const dateVariables = ['fechaNacimiento', 'termino', 'vigencia'];
 
-                    for (let j = 0; j < properties.length; j++) {
-                        jsonRows[i][properties[j]] = jsonRows[i][properties[j]] ?? '';
-                        if (properties[j] !== 'nombrePoliza') {
-                            jsonRows[i][properties[j]] = jsonRows[i][properties[j]].trim();
+                jsonRows.forEach(row => {
+                    //check if row.genero is undefined
+                    if (row.genero !== undefined) {
+                        if (row.genero === 'masculino') {
+                            row.genero = 1;
+                        } else if (row.genero === 'femenino') {
+                            row.genero = 2;
                         }
                     }
-
-                    if (jsonRows[i].terminoBeneficio !== undefined) {
-                        if (jsonRows[i].terminoBeneficio.includes("/")) {
-                            var dateString = jsonRows[i].terminoBeneficio.replaceAll('-', '/')
-                            var dateObject = new Date(dateString);
-                            var day = dateObject.getDate();
-                            var month = dateObject.getMonth();
-                            var year = dateObject.getFullYear();
-                            dateObject = `${day}-${month}-${year}`;
-                            jsonRows[i].terminoBeneficio = dateObject;
+                    dateVariables.forEach(key => {
+                        if (row[key]) {
+                            let date;
+                            if (row[key].includes('/')) {
+                                date = moment(row[key], 'DD/MM/YYYY');
+                            } else if (row[key].includes('-')) {
+                                date = moment(row[key], 'DD-MM-YYYY');
+                            }
+                            const formattedDate = date.format('YYYYMMDD');
+                            row[key] = formattedDate;
                         }
-                    }
-                }
+                    });
+                });
+
+
                 const out = this.jsonToCsv(jsonRows, properties);
+
                 this.setState({ selectedFile: out });;
             }
         }
@@ -69,8 +78,8 @@ class UploadFilePolizas extends Component {
         e.preventDefault();
         if (this.state.selectedFile !== null) {
             const blob = new Blob([this.state.selectedFile], { type: 'text/csv' });
-            var resp = await UploadPolizas(blob);
-            this.setState({ msj: resp.response1[0].detalleRespuest });;
+            var resp = await UploadExcelBeneficiarios(blob);
+            this.setState({ msj: resp.actualizaResponse[0].detalle });;
         }
     };
     handleClick = event => {
@@ -106,4 +115,4 @@ class UploadFilePolizas extends Component {
     }
 }
 
-export default UploadFilePolizas;
+export default UploadFileBeneficiarios;

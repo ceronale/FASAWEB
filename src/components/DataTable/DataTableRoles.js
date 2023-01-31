@@ -22,7 +22,6 @@ const DataTableRoles = props => {
     const handleDeleteRow = useCallback(
         (row) => {
             setValues(row);
-            console.log(row);
             setTitle("¿Desea continuar?")
             setMsj("Seleccione confirmar si desea eliminar el campo")
             setShowModalConfirmar(true)
@@ -34,7 +33,7 @@ const DataTableRoles = props => {
             setLeft(["Polizas y Grupos", "Autorizaciones previas.", "Listar Medicos.", "Visualizar documentos", "Reporte de auditoria"]);
             setRight(["Cartola de beneficiarios", "Actualizar beneficiarios.", "Crear Cliente Empresa", "Listar - Eliminar Usuarios."]);
             setValues(row.original);
-            console.log(row.original)
+
             setShowModalRoles(true)
         },
         [tableData],

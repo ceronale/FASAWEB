@@ -1,13 +1,12 @@
 import React from 'react';
 import Button from '@mui/material/Button';
 import Modal from 'react-bootstrap/Modal';
-import UploadFileMedicos from "../UploadFile/UploadFileMedicos";
+import UploadFileBeneficiarios from "../UploadFile/UploadFileBeneficiarios";
 
 
 
 
-const ModalUploadFileMedicos = ({ show, handleClose, msj, title, codigoLista }) => {
-
+const ModalUploadFileBeneficiarios = ({ show, handleClose, msj, title }) => {
     return (
         <Modal show={show} onHide={handleClose}
             size="lg"
@@ -18,9 +17,9 @@ const ModalUploadFileMedicos = ({ show, handleClose, msj, title, codigoLista }) 
             </Modal.Header>
             <Modal.Body>{msj}
 
-                <UploadFileMedicos codigoLista={codigoLista}>
+                <UploadFileBeneficiarios>
 
-                </UploadFileMedicos>
+                </UploadFileBeneficiarios>
 
             </Modal.Body>
             <Modal.Footer>
@@ -30,7 +29,6 @@ const ModalUploadFileMedicos = ({ show, handleClose, msj, title, codigoLista }) 
             </Modal.Footer>
         </Modal>
     );
-
 };
 
-export default ModalUploadFileMedicos;
+export default ModalUploadFileBeneficiarios;

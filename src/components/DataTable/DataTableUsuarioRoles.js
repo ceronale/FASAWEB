@@ -31,7 +31,7 @@ const DataTableUsuarioRoles = props => {
     const handleEditRow = useCallback(
         (row) => {
             setValues(row.original);
-            console.log(row.original)
+
             setShowModalRoles(true)
         },
         [tableData],
@@ -39,7 +39,7 @@ const DataTableUsuarioRoles = props => {
 
     //Modal Confirmar
     const handleConfirmar = async () => {
-        console.log("Se elimina xd")
+
         tableData.splice(values.index, 1);
         setTableData([...tableData]);
         setShowModalConfirmar(false);

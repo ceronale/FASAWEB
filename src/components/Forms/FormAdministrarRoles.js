@@ -65,7 +65,6 @@ export default function FormAdministrarRoles(prop) {
     };
 
     React.useEffect(() => {
-        console.log(prop)
         setLeft(prop.propLeft);
         setRight(prop.propRight);
     }, [])

@@ -30,7 +30,6 @@ const ModalRoles = ({ show, handleClose, msj, title, name, description, propLeft
 
     //Modal Confirmar
     const handleConfirmar = async () => {
-        console.log("Confirmo");
         setShowModalConfirmar(false);
     }
 

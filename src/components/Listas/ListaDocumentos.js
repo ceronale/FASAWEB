@@ -21,8 +21,8 @@ import ModalPdf from '../Modals/ModalPdf';
 const Lista = props => {
     const paperRef = useRef(null);
     const inputRef = useRef(null);
-    const [secondary, setSecondary] = useState(false);
-    const [dense, setDense] = useState(false);
+    const [secondary] = useState(false);
+    const [dense] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -59,28 +59,43 @@ const Lista = props => {
         const file = event.target.files[0];
         if (file) {
             const response = await UploadDocumentos(file, props.convenio);
-            console.log(response)
             setTitle('Información');
             setMsj("Documento subido correctamente");
             setShowModal(true);
+            props.fetchData();
             return;
         }
     };
 
+    const handleModal = (title, msj) => {
+        setTitle(title);
+        setMsj(msj);
+        setShowModal(true);
+    };
+
+
     const handleDownload = async (item) => {
-        const { archivo } = "Smart_Money_Concepts.pdf";
-        const { b64 } = await getDocumentData(archivo);
-        const link = document.createElement('a');
-        link.href = `data:application/pdf;base64,${b64}`;
-        link.download = archivo.split('_')[0];
-        link.click();
+        const archivo = item.nombreDocumento;
+        const data = await getDocumentData(archivo);
+        const b64 = data[0].b64;
+        const element = document.createElement("a");
+        element.setAttribute("href", `data:application/octet-stream;base64,${b64}`);
+        element.setAttribute("download", archivo);
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+
     }
 
     const handleOpenPdf = async (item) => {
-        setModalOpen(true);
-        const { b64 } = await getDocumentData("Smart_Money_Concepts.pdf");
-        console.log(b64);
+
+        const archivo = item.nombreDocumento;
+        const data = await getDocumentData(archivo);
+        const b64 = data[0].b64;
         setPdfSrc(`data:application/pdf;base64,${b64}`);
+
+        setModalOpen(true);
     };
 
     const getDocumentData = async (archivo) => {
@@ -89,13 +104,12 @@ const Lista = props => {
             convenio: props.convenio,
         }
         const response = await getDocumento(data);
-        return response.response[0];
+        return response.documentResponse;
     }
     function generate(data) {
         // Filter the data array based on the search term
-        console.log(data);
         const filteredData = data.filter(item =>
-            item.primary.toLowerCase().includes(searchTerm.toLowerCase())
+            item.nombreDocumento.toLowerCase().includes(searchTerm.toLowerCase())
         );
 
         // Split the filtered data array into chunks
@@ -108,14 +122,19 @@ const Lista = props => {
         if (page >= 0 && page < dataChunks.length) {
             return dataChunks[page].map(item => (
                 <ListItem
-                    key={item.id}
+                    key={item.codigoDocumento}
                     secondaryAction={
                         <><IconButton edge="end" aria-label="delete" onClick={() => { handleDownload(item); }}>
                             <FileDownloadIcon />
                         </IconButton>
-                            <IconButton edge="end" aria-label="open pdf" onClick={() => { handleOpenPdf(item); }}>
-                                <PictureAsPdfIcon />
-                            </IconButton></>
+                            {
+                                item.nombreDocumento.includes('.pdf') &&
+                                <IconButton edge="end" aria-label="open pdf" onClick={() => { handleOpenPdf(item); }}>
+                                    <PictureAsPdfIcon />
+                                </IconButton>
+
+                            }
+                        </>
                     }
                 >
                     <ListItemAvatar>
@@ -124,7 +143,7 @@ const Lista = props => {
                         </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                        primary={item.primary}
+                        primary={item.nombreDocumento}
                         secondary={secondary ? item.secondary : null}
                     />
                 </ListItem>

@@ -13,9 +13,9 @@ const PolizasGrupos = ({ user }) => {
     // state to store the selected filter value
     const [filtrarValue, setFiltrarValue] = useState(null);
     // state to store the parsed user object
-    const [usuario, setUsuario] = useState(JSON.parse(user));
+    const [usuario] = useState(JSON.parse(user));
     // state to store the options for the select input
-    const [convenios, setConvenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
+    const [convenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
     // state to store the data for the DataTable component
     const [dataTable, setDataTable] = useState({});
     // state to store the title of the modal
@@ -34,16 +34,11 @@ const PolizasGrupos = ({ user }) => {
                 handleModal("Error", "Debe seleccionar un convenio");
                 return;
             }
-
             //call the service to get the data
             setLoading(true);
-            console.log(filtrarValue)
-            // const response = await PolizaService(filtrarValue);
-            const response = await PolizaService("EURA");
-            console.log(response)
-
+            const response = await PolizaService(filtrarValue.value);
             if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
-                console.log("Error de conexión");
+
                 setLoading(false);
                 handleModal("Error", "No se pudo obtener la información de las pólizas y grupos");
             } else {
@@ -55,11 +50,6 @@ const PolizasGrupos = ({ user }) => {
             setLoading(false);
             handleModal("Error", "No se pudo obtener la información de las pólizas y grupos");
         }
-    };
-
-    // function to handle changes to the select input
-    const handleChange = (e) => {
-        setFiltrarValue(e.target.value);
     };
 
     //create function to handle the modal

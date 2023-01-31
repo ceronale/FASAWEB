@@ -5,6 +5,8 @@ export const UploadDocumentos = async (data, convenio) => {
     var formData = new FormData();
     formData.append('file', data);
     formData.append('convenio', convenio);
+    const user = (JSON.parse(localStorage.getItem("user"))).correo;
+    formData.append('userRep', user);
     var config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/mk/services/visualizar/documento',
@@ -23,7 +25,6 @@ export const UploadDocumentos = async (data, convenio) => {
 }
 
 export const getDocumento = async (data) => {
-
     var config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/up/services/upload/file',
@@ -43,5 +44,30 @@ export const getDocumento = async (data) => {
 
     return response;
 }
+
+
+export const getDocumentos = async (data) => {
+
+    var config = {
+        method: 'get',
+        url: 'http://150.100.253.61:8181/cxf/getDocument/services/get/document',
+        headers: {
+            'convenio': data
+        }
+    };
+
+
+    const response = axios(config)
+        .then(({ data: out }) => {
+            return out;
+        })
+        .catch((error) => {
+            return error;
+        });
+
+    return response;
+}
+
+
 
 

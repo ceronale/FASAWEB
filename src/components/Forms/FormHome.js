@@ -20,7 +20,7 @@ const FormHome = (user) => {
 		position: '',
 	})
 	// Initialize the state for the current user
-	const [currentUser, setCurrentUser] = useState(JSON.parse(user.user))
+	const [currentUser] = useState(JSON.parse(user.user))
 
 	// Initialize the navigate hook for navigation
 	const navigate = useNavigate();

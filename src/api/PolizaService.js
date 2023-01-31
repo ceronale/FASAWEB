@@ -20,7 +20,7 @@ export const PolizaService = async (data) => {
 }
 
 export const PolizaServiceUpdate = async (grupo, nombre, codigo, rut, fecha, bio, user) => {
-    console.log(user)
+
     const config = {
         method: 'put',
         url: 'http://150.100.253.61:8181/cxf/act/services/actualizarP',
@@ -39,7 +39,7 @@ export const PolizaServiceUpdate = async (grupo, nombre, codigo, rut, fecha, bio
             return out;
         })
         .catch((error) => {
-            console.log(error);
+
             return error;
 
         });

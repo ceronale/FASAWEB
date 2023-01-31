@@ -81,7 +81,7 @@ const ListarRepAuditoria = (user) => {
       };
       setDataTable(undefined);
       const response = await ReporteAuditoriaService(data);
-      console.log(response);
+
       setDataTable(response.auditoria);
     }
   };
@@ -106,7 +106,7 @@ const ListarRepAuditoria = (user) => {
       label: 'Eliminar Rut Lista Medicos',
     },
     {
-      value: 'actualizarListaMedicos',
+      value: 'eliminarListaMedicos',
       label: 'Eliminar Lista Medicos',
     },
     {
@@ -126,7 +126,7 @@ const ListarRepAuditoria = (user) => {
     },
     {
       value: 'actualizarListaMedicos',
-      label: 'Actualizar Lista Medicos',
+      label: 'Actualizar Medicos',
     },
     {
       value: 'actualizarPoliza',
@@ -143,6 +143,10 @@ const ListarRepAuditoria = (user) => {
     {
       value: 'insertarEmpresa',
       label: 'Insertar Empresa',
+    },
+    {
+      value: 'cargarDocumento',
+      label: 'Cargar Documento',
     },
   ];
 

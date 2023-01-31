@@ -1,7 +1,7 @@
 const axios = require('axios');
 var FormData = require('form-data');
 
-export const UploadPolizas = async (data) => {
+export const UploadExcelBeneficiarios = async (data) => {
 
     var formData = new FormData();
     formData.append('csv', data);
@@ -11,7 +11,7 @@ export const UploadPolizas = async (data) => {
 
     var config = {
         method: 'post',
-        url: 'http://150.100.253.61:8181/cxf/carga/services/csv',
+        url: 'http://150.100.253.61:8181/cxf/beneUpmasivo/services/csv/beneficiarios',
         data: formData
     };
     const response = axios(config)

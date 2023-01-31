@@ -24,6 +24,8 @@ import PacienteRoutes from './utils/PacienteRoutes';
 import EmpresaRoutes from './utils/EmpresaRoutes';
 import LoginRoutes from './utils/LoginRoutes';
 import RestaurarRoutes from './utils/RestaurarRoutes';
+import AutorizacionesPrevias from './screens/AutorizacionesPrevias';
+import AutorizacionesPreviaAdd from './screens/AutorizacionesPreviaAdd';
 
 export default function App() {
   const user = localStorage.getItem("user");
@@ -56,6 +58,8 @@ export default function App() {
           <Route exact path="/Medicos" element={<Medicos />} />
           <Route exact path="/ReporteAuditoria" element={<ReporteAuditoria />} />
           <Route exact path="/CartolaVentas" element={<CartolaVentas />} />
+          <Route exact path="/AutorizacionesPrevias" element={<AutorizacionesPrevias />} />
+          <Route exact path="/AutorizacionesPreviaAdd" element={<AutorizacionesPreviaAdd />} />
         </Route>
 
         <Route element={<RestaurarRoutes />}>

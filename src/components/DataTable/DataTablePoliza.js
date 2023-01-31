@@ -62,7 +62,6 @@ const DataTablePoliza = props => {
         props.user.correo
       )
       setShowModalConfirmar(false);
-      console.log(resp);
 
       if (resp.response1[0].codigoRespuesta === 0) {
         setTitleAlert("Exito")
@@ -146,7 +145,7 @@ const DataTablePoliza = props => {
 
   //Metodo para handle la cancelacion de la edicion de informacion de la table
   const handleCancelRowEdits = () => {
-    console.log('');
+
   };
 
   const downloadExcel = (rows) => {

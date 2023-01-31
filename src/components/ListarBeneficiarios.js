@@ -63,7 +63,7 @@ const ListarBeneficiarios = (user) => {
       const response = await getBeneficiarios(data);
 
       if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
-        console.log("Error de conexión");
+
         setLoading(false);
 
         handleModal("Error", "No se pudo obtener la información de los beneficiarios");
@@ -71,6 +71,10 @@ const ListarBeneficiarios = (user) => {
         setLoading(false);
         setDataTable(undefined)
         setDataTable(response.response);
+        //print just the keys of the object separated by commas
+        console.log(Object.keys(response.response[0]).join(","));
+
+        console.log(response.response);
       }
     } catch (error) {
       setLoading(false);
@@ -78,10 +82,7 @@ const ListarBeneficiarios = (user) => {
     }
   };
 
-  // function to handle changes to the select input
-  const handleChange = (e) => {
-    setFiltrarValue(e.target.value);
-  };
+
 
   //create function to handle the modal
   const handleModal = (title, msj) => {

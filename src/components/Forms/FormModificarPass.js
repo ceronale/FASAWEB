@@ -20,7 +20,7 @@ const FormModificarPass = (user) => {
     const [title, setTitle] = useState();
     const [msj, setMsj] = useState();
     const [showModal, setShowModal] = useState(false);
-    const [usuario, setUsuario] = useState(JSON.parse(user.user))
+    const [usuario] = useState(JSON.parse(user.user));
     const [IsValid, setIsValid] = useState(false);
 
 

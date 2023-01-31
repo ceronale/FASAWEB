@@ -1,7 +1,6 @@
 const axios = require('axios');
 
 export const EliminarUsuario = async (data, usuario) => {
-    console.log(usuario)
     const config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/eliminarUsuario/services/eliminar',

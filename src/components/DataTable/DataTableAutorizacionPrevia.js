@@ -27,6 +27,7 @@ import {
     TextField,
     Tooltip,
 } from '@mui/material';
+import { useNavigate } from "react-router-dom";
 
 
 const checkDate = (date) => {
@@ -42,7 +43,7 @@ const checkDate = (date) => {
     }
 }
 
-const DataTableAutorizacionPrevia = props => {
+const DataTableMedicos = props => {
     //Modal Variables
     const [title, setTitle] = useState();
     const [msj, setMsj] = useState();
@@ -60,7 +61,7 @@ const DataTableAutorizacionPrevia = props => {
 
     const [loading, setLoading] = useState(false);
     const [createModalOpen, setCreateModalOpen] = useState(false);
-
+    const history = useNavigate();
     const handleCloseConfirmar = () => {
         setShowModalConfirmar(false);
     }
@@ -194,6 +195,7 @@ const DataTableAutorizacionPrevia = props => {
         (row, table) => {
             table.setEditingRow(row)
             setValues(row.original);
+
             // setShowModalRoles(true)
         },
         [tableData],
@@ -283,31 +285,12 @@ const DataTableAutorizacionPrevia = props => {
                         )}
                         renderTopToolbarCustomActions={() => (
                             <Button
-                                onClick={() => setCreateModalOpen(true)}
                                 variant="contained"
-                                disabled={props.isButtonDisabled}
+                                color="primary"
+                                onClick={() => { history("/AutorizacionesPreviaAdd"); }}
                             >
-                                + Agregar Medico
+                                + Agregar Autorización
                             </Button>
-                        )}
-                        renderBottomToolbarCustomActions={({ table }) => (
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-
-                                <Button
-                                    variant="contained"
-                                    onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
-                                >
-                                    Exportar
-
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    onClick={() => { setShowModalUpload(true) }}
-                                >
-                                    Importar
-                                </Button>
-                            </div>
-
                         )}
                     />
                 </div>
@@ -440,4 +423,4 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
 
     );
 };
-export default DataTableAutorizacionPrevia;
+export default DataTableMedicos;

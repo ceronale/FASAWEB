@@ -33,7 +33,6 @@ export const getMedicos = async (data) => {
             return out;
         })
         .catch((error) => {
-            console.log(error);
             return error;
         });
 
@@ -41,7 +40,6 @@ export const getMedicos = async (data) => {
 }
 
 export const updateMedico = async (data, user) => {
-    console.log(data, user)
     const config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/actualizarMedic/services/act/actualizarListaMedic',
@@ -88,7 +86,6 @@ export const deleteMedico = async (data, user) => {
 }
 
 export const addMedico = async (data, user) => {
-    console.log(data, user)
     const config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/agregar/services/Ins/agregarRut',

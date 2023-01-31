@@ -55,7 +55,7 @@ const DataTableDeleteAndExport = props => {
     tableData.splice(values.index, 1);
     setTableData([...tableData]);
     setShowModalConfirmar(false);
-    console.log(resp)
+
   }
 
   const handleCloseConfirmar = () => {

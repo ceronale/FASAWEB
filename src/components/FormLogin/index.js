@@ -25,10 +25,7 @@ const FormLogin = () => {
 
 	useEffect(() => {
 		const loggedInUser = localStorage.getItem("user");
-		if (loggedInUser) {
-			const foundUser = JSON.parse(loggedInUser);
-			console.log(foundUser);
-		}
+
 	}, []);
 
 	const [showModal, setShowModal] = useState(false);
@@ -81,7 +78,7 @@ const FormLogin = () => {
 			// Extrae la información relevante de la respuesta
 			const { login } = JSON.parse(resp);
 			const [{ codigoResultadoLogin }] = login;
-			console.log(login)
+
 
 			// Si el código de resultado es 0 (ok), se procede a obtener los datos del usuario y a almacenarlos en el almacenamiento local
 			if (codigoResultadoLogin === 0) {
@@ -107,7 +104,6 @@ const FormLogin = () => {
 
 				} else if (login[0].tipo === "Paciente") {
 					user = await HomeService(registerData.email);
-					console.log(user);
 					[usuario] = user.usuario;
 					usuario.rol = login[0].tipo;
 

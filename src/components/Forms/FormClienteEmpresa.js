@@ -16,7 +16,7 @@ import ModalAlert from '../Modals/ModalAlert';
 import BaseSelect from "react-select";
 import FixRequiredSelect from "../../FixRequiredSelect";
 import { Button } from "@mui/material";
-import { Margin } from "@mui/icons-material";
+
 
 
 const initialForm = {
@@ -99,7 +99,7 @@ const FormClienteEmpresa = (usuario) => {
 		var isPassValid = contraseñaValidar();
 		if (isPassValid) {
 			const resp = await EmpresaService(registerData, correoUsuario)
-			console.log(registerData)
+
 			var aux = resp['outActualizar'][0]['outSeq'];
 			if (aux === 0) {
 				setShowModal(true)

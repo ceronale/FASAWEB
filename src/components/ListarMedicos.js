@@ -16,7 +16,7 @@ const ListarMedicos = (user) => {
   //State to handle the disable/enable of lista select
   const [isListaDisabled, setIsListaDisabled] = useState(true);
   //State to handle the user data
-  const [usuario, setUsuario] = useState(JSON.parse(user.user))
+  const [usuario] = useState(JSON.parse(user.user));
   //State to handle the convenios of the user
   const [convenios, setConvenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
   //State to handle the selected convenio

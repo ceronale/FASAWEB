@@ -11,7 +11,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 const AdministrarUsuarios = (user) => {
     const [loading, setLoading] = useState(false);
-    const [usuario, setUsuario] = useState(JSON.parse(user.user))
+    const [usuario] = useState(JSON.parse(user.user));
     const [title, setTitle] = useState();
     const [msj, setMsj] = useState();
     const [showModalConfirmar, setShowModalConfirmar] = useState(false);
@@ -49,7 +49,6 @@ const AdministrarUsuarios = (user) => {
     const showData = async () => {
         setLoading(true);
         const response = await ListarUsuarios()
-        console.log(response);
         setLoading(true)
         setData(undefined)
         setData(response.usuario)

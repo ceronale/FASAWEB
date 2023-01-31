@@ -1,9 +1,13 @@
 const axios = require('axios');
 var FormData = require('form-data');
 
-export const UploadMedicos = async (data) => {
+export const UploadMedicos = async (data, codigoLista) => {
     var formData = new FormData();
     formData.append('csv', data);
+    formData.append('codigoLista', codigoLista);
+    const user = (JSON.parse(localStorage.getItem("user"))).correo;
+    formData.append('userRep', user);
+
     var config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/cargaMedico/services/csv/medicos',
@@ -14,7 +18,8 @@ export const UploadMedicos = async (data) => {
             return out;
         })
         .catch((error) => {
-            throw new error(error);
+
+            return error;
         });
 
     return response;

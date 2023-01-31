@@ -133,7 +133,6 @@ const FormPacienteCliente = () => {
 			setTitle("Codigo de confirmación")
 			setMsj("Se ha enviado un token de verificación a tu correo.")
 			const respToken = await GenerarToken(registerData.user);
-			console.log(respToken);
 			setcheckToken(true);
 		}
 	};
