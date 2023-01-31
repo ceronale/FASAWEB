@@ -58,7 +58,7 @@ class UploadFileBeneficiarios extends Component {
 
 
                 const out = this.jsonToCsv(jsonRows, properties);
-
+                console.log(out);
                 this.setState({ selectedFile: out });;
             }
         }
