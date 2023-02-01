@@ -13,11 +13,37 @@ import { IconButton, Tooltip } from '@mui/material';
 import Delete from '@mui/icons-material/Delete';
 import { Edit } from "@material-ui/icons";
 import CircularProgress from '@mui/material/CircularProgress';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import {
+    Box,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    MenuItem,
+    Stack,
+    TextField,
+} from '@mui/material';
 
-
+const checkDate = (date) => {
+    const dateArray = date.split("-");
+    if (dateArray.length === 3) {
+        if (dateArray[0].length === 2 && dateArray[1].length === 2 && dateArray[2].length === 4) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
 
 
 const DataTableBeneficiarios = props => {
+    const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [rows, setRows] = useState([]);
 
     // State variables to handle form validation errors and loading state
     const [validationErrors, setValidationErrors] = useState({});
@@ -60,6 +86,7 @@ const DataTableBeneficiarios = props => {
         termino: "",
         vigencia: "",
     });
+
     const [, setRow] = useState();
 
     // Handlers for closing modals
@@ -549,9 +576,6 @@ const DataTableBeneficiarios = props => {
     ];
 
 
-
-
-
     // Initialize the tableData state variable with the data passed in as props
     const [tableData, setTableData] = useState(() => props.data)
 
@@ -560,6 +584,67 @@ const DataTableBeneficiarios = props => {
         setTableData(props.data);
     }, [])
 
+
+    const handleEditDate = async (values) => {
+        let valuesCopy = { ...values };
+
+        // Format date and gender fields to match API requirements
+        values.fechaNacimiento = values.fechaNacimiento.split("-").reverse().join("");
+        values.vigencia = values.vigencia.split("-").reverse().join("");
+        values.termino = values.termino.split("-").reverse().join("");
+        if (values.rutBeneficiario && values.rutBeneficiario.replace) {
+            values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9]/g, '');
+        }
+
+        if (values.rutTitular && values.rutTitular.replace) {
+            values.rutTitular = values.rutTitular.replace(/[^0-9]/g, '');
+        }
+
+        if (values.genero === "Masculino" || values.genero === "masculino") {
+            values.genero = 1;
+        } else if (values.genero === "Femenino" || values.genero === "femenino") {
+            values.genero = 2;
+        }
+        if (values.genero === "M" || values.genero === "m") {
+            values.genero = 1;
+        } else if (values.genero === "F" || values.genero === "f") {
+            values.genero = 2;
+        }
+
+        try {
+            // Make API call to update beneficiario
+            const response = await updateBeneficiario(values, props.user.correo);
+            console.log(response);
+
+            // Handle network error
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setLoading(false);
+                setTitleAlert("Error")
+                setMsjAlert("Error de conexión")
+                setShowModalAlert(true);
+            } else {
+                setLoading(false);
+            }
+            // Handle successful update
+            if (response.actualizaResponse[0].codigoError === 0) {
+                setTitleAlert("Éxito")
+                setMsjAlert("Beneficiario actualizado correctamente")
+                setShowModalAlert(true);
+                tableData[rows.index] = valuesCopy;
+                setTableData([...tableData]);
+            } else {
+                setTitleAlert("Error")
+                setMsjAlert("Error al actualizar beneficiario");
+                setShowModalAlert(true);
+            }
+        } catch (error) {
+            console.log(error);
+            setLoading(false);
+            setTitleAlert("Error")
+            setMsjAlert("Error al actualizar beneficiario");
+            setShowModalAlert(true);
+        }
+    };
     // Method to handle editing of table data
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
         setValues(values);
@@ -575,8 +660,14 @@ const DataTableBeneficiarios = props => {
             values.fechaNacimiento = values.fechaNacimiento.split("-").reverse().join("");
             values.vigencia = values.vigencia.split("-").reverse().join("");
             values.termino = values.termino.split("-").reverse().join("");
-            values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9]/g, '');
-            values.rutTitular = values.rutTitular.replace(/[^0-9]/g, '');
+
+            if (values.rutBeneficiario && values.rutBeneficiario.replace) {
+                values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9]/g, '');
+            }
+
+            if (values.rutTitular && values.rutTitular.replace) {
+                values.rutTitular = values.rutTitular.replace(/[^0-9]/g, '');
+            }
 
             if (values.genero === "Masculino" || values.genero === "masculino") {
                 values.genero = 1;
@@ -664,16 +755,16 @@ const DataTableBeneficiarios = props => {
 
     // Metodo para eliminar
     const handleDeleteRow = useCallback(
-        (row) => {
-            setValues(row);
-            setTitle("¿Desea continuar?")
-            setMsj("Seleccione confirmar si desea eliminar el campo")
-            setShowModalConfirmar(true)
+        (row, table) => {
+            setRows(row);
+            setValues(row.original);
+            console.log(values);
+            setCreateModalOpen(true)
         },
         [tableData],
     );
-    const handleEditRow = useCallback(
 
+    const handleEditRow = useCallback(
         (row, table) => {
             table.setEditingRow(row)
             setValidationErrors({});
@@ -681,6 +772,7 @@ const DataTableBeneficiarios = props => {
         },
         [tableData],
     );
+
 
     return (
         <>        <div style={{ position: 'relative' }}>
@@ -714,7 +806,7 @@ const DataTableBeneficiarios = props => {
                                 </Grid>
                                 <Grid xs={6}>
                                     <Tooltip title="Eliminar">
-                                        <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                                        <IconButton color="error" onClick={() => handleDeleteRow(row, table)}>
                                             <Delete />
                                         </IconButton>
                                     </Tooltip>
@@ -758,11 +850,87 @@ const DataTableBeneficiarios = props => {
                 show={showModalUpload}
                 handleClose={handleCloseUpload}
             />
+            //render just when createModalOpen is true
+            {createModalOpen && <CreateNewAccountModal
+                columns={props.columns}
+                open={createModalOpen}
+                onClose={() => setCreateModalOpen(false)}
+                onSubmit={handleEditDate}
+                allValues={values}
+            />
+            }
         </div>
         </>
     );
 
 };
 
+export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) => {
+    const [titleAlert, setTitleAlert] = useState();
+    const [msjAlert, setMsjAlert] = useState();
+    const [values, setValues] = useState(allValues);
+    const [showModalAlert, setShowModalAlert] = useState(false);
+    const handleCloseAlert = () => {
+        setShowModalAlert(false);
+    }
+    console.log(values.termino)
+
+    const parts = values.termino.split('-');
+    const datex = new Date(parts[1] + '/' + parts[0] + '/' + parts[2]);
+    const [date, setDate] = useState(datex);
+    console.log(date);
+    const handleSubmit = () => {
+        var dd = String(date.$d.getDate()).padStart(2, '0');
+        var mm = String(date.$d.getMonth() + 1).padStart(2, '0');
+        var yyyy = date.$d.getFullYear();
+        values.termino = dd + '-' + mm + '-' + yyyy;
+        if (values.termino === "") {
+            setTitleAlert("Error")
+            setMsjAlert("La fecha no puede estar vacia")
+            setShowModalAlert(true);
+        } else {
+            onSubmit(values);
+            onClose();
+        }
+    }
+
+
+    return (
+        <>
+            <Dialog open={open} style={{ zIndex: 2 }}>
+                <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
+                <DialogTitle textAlign="center">Actualizar fecha termino</DialogTitle>
+                <DialogContent>
+                    <form onSubmit={(e) => e.preventDefault()}>
+                        <Stack
+                            sx={{
+                                width: '100%',
+                                minWidth: { xs: '300px', sm: '360px', md: '400px' },
+                                gap: '1.5rem',
+                            }}
+                        >
+                            <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                <DatePicker
+                                    value={date}
+                                    sx={{ width: '100%' }}
+                                    onChange={(e) => {
+                                        setDate(e)
+                                    }}
+                                    renderInput={(params) => <TextField fullWidth  {...params} />}
+                                />
+                            </LocalizationProvider>
+                        </Stack>
+                    </form>
+                </DialogContent>
+                <DialogActions sx={{ p: '1.25rem' }}>
+                    <Button onClick={onClose}>Cancel</Button>
+                    <Button color="primary" onClick={handleSubmit} variant="contained">
+                        Guardar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
+    );
+};
 
 export default DataTableBeneficiarios;
