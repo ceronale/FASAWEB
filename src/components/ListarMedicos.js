@@ -133,6 +133,7 @@ const ListarMedicos = (user) => {
       setTitle("Error");
       setMsj("Debe seleccionar un convenio y una lista");
       setShowModal(true);
+
     } else {
       //create a try and catrch block to handle the error of the request and show the modal with the error message
       try {

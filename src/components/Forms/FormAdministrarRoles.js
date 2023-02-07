@@ -45,23 +45,27 @@ export default function FormAdministrarRoles(prop) {
     const handleAllRight = () => {
         setRight(right.concat(left));
         setLeft([]);
+        prop.getDatos([], right.concat(left));
     };
 
     const handleCheckedRight = () => {
         setRight(right.concat(leftChecked));
         setLeft(not(left, leftChecked));
         setChecked(not(checked, leftChecked));
+        prop.getDatos(not(left, leftChecked), right.concat(leftChecked));
     };
 
     const handleCheckedLeft = () => {
         setLeft(left.concat(rightChecked));
         setRight(not(right, rightChecked));
         setChecked(not(checked, rightChecked));
+        prop.getDatos(left.concat(rightChecked), not(right, rightChecked));
     };
 
     const handleAllLeft = () => {
         setLeft(left.concat(right));
         setRight([]);
+        prop.getDatos(left.concat(right), []);
     };
 
     React.useEffect(() => {
@@ -72,13 +76,10 @@ export default function FormAdministrarRoles(prop) {
     const customList = (items) => (
         <>
             <div style={{ width: 300, height: 230, overflow: 'auto' }}>
-
-                <List dense component="div" role="list" style={{ margin: "auto", width: "70%" }} alignItems="center">
+                <List dense component="div" role="list" style={{ margin: "auto", width: "70%" }} alignitems="center">
                     {items.map((value) => {
                         const labelId = `transfer-list-item-${value}-label`;
-
                         return (
-
                             <ListItem
                                 key={value}
                                 role="listitem"
@@ -109,7 +110,7 @@ export default function FormAdministrarRoles(prop) {
                 <Label>No Permitido </Label>
                 {customList(left)}</Grid>
             <Grid item>
-                <Grid container direction="column" alignItems="center">
+                <Grid container direction="column" alignitems="center">
                     <Button
                         sx={{ my: 0.5 }}
                         variant="outlined"

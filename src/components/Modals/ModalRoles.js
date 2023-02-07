@@ -17,6 +17,11 @@ const ModalRoles = ({ show, handleClose, msj, title, name, description, propLeft
     const [nombre, setNombre] = useState(name);
     const [descripcion, setDescripcion] = useState(description);
 
+    const getDatos = (leftx, rightx) => {
+        console.log("wtfNIGGA")
+        console.log(leftx);
+        console.log(rightx);
+    }
     const onSubmit = async (e) => {
         e.preventDefault();
     };
@@ -88,7 +93,8 @@ const ModalRoles = ({ show, handleClose, msj, title, name, description, propLeft
                                             </GrupoInput>
                                             <GrupoInput>
                                                 <Label>Componentes </Label>
-                                                <FormAdministrarRoles propLeft={propLeft} propRight={propRight} />
+
+                                                <FormAdministrarRoles getDatos={getDatos} propLeft={propLeft} propRight={propRight} />
                                             </GrupoInput>
 
                                         </div>

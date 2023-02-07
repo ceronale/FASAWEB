@@ -17,7 +17,7 @@ const ModalPdf = ({ Pdf, show, handleClose }) => {
             <Modal.Header closeButton>
             </Modal.Header>
             <Modal.Body>
-                <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.15.349/build/pdf.worker.min.js">
+                <Worker workerUrl="https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js">
                     <div style={{ height: '650px', width: '100%', overflow: 'scroll' }}>
                         <Viewer fileUrl={Pdf} plugins={[newplugin]} />
                     </div>

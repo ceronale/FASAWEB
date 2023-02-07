@@ -16,8 +16,10 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import ModalAlert from './Modals/ModalAlert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ListarRepAuditoria = (user) => {
+  const [loading, setLoading] = useState(false);
   const columns = [
     {
       accessorKey: 'accion',
@@ -80,9 +82,23 @@ const ListarRepAuditoria = (user) => {
         fechaHasta: formattedHasta,
       };
       setDataTable(undefined);
-      const response = await ReporteAuditoriaService(data);
+      console.log(data);
+      setLoading(true);
 
-      setDataTable(response.auditoria);
+
+
+      const response = await ReporteAuditoriaService(data);
+      //Check if the response is ok response.auditoria[0].codigo === 0 is ok and response.auditoria[0].codigo === 1 is error
+      if (response.auditoria[0].codigo === 1) {
+        setTitle("Error");
+        setMsj(response.auditoria[0].detalle);
+        setShowModal(true);
+        setDataTable({});
+      } else {
+        setDataTable(response.auditoria);
+
+      }
+      setLoading(false);
     }
   };
 
@@ -103,15 +119,25 @@ const ListarRepAuditoria = (user) => {
   const eliminar = [
     {
       value: 'eliminarRutListaMedicos',
-      label: 'Eliminar Rut Lista Medicos',
-    },
-    {
-      value: 'eliminarListaMedicos',
-      label: 'Eliminar Lista Medicos',
+      label: 'Eliminar Medico',
     },
     {
       value: 'eliminarUsuario',
       label: 'Eliminar Usuario',
+    },
+  ];
+  const cargaMasiva = [
+    {
+      value: 'cargaMasivaMedicos',
+      label: 'Carga masiva medicos',
+    },
+    {
+      value: 'cargaMasivaPolizas',
+      label: 'Carga masiva polizas',
+    },
+    {
+      value: 'cargaMasivaBeneficiarios',
+      label: 'Carga masiva beneficiarios',
     },
   ];
 
@@ -132,6 +158,10 @@ const ListarRepAuditoria = (user) => {
       value: 'actualizarPoliza',
       label: 'Actualizar Poliza',
     },
+    {
+      value: 'actualizarBeneficiario',
+      label: 'Actualizar Beneficiario',
+    },
 
   ];
 
@@ -145,6 +175,14 @@ const ListarRepAuditoria = (user) => {
       label: 'Insertar Empresa',
     },
     {
+      value: 'insertarMedico',
+      label: 'Insertar Medico',
+    },
+    {
+      value: 'cargarDocumento',
+      label: 'Cargar Documento',
+    },
+    {
       value: 'cargarDocumento',
       label: 'Cargar Documento',
     },
@@ -155,6 +193,7 @@ const ListarRepAuditoria = (user) => {
     Insertar: crear,
     Actualizar: actualizar,
     Eliminar: eliminar,
+    CargaMasiva: cargaMasiva,
   };
 
   const handleChangeAccion = (event) => {
@@ -201,113 +240,121 @@ const ListarRepAuditoria = (user) => {
 
   return (
     <main>
-      <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
-      <div>
-        <ContenedorTitulo>
-          <Titulo>Visualización de reporte y auditoria</Titulo>
-        </ContenedorTitulo>
-        <div id="notaLogin">
-          En esta seccion podras visualizar las acciones realizadas.
+      <div style={{ position: 'relative' }}>
+        {loading && (
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+            <CircularProgress />
+          </div>
+        )}
+        <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
+        <div>
+          <ContenedorTitulo>
+            <Titulo>Visualización de reporte y auditoria</Titulo>
+          </ContenedorTitulo>
+          <div id="notaLogin">
+            En esta seccion podras visualizar las acciones realizadas.
+          </div>
+          <Form >
+            <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
+              <Grid container spacing={2}>
+                <Grid xs={4}>
+                  <FormControl fullWidth >
+                    <InputLabel id="usuario-select">Usuario</InputLabel>
+                    <Select
+                      labelId="usuario-select"
+                      id="usuario-select"
+                      label="Usuario"
+                      value={usuarioInputSelected}
+                      onChange={handleChangeUsuario}
+                    >
+                      {usuarioInput.map((u) => (
+                        <MenuItem key={u.value} value={u.value}>
+                          {u.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid xs={4}>
+                  <FormControl fullWidth  >
+                    <InputLabel id="demo-simple-select-label">Accion</InputLabel>
+                    <Select
+                      labelId="accion-label"
+                      id="accion-id"
+                      label="Accion"
+                      value={accion}
+                      onChange={handleChangeAccion}
+                    >
+                      <MenuItem value={"Insertar"}>Insertar</MenuItem>
+                      <MenuItem value={"Actualizar"}>Actualizar</MenuItem>
+                      <MenuItem value={"Eliminar"}>Eliminar</MenuItem>
+                      <MenuItem value={"CargaMasiva"}>Carga masiva</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+                <Grid xs={4}>
+                  <FormControl fullWidth disabled={isServicioDisabled}>
+                    <InputLabel id="demo-simple-select-label">Servicio</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      label="Servicio"
+                      value={servicioSelected}
+                      onChange={handleChangeServicio}
+                    >
+                      {servicio.map((servicio) => (
+                        <MenuItem key={servicio.value} value={servicio.value}>
+                          {servicio.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+
+
+
+                <Grid xs={3}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs} size="small">
+                    <DatePicker
+                      label="Desde"
+                      value={desde}
+                      onChange={(desde) => {
+                        setDesde(desde);
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid xs={3}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs} >
+                    <DatePicker
+                      label="Hasta"
+                      value={hasta}
+                      onChange={(hasta) => {
+                        setHasta(hasta);
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid xs={6}>
+                  <Button size="large" variant="contained" onClick={showData} style={{ marginTop: 5 }}>
+                    Filtrar
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+          </Form>
+          {
+            (dataTable === undefined)
+              ?
+              null
+              :
+              <DataTable data={dataTable} columns={columns} />
+          }
         </div>
-        <Form >
-          <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
-            <Grid container spacing={2}>
-              <Grid xs={4}>
-                <FormControl fullWidth >
-                  <InputLabel id="usuario-select">Usuario</InputLabel>
-                  <Select
-                    labelId="usuario-select"
-                    id="usuario-select"
-                    label="Usuario"
-                    value={usuarioInputSelected}
-                    onChange={handleChangeUsuario}
-                  >
-                    {usuarioInput.map((u) => (
-                      <MenuItem key={u.value} value={u.value}>
-                        {u.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid xs={4}>
-                <FormControl fullWidth  >
-                  <InputLabel id="demo-simple-select-label">Accion</InputLabel>
-                  <Select
-                    labelId="accion-label"
-                    id="accion-id"
-                    label="Accion"
-                    value={accion}
-                    onChange={handleChangeAccion}
-                  >
-                    <MenuItem value={"Insertar"}>Insertar</MenuItem>
-                    <MenuItem value={"Actualizar"}>Actualizar</MenuItem>
-                    <MenuItem value={"Eliminar"}>Eliminar</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-
-              <Grid xs={4}>
-                <FormControl fullWidth disabled={isServicioDisabled}>
-                  <InputLabel id="demo-simple-select-label">Servicio</InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    label="Servicio"
-                    value={servicioSelected}
-                    onChange={handleChangeServicio}
-                  >
-                    {servicio.map((servicio) => (
-                      <MenuItem key={servicio.value} value={servicio.value}>
-                        {servicio.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-
-
-
-              <Grid xs={3}>
-                <LocalizationProvider dateAdapter={AdapterDayjs} size="small">
-                  <DatePicker
-                    label="Desde"
-                    value={desde}
-                    onChange={(desde) => {
-                      setDesde(desde);
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </LocalizationProvider>
-              </Grid>
-              <Grid xs={3}>
-                <LocalizationProvider dateAdapter={AdapterDayjs} >
-                  <DatePicker
-                    label="Hasta"
-                    value={hasta}
-                    onChange={(hasta) => {
-                      setHasta(hasta);
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </LocalizationProvider>
-              </Grid>
-              <Grid xs={6}>
-                <Button size="large" variant="contained" onClick={showData} style={{ marginTop: 5 }}>
-                  Filtrar
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </Form>
-        {
-          (dataTable === undefined)
-            ?
-            null
-            :
-            <DataTable data={dataTable} columns={columns} />
-        }
       </div>
     </main>
 

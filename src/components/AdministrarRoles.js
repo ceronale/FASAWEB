@@ -1,51 +1,71 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import DataTableRoles from "./DataTable/DataTableRoles";
-
 import { ContenedorTitulo, Titulo } from "./Formularios";
-
-
+import CircularProgress from '@mui/material/CircularProgress';
+import { getRoles } from "../api/RolesServices";
+import ModalAlert from "./Modals/ModalAlert";
 
 const AdministrarRoles = (user) => {
-    const data = [
-        {
-            rol: 'Administrador',
-            descripcion: 'Administrador',
-        },
-        {
-            rol: 'Paciente',
-            descripcion: 'Paciente',
-        },
-        {
-            rol: 'Paciente Empresa',
-            descripcion: 'Paciente Empresa',
-        },
+    const [loading, setLoading] = useState(false);
+    const [roles, setRoles] = useState([]);
+    const [title, setTitle] = useState();
+    const [msj, setMsj] = useState();
+    const [showModal, setShowModal] = useState(false);
 
-    ];
     const columns = [
         {
-            accessorKey: 'rol', //access nested data with dot notation
+            accessorKey: 'nombre',
             header: 'Rol',
             maxSize: 5
         },
-        {
-            accessorKey: 'descripcion',
-            header: 'Descripcion',
-        },
     ];
+
+    //call the api to get roles to the table useffect
+    useEffect(() => {
+        setLoading(true);
+        getRoles().then((response) => {
+            setRoles(undefined);
+            setRoles(response.roles);
+            setLoading(false);
+        }).catch((error) => {
+            setTitle("Error");
+            setMsj("Error al obtener los roles");
+            setShowModal(true);
+            setLoading(false);
+        });
+    }, []);
 
 
     return (
-        <main >
-            <ContenedorTitulo>
-                <Titulo>Administrar Roles</Titulo>
-            </ContenedorTitulo>
-            <div id="notaLogin">
-                En esta seccion podras editar, crear y elimnar roles.
-            </div>
-            <DataTableRoles columns={columns} data={data} />
+        <div style={{ position: 'relative' }}>
+            {loading && (
+                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+                    <CircularProgress />
+                </div>
+            )}
+            <ModalAlert
+                title={title}
+                msj={msj}
+                showModal={showModal}
+                setShowModal={setShowModal}
+            />
+            <main >
+                <ContenedorTitulo>
+                    <Titulo>Administrar Roles</Titulo>
+                </ContenedorTitulo>
+                <div id="notaLogin">
+                    En esta seccion podras editar, crear y elimnar roles.
+                </div>
+                {
+                    (roles === undefined)
+                        ?
+                        null
+                        : <DataTableRoles columns={columns} data={roles} />
+                }
 
-        </main >
+            </main >
+        </div>
     );
 }
 

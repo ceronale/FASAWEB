@@ -850,7 +850,6 @@ const DataTableBeneficiarios = props => {
                 show={showModalUpload}
                 handleClose={handleCloseUpload}
             />
-            //render just when createModalOpen is true
             {createModalOpen && <CreateNewAccountModal
                 columns={props.columns}
                 open={createModalOpen}

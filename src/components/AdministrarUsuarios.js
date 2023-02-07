@@ -20,13 +20,14 @@ const AdministrarUsuarios = (user) => {
     const handleCloseConfirmar = () => {
         setShowModalConfirmar(false);
     }
+
     const handleClose = () => {
         setShowModal(false);
     }
 
     const handleConfirmar = async () => {
 
-
+        setLoading(true);
         const resp = await EliminarUsuario(idElminar, usuario.correo)
         var codigoRespuesta = resp['eliminar'][0]['codigoRespuesta'];
         var detalleRespuesta = resp['eliminar'][0]['detalleRespuesta'];
@@ -37,6 +38,7 @@ const AdministrarUsuarios = (user) => {
         if (codigoRespuesta === 0) {
             setIdElminar("");
         }
+        setLoading(false);
     }
 
 
