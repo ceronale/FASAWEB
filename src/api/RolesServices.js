@@ -1,6 +1,7 @@
 const axios = require('axios');
-const user = (JSON.parse(localStorage.getItem("user"))).correo;
+
 export const getRoles = async () => {
+    const user = (JSON.parse(localStorage.getItem("user"))).correo;
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/leerRoles/services/leer/roles',
@@ -19,6 +20,7 @@ export const getRoles = async () => {
 }
 
 export const getRol = async (data) => {
+    const user = (JSON.parse(localStorage.getItem("user"))).correo;
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/reportar/services/reportar/auditoria',
@@ -42,6 +44,7 @@ export const getRol = async (data) => {
 }
 
 export const deleteRol = async (data) => {
+    const user = (JSON.parse(localStorage.getItem("user"))).correo;
     const config = {
         method: 'delete',
         url: 'http://150.100.253.61:8181/cxf/delRol/services/del/roles',
@@ -62,6 +65,7 @@ export const deleteRol = async (data) => {
 }
 
 export const getComponentes = async () => {
+    const user = (JSON.parse(localStorage.getItem("user"))).correo;
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/getAllrecursos/services/listar/recurso',
@@ -79,6 +83,7 @@ export const getComponentes = async () => {
 }
 
 export const getComponentesByRol = async (data) => {
+    const user = (JSON.parse(localStorage.getItem("user"))).correo;
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/getAllRecursosRol/services/listar/recurso/rol',
@@ -98,6 +103,7 @@ export const getComponentesByRol = async (data) => {
 }
 
 export const addRol = async (data) => {
+    const user = (JSON.parse(localStorage.getItem("user"))).correo;
     const config = {
         method: 'put',
         url: 'http://150.100.253.61:8181/cxf/ins/services/ins/roles',
@@ -121,6 +127,7 @@ export const addRol = async (data) => {
     return response;
 }
 export const updateRol = async (data) => {
+    const user = (JSON.parse(localStorage.getItem("user"))).correo;
     const config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/actRol/services/act/roles',
@@ -132,7 +139,6 @@ export const updateRol = async (data) => {
             'vigencia': 'S'
         }
     };
-    console.log(config);
 
     const response = axios(config)
         .then(({ data: out }) => {

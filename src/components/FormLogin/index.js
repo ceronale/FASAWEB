@@ -125,7 +125,7 @@ const FormLogin = () => {
 			else if (codigoResultadoLogin === 1) {
 				setShowModal(true);
 				setTitle("Error al iniciar sesión");
-				setMsj("El usuario ingresado no existe.");
+				setMsj("El usuario ingresado no existe o no esta vigente");
 			}
 			// Si el código de resultado es 2 (Usuario Invalido), se muestra un modal con un mensaje de error
 			else if (codigoResultadoLogin === 2) {
