@@ -18,6 +18,7 @@ const FormHome = (user) => {
 		kamConvenios: '',
 		kamEmail: '',
 		position: '',
+		convenio: '',
 	})
 	// Initialize the state for the current user
 	const [currentUser] = useState(JSON.parse(user.user))
@@ -36,8 +37,9 @@ const FormHome = (user) => {
 
 		let userData = currentUser;
 
+
 		// Destructure the user data from the response
-		const { rut, nombre, apellido, apellido2, correo, celular, kamConvenios, kamCorreo, cargo } = userData;
+		const { rut, nombre, apellido, apellido2, correo, celular, kamConvenios, kamCorreo, cargo, convenio } = userData;
 
 		// Set the form state with the retrieved data
 		setFormState({
@@ -50,6 +52,7 @@ const FormHome = (user) => {
 			kamConvenios: kamConvenios,
 			kamEmail: kamCorreo,
 			position: cargo,
+			convenio: convenio,
 		});
 	};
 
@@ -105,9 +108,10 @@ const FormHome = (user) => {
 									/>
 								</GrupoInput>
 								{
-									(currentUser.rol === "Paciente")
+									(currentUser.recursos.indexOf("441") === -1)
 										?
-										<GrupoInput>
+										null
+										: <GrupoInput>
 											<Label className="labelForm" htmlFor="">
 												Numero de Telefono
 											</Label>
@@ -118,7 +122,6 @@ const FormHome = (user) => {
 												readOnly
 											/>
 										</GrupoInput>
-										: null
 								}
 
 							</div>
@@ -138,10 +141,29 @@ const FormHome = (user) => {
 											readOnly
 										/>
 									</GrupoInput>
+									{
+										(currentUser.recursos.indexOf("443") === -1)
+											?
+											null
+											:
+											<GrupoInput>
+												<Label className="labelForm" htmlFor="">
+													Convenios Asociados
+												</Label>
+												<InputH
+													className="inputForm"
+													type="text"
+													value={formState.convenio}
+													readOnly
+												/>
+											</GrupoInput>
+									}
+
+
+
 									<div id="accionRegistro">
 
 										<Button variant="contained" onClick={handleClick} >Modificar Contraseña</Button>
-
 
 									</div>
 								</GrupoInput>{" "}
@@ -149,7 +171,7 @@ const FormHome = (user) => {
 
 						</div>
 						{
-							(currentUser.rol === "Paciente")
+							(currentUser.recursos.indexOf("440") === -1)
 								?
 								null
 								: <div className="row">

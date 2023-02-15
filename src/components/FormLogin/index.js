@@ -19,7 +19,7 @@ import {
 import ModalAlert from '../Modals/ModalAlert';
 import { HomeServiceEmpresa } from "../../api/HomeEmpresaService";
 import { HomeService } from "../../api/HomeService";
-
+import { getComponentesAndRolByUser } from "../../api/RolesServices";
 
 const FormLogin = () => {
 
@@ -82,38 +82,24 @@ const FormLogin = () => {
 
 			// Si el código de resultado es 0 (ok), se procede a obtener los datos del usuario y a almacenarlos en el almacenamiento local
 			if (codigoResultadoLogin === 0) {
-
 				//Create a function to get user data depending on the role
-				//Create a function to get user data depending on the role
-				if (login[0].tipo === "Empresa") {
-					user = await HomeServiceEmpresa(registerData.email);
-					[usuario] = user.usuarioEmpresa;
-					usuario.rol = login[0].tipo;
-					// Crea un objeto para almacenar los convenios del usuario
 
-					// Recorre el array de usuarioEmpresa y agrega cada convenio al objeto convenios
-					user.usuarioEmpresa.forEach(obj => {
-						if (obj.convenio) {
-							if (convenios.convenio) {
-								convenios.convenio += `,${obj.convenio}`;
-							} else {
-								convenios.convenio = obj.convenio;
-							}
+				user = await HomeServiceEmpresa(registerData.email);
+				[usuario] = user.usuarioEmpresa;
+				let rol = await getComponentesAndRolByUser(usuario.id);
+				usuario.idRol = rol.rolUsuario[0].id_rol;
+				usuario.recursos = rol.rolUsuario[1].id_recurso;
+
+				// Recorre el array de usuarioEmpresa y agrega cada convenio al objeto convenios
+				user.usuarioEmpresa.forEach(obj => {
+					if (obj.convenio) {
+						if (convenios.convenio) {
+							convenios.convenio += `,${obj.convenio}`;
+						} else {
+							convenios.convenio = obj.convenio;
 						}
-					});
-
-				} else if (login[0].tipo === "Paciente") {
-					user = await HomeService(registerData.email);
-					[usuario] = user.usuario;
-					usuario.rol = login[0].tipo;
-
-				}
-
-
-
-
-
-
+					}
+				});
 				// Combina los datos del usuario y los convenios en un nuevo objeto
 				const userFormated = { ...usuario, ...convenios };
 				// Almacena el objeto en el almacenamiento local

@@ -6,7 +6,7 @@ import UploadFilePolizas from "../UploadFile/UploadFilePolizas";
 
 
 
-const ModalUploadFile = ({ show, handleClose, msj, title }) => {
+const ModalUploadFile = ({ show, handleClose, msj, title, convenio }) => {
     return (
         <Modal show={show} onHide={handleClose}
             size="lg"
@@ -16,8 +16,8 @@ const ModalUploadFile = ({ show, handleClose, msj, title }) => {
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>{msj}
-
-                <UploadFilePolizas>
+                convenio
+                <UploadFilePolizas convenio={convenio}>
 
                 </UploadFilePolizas>
 

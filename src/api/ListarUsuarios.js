@@ -1,12 +1,12 @@
 const axios = require('axios');
 
 export const ListarUsuarios = async () => {
-
+	const user = (JSON.parse(localStorage.getItem('user'))).correo;
 	var config = {
 		method: 'get',
 		url: 'http://150.100.253.61:8181/cxf/listando/services/listar',
 		headers: {
-			user: 'prueba5@nuevamasvida.cl'
+			user: user
 		}
 	};
 

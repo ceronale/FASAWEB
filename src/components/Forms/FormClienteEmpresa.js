@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../styles/FormClienteEmpresa.css";
 import { EmpresaService, ConvenioService } from "../../api/EmpresaService";
+import { HomeService } from "../../api/HomeService";
 import { LIstaEmpresasService, } from "../../api/LIstaEmpresasService";
 import {
 	Label,
@@ -94,26 +95,45 @@ const FormClienteEmpresa = (usuario) => {
 		}));
 	}
 
+	//function to call the api home service and check if the user exist 
+	const validateUser = async (userData) => {
+		const resp = await HomeService(userData);
+		//Check is the resp.usuario[0].codigo is the resp
+
+		if (resp.usuario[0].codigo === 1) {
+			return true;
+		} else {
+			setShowModal(true)
+			setTitle("Error")
+			setMsj("El usuario ingresado ya existe.")
+			return false;
+		}
+	}
+
 	const onSubmit = async (e) => {
 		e.preventDefault();
 		var isPassValid = contraseñaValidar();
+		var isUserValid = await validateUser(registerData.user);
 		if (isPassValid) {
-			const resp = await EmpresaService(registerData, correoUsuario)
+			if (isUserValid) {
+				const resp = await EmpresaService(registerData, correoUsuario)
 
-			var aux = resp['outActualizar'][0]['outSeq'];
-			if (aux === 0) {
-				setShowModal(true)
-				setTitle("Error al crear usuario")
-				setMsj("El Cliente Empresa ya existe.")
+				var aux = resp['outActualizar'][0]['outSeq'];
+				if (aux === 0) {
+					setShowModal(true)
+					setTitle("Error")
+					setMsj("Error al crear usuario")
 
-			} else {
-				setShowModal(true)
-				setTitle("Creación de usuario")
-				setMsj("Cliente Empresa creado de manera exitosa.")
-				const respConvenio = await ConvenioService(registerData.user, selectedOptions.toString(), correoUsuario);
+				} else {
+					setShowModal(true)
+					setTitle("Exito")
+					setMsj("Usuario creado de manera exitosa.")
+					const respConvenio = await ConvenioService(registerData.user, selectedOptions.toString(), correoUsuario);
+					handleClear();
+				}
 
-				handleClear();
 			}
+
 		}
 	};
 

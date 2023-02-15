@@ -9,9 +9,7 @@ const AutorizacionesPrevias = () => {
     return (
         <div>
             <BarraOpciones user={user} />
-            <AutorizacionPreviaAdd user={user} />
-            {/* <AutorizacionesPrevia user={user} /> */}
-
+            <AutorizacionesPrevia user={user} />
         </div>
     );
 }

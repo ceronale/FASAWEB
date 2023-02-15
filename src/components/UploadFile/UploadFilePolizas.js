@@ -65,11 +65,11 @@ class UploadFilePolizas extends Component {
 
 
     // On file upload (click the upload button)
-    onFileUpload = async (e) => {
+    onFileUpload = async (e, convenioValue) => {
         e.preventDefault();
         if (this.state.selectedFile !== null) {
             const blob = new Blob([this.state.selectedFile], { type: 'text/csv' });
-            var resp = await UploadPolizas(blob);
+            var resp = await UploadPolizas(blob, convenioValue);
             this.setState({ msj: resp.response1[0].detalleRespuest });;
         }
     };
@@ -79,9 +79,12 @@ class UploadFilePolizas extends Component {
     };
 
     render() {
+        const { convenio } = this.props;
+
+        const convenioValue = convenio.value;
         return (
             <>
-                <Form onSubmit={this.onFileUpload}>
+                <Form onSubmit={(e) => this.onFileUpload(e, convenioValue)}>
                     <Row>
                         <Col xs={7}>
                             <Form.Control required onChange={this.onFileChange} onClick={this.handleClick} type="file" />

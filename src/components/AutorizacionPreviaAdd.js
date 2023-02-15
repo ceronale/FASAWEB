@@ -12,7 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { RadioGroup } from "@mui/material";
-import { Radio } from "@mui/material";
+import { Radio, Autocomplete } from "@mui/material";
 import { FormControlLabel, FormLabel } from "@mui/material";
 import { setAutorizaciones } from '../api/AutorizacionesPreviasService';
 
@@ -22,14 +22,16 @@ const AutorizacionPreviaAdd = (user) => {
     //State to handle the user data
     const [usuario] = useState(JSON.parse(user.user));
     //State to handle the convenios of the user
-    const [convenios, setConvenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
+    const [convenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
+    const [convenio, setConvenio] = useState(null);
     const [grupoInput, setGrupoInput] = useState([
-        { label: 'ASAP', value: 'S' },
+        { label: 'SAP', value: 'S' },
         { label: 'UPC', value: 'U' },
     ]);
 
     const [valuesForm, setValuesForm] = useState({
         cardHolder: '',
+        convenio: '',
         Protocolo: '',
         Campo: '',
         valorCampo: '',
@@ -52,42 +54,42 @@ const AutorizacionPreviaAdd = (user) => {
         setShowModal(false);
     }
 
-    const [desde, setDesde] = useState(new Date());
-    const [hasta, setHasta] = useState(new Date());
-
-
     const handleSubmit = async (event) => {
         event.preventDefault();
-
         setLoading(true);
+        //create a copy of the valuesForm
+        const copyValuesForm = { ...valuesForm };
+
         //check all the values of the form
+
         const fieldsToCheck = [
             { name: 'maxEnvases', error: 'Debe ingresar el maximo de envases' },
-            { name: 'inEx', error: 'Debe ingresar Inclusión/Exclusión' },
             { name: 'hasta', error: 'Debe ingresar la fecha hasta' },
             { name: 'desde', error: 'Debe ingresar la fecha desde' },
             { name: 'personCode', error: 'Debe ingresar el codigo de carga' },
-            { name: 'valorCampo', error: 'Debe ingresar el valor campo ASAP/UPC' },
-            { name: 'Campo', error: 'Debe ingresar el campo ASAP/UPC' },
+            { name: 'valorCampo', error: 'Debe ingresar el valor campo SAP/UPC' },
+            { name: 'Campo', error: 'Debe ingresar el campo SAP/UPC' },
             { name: 'Protocolo', error: 'Debe ingresar el protocolo' },
-            { name: 'cardHolder', error: 'Debe ingresar las credenciales' }
+            { name: 'convenio', error: 'Debe ingresar el convenio' },
+            { name: 'cardHolder', error: 'Debe ingresar el rut' }
         ];
 
         let canContinue = true;
-
-        if (valuesForm["rutMedico"] && !valuesForm["inExMedico"]) {
+        if (copyValuesForm["rutMedico"] && !copyValuesForm["inExMedico"]) {
             handleShowModal('Error', 'Debe ingresar el Inclusión/Exclusión medico');
             setLoading(false);
             canContinue = false;
-        } else if (!valuesForm["rutMedico"] && valuesForm["inExMedico"]) {
+        } else if (!copyValuesForm["rutMedico"] && copyValuesForm["inExMedico"]) {
             handleShowModal('Error', 'Debe ingresar el rut del medico');
             setLoading(false);
             canContinue = false;
         }
 
+
+
         if (canContinue) {
             fieldsToCheck.forEach((field) => {
-                if (valuesForm[field.name] === '' || valuesForm[field.name] === null) {
+                if (copyValuesForm[field.name] === '' || copyValuesForm[field.name] === null) {
                     handleShowModal('Error', field.error);
                     setLoading(false);
                     canContinue = false;
@@ -95,27 +97,42 @@ const AutorizacionPreviaAdd = (user) => {
             });
         }
 
-        if (valuesForm.desde > valuesForm.hasta) {
+
+        if (copyValuesForm.desde > copyValuesForm.hasta) {
             handleShowModal('Error', 'La fecha desde no puede ser mayor a la fecha hasta');
             setLoading(false);
             canContinue = false;
         }
 
         if (canContinue) {
-            valuesForm.rutMedico = valuesForm.rutMedico.replace(/\./g, '').replace(/\-/g, '');
+            copyValuesForm.cardHolder = copyValuesForm.convenio.value + copyValuesForm.cardHolder.replace(/\./g, '').replace(/\-/g, '');
+            copyValuesForm.rutMedico = copyValuesForm.rutMedico.replace(/\./g, '').replace(/\-/g, '');
+
             //set a variable exactly like valuesForm but with the date in the correct format call data
             const data = {
-                ...valuesForm,
-                desde: `${valuesForm.desde.$D}-${valuesForm.desde.$M + 1}-${valuesForm.desde.$y}`,
-                hasta: `${valuesForm.hasta.$D}-${valuesForm.hasta.$M + 1}-${valuesForm.hasta.$y}`,
+                ...copyValuesForm,
+                desde: `${copyValuesForm.desde.$D}-${copyValuesForm.desde.$M + 1}-${copyValuesForm.desde.$y}`,
+                hasta: `${copyValuesForm.hasta.$D}-${copyValuesForm.hasta.$M + 1}-${copyValuesForm.hasta.$y}`,
             }
 
             const response = await setAutorizaciones(data, usuario.correo);
-
             if (response.response[0].codigo === 0) {
                 handleShowModal('Éxito', 'Autorización previa creada correctamente');
                 //set all valuesForm to empty
-
+                setValuesForm({
+                    cardHolder: '',
+                    convenio: '',
+                    Protocolo: '',
+                    Campo: '',
+                    valorCampo: '',
+                    rutMedico: '',
+                    personCode: '',
+                    inEx: '',
+                    inExMedico: '',
+                    desde: null,
+                    hasta: null,
+                    maxEnvases: '',
+                })
 
             } else {
                 handleShowModal('Error', 'Error al crear la autorización previa');
@@ -161,23 +178,34 @@ const AutorizacionPreviaAdd = (user) => {
                             </Grid>
                             <Grid container spacing={2}>
                                 <Grid xs={4}>
-                                    <FormLabel >Credenciales</FormLabel>
+                                    <FormLabel >Rut</FormLabel>
                                     <TextField
-
                                         id="cardHolder"
                                         variant="outlined"
                                         sx={{ width: '100%' }}
-                                        inputProps={{ maxLength: 60 }}
+                                        inputProps={{ maxLength: 12 }}
                                         value={valuesForm.cardHolder}
                                         onChange={(event) => {
-                                            setValuesForm({ ...valuesForm, cardHolder: event.target.value });
+                                            setValuesForm({ ...valuesForm, cardHolder: formatRut(event.target.value) });
                                         }}
+                                    />
+                                </Grid>
+                                <Grid xs={4}>
+                                    <FormLabel >Convenios</FormLabel>
+                                    <Autocomplete
+                                        value={valuesForm.convenio}
+                                        variant="outlined"
+                                        onChange={(event, newValue) => {
+                                            setValuesForm({ ...valuesForm, convenio: newValue });
+                                        }}
+                                        id="controllable-states-demo"
+                                        options={convenios}
+                                        renderInput={(params) => <TextField {...params} />}
                                     />
                                 </Grid>
                                 <Grid xs={4}>
                                     <FormLabel >Protocolo</FormLabel>
                                     <TextField
-
                                         id="Protocolo"
                                         variant="outlined"
                                         sx={{ width: '100%' }}
@@ -191,7 +219,7 @@ const AutorizacionPreviaAdd = (user) => {
                                 </Grid>
                                 <Grid xs={4}>
                                     <FormControl fullWidth >
-                                        <FormLabel >Campo ASAP/UPC</FormLabel>
+                                        <FormLabel >Campo SAP/UPC</FormLabel>
 
                                         <Select
 
@@ -211,7 +239,7 @@ const AutorizacionPreviaAdd = (user) => {
                                     </FormControl>
                                 </Grid>
                                 <Grid xs={4}>
-                                    <FormLabel >Valor campo ASAP/UPC</FormLabel>
+                                    <FormLabel >Valor campo SAP/UPC</FormLabel>
                                     <TextField
                                         id="valorCampo"
                                         variant="outlined"
@@ -265,8 +293,21 @@ const AutorizacionPreviaAdd = (user) => {
                                     </LocalizationProvider>
 
                                 </Grid>
-
                                 <Grid xs={4}>
+                                    <FormLabel >Fecha Termino</FormLabel>
+                                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                        <DatePicker
+                                            value={valuesForm.hasta}
+                                            sx={{ width: '100%' }}
+                                            onChange={(event) => {
+                                                setValuesForm({ ...valuesForm, hasta: event });
+                                            }}
+                                            renderInput={(params) => <TextField fullWidth {...params} />}
+                                        />
+                                    </LocalizationProvider>
+                                </Grid>
+
+                                <Grid xs={4} style={{ marginTop: '5px' }}>
                                     <FormControl>
                                         <FormLabel >Inclusión/Exclusión</FormLabel>
                                         <RadioGroup
@@ -283,27 +324,8 @@ const AutorizacionPreviaAdd = (user) => {
                                         </RadioGroup>
                                     </FormControl>
                                 </Grid>
-                                <Grid xs={4}>
-                                    <ContenedorTitulo>
-                                        <Titulo>Cantidad Envases</Titulo>
-                                    </ContenedorTitulo>
-                                </Grid>
-                            </Grid>
-                            <Grid container spacing={2} >
-                                <Grid xs={4}>
-                                    <FormLabel >Fecha Termino</FormLabel>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs} >
-                                        <DatePicker
-                                            value={valuesForm.hasta}
-                                            sx={{ width: '100%' }}
-                                            onChange={(event) => {
-                                                setValuesForm({ ...valuesForm, hasta: event });
-                                            }}
-                                            renderInput={(params) => <TextField fullWidth {...params} />}
-                                        />
-                                    </LocalizationProvider>
-                                </Grid>
-                                <Grid xs={4}>
+
+                                <Grid xs={4} style={{ marginTop: '5px' }}>
                                     <FormControl>
                                         <FormLabel >Inclusión/Exclusión Medico</FormLabel>
                                         <RadioGroup
@@ -319,8 +341,8 @@ const AutorizacionPreviaAdd = (user) => {
                                             <FormControlLabel value="E" control={<Radio />} label="Exclusión" />
                                         </RadioGroup>
                                     </FormControl>
-
                                 </Grid>
+
                                 <Grid xs={2}>
                                     <FormLabel>Max Envases</FormLabel>
                                     <TextField
@@ -333,14 +355,11 @@ const AutorizacionPreviaAdd = (user) => {
                                             setValuesForm({ ...valuesForm, maxEnvases: event.target.value });
                                         }}
                                     />
-
-
                                 </Grid>
                                 <Grid xs={2} style={{ marginTop: '30px' }}>
                                     <Button type="submit" variant="contained" size="large" sx={{ width: '100%' }}>Agregar</Button>
                                 </Grid>
                             </Grid>
-
                         </form>
                     </div>
                 </div>

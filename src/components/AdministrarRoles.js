@@ -36,6 +36,20 @@ const AdministrarRoles = (user) => {
         });
     }, []);
 
+    //method to get the roles
+    const getRols = async () => {
+        getRoles().then((response) => {
+            setRoles(undefined);
+            setRoles(response.roles);
+            setLoading(false);
+        }).catch((error) => {
+            setTitle("Error");
+            setMsj("Error al obtener los roles");
+            setShowModal(true);
+            setLoading(false);
+        });
+    }
+
 
     return (
         <div style={{ position: 'relative' }}>
@@ -61,7 +75,7 @@ const AdministrarRoles = (user) => {
                     (roles === undefined)
                         ?
                         null
-                        : <DataTableRoles columns={columns} data={roles} />
+                        : <DataTableRoles columns={columns} data={roles} getRols={getRols} />
                 }
 
             </main >

@@ -6,6 +6,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
 import ModalConfirmar from "../Modals/ModalConfirmar";
 import ModalAlert from "../Modals/ModalAlert";
+import ModalAlert2 from "../Modals/ModalAlert";
 import {
     Box, Button, IconButton, Tooltip,
     Dialog,
@@ -32,6 +33,7 @@ const DataTableRoles = props => {
     const [left, setLeft] = useState([]);
     const [right, setRight] = useState([]);
     const [showModalAlert, setShowModalAlert] = useState(false);
+    const [showModalAlert2, setShowModalAlert2] = useState(false);
     const [titleAlert, setTitleAlert] = useState();
     const [msjAlert, setMsjAlert] = useState();
     const [loading, setLoading] = useState(false);
@@ -40,7 +42,7 @@ const DataTableRoles = props => {
     // Metodo para eliminar
     const handleDeleteRow = useCallback(
         (row) => {
-            setValues(row.original);
+            setValues(row);
             setTitle("¿Desea continuar?")
             setMsj("Seleccione confirmar si desea eliminar el campo")
             setShowModalConfirmar(true)
@@ -68,7 +70,6 @@ const DataTableRoles = props => {
                             setRight((prevRight) => [...prevRight, componente.nombre_logico]);
                         }
                     });
-
                     setValues(row.original);
                 });
             });
@@ -101,7 +102,7 @@ const DataTableRoles = props => {
     };
     //Modal Confirmar
     const handleConfirmar = async () => {
-        const response = await deleteRol(values.id_rol);
+        const response = await deleteRol(values.original.id_rol);
         //modal alert if the response is ok response.response1[0].codigo === 0 is ok and response.response1[0].codigo === 1 is error
         if (response.response1[0].codigo === 0) {
             setTitleAlert("Eliminado");
@@ -121,19 +122,73 @@ const DataTableRoles = props => {
     const handleCloseConfirmar = () => {
         setShowModalConfirmar(false);
     }
+
+
     const handleSumbitModal = () => {
         console.log(values);
     }
+
+
+    const handleAddRol = async (values) => {
+        const response = await addRol(values);
+        const { codigo } = response.response[0];
+        setLoading(true);
+        if (codigo === 1) {
+            setTitleAlert("Éxito");
+            setMsjAlert("El rol se ha añadido correctamente");
+            setLoading(false);
+            setShowModalAlert2(true);
+        } else {
+            setTitleAlert("Error");
+            setMsjAlert("El rol no se ha añadido correctamente");
+            setLoading(false);
+            setShowModalAlert(true);
+        }
+
+        setShowModalRoles(false);
+    }
+
+    const handleEditRol = async (values) => {
+        const response = await updateRol(values);
+        setLoading(true);
+        console.log(response)
+        const { codigo } = response.response1[0];
+        if (codigo === 0) {
+            setTitleAlert("Éxito");
+            setMsjAlert("El rol se ha editado correctamente");
+            setLoading(false);
+            setShowModalAlert2(true);
+        } else {
+            setTitleAlert("Error");
+            setMsjAlert("El rol no se ha editado correctamente");
+            setLoading(false);
+            setShowModalAlert(true);
+        }
+
+        setShowModalRoles(false);
+    }
+
+    const handleClose = () => {
+        setShowModalAlert2(false)
+        props.getRols();
+    }
+
 
 
     return (
         <>
             <div style={{ position: 'relative' }}>
                 {loading && (
-                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '99999' }}>
                         <CircularProgress />
                     </div>
                 )}
+                <ModalAlert2
+                    title={titleAlert}
+                    msj={msjAlert}
+                    show={showModalAlert2}
+                    handleClose={() => handleClose()}
+                />
 
                 <ModalAlert
                     title={titleAlert}
@@ -196,6 +251,9 @@ const DataTableRoles = props => {
                             left={left}
                             right={right}
                             componentes={components}
+                            handleAddRol={handleAddRol}
+                            handleEditRol={handleEditRol}
+                            rolslist={tableData}
                         />
                 }
 
@@ -205,13 +263,14 @@ const DataTableRoles = props => {
     );
 };
 
-export const ModalRolesx = ({ allValues, open, onClose, onSubmit, left, right, componentes }) => {
+export const ModalRolesx = ({ allValues, open, onClose, onSubmit, left, right, componentes, handleAddRol, handleEditRol, rolslist }) => {
     const [titleAlert, setTitleAlert] = useState();
     const [msjAlert, setMsjAlert] = useState();
     const [values, setValues] = useState({});
     const [showModalAlert, setShowModalAlert] = useState(false);
     const [leftx, setLeft] = useState(left);
     const [rightx, setRight] = useState(right);
+    const [loading, setLoading] = useState(false);
 
     const getDatos = (leftParam, rightParam) => {
         setLeft(leftParam);
@@ -222,63 +281,68 @@ export const ModalRolesx = ({ allValues, open, onClose, onSubmit, left, right, c
         setShowModalAlert(false);
     }
 
-    const handleSubmit = () => {
-        console.log(values);
+    const handleSubmit = async () => {
         let id_recursos = componentes
             .filter(componente2 => rightx.includes(componente2.nombre_logico))
             .map(componente2 => componente2.id_recursos)
             .join(',');
-        //check if values has new property
-        if (values.new) {
-            //create a variable call data and set all the values that you need to send to the api
-            let data = {
-                nombre: values.nombre,
-                recursos: id_recursos
-            }
-            //call the api addrow and send the data
-            addRol(data).then((response) => {
-                console.log(response);
-                //modal alert if the response is ok response.response1[0].codigo === 0 is ok and response.response1[0].codigo === 1 is error
-                // if (response.response1[0].codigo === 0) {
-                //     setTitleAlert("Exito");
-                //     setMsjAlert("El rol se agrego correctamente");
-                //     setShowModalAlert(true);
-                // }
-                // else {
-                //     setTitleAlert("Error");
-                //     setMsjAlert("El rol no se agrego correctamente");
-                //     setShowModalAlert(true);
-                // }
-            })
-        } else {
-            //create a variable call data and set all the values that you need to send to the api
-            let data = {
-                id_rol: values.id_rol,
-                nombre: values.nombre,
-                recursos: id_recursos
-            }
-            //call the api editrow and send the data
-            updateRol(data).then((response) => {
-                console.log(response);
-                //modal alert if the response is ok response.response1[0].codigo === 0 is ok and response.response1[0].codigo === 1 is error
-                // if (response.response1[0].codigo === 0) {
-                //     setTitleAlert("Exito");
-                //     setMsjAlert("El rol se edito correctamente");
-                //     setShowModalAlert(true);
-                // }
-                // else {
-                //     setTitleAlert("Error");
-                //     setMsjAlert("El rol no se edito correctamente");
-                //     setShowModalAlert(true);
-                // }
-            }
-            )
+
+        let componentesIncluidos = componentes
+            .filter(componente2 => !rightx.includes(componente2.nombre_logico))
+            .map(componente2 => componente2.id_recursos)
+            .join(',');
+        //check if componentesIncluidos o id_recursos is empty and if it is set the value to 0
+        if (!componentesIncluidos) {
+            componentesIncluidos = 0;
+        }
+        if (!id_recursos) {
+
+            id_recursos = 0;
         }
 
-        //close the modal
-        onClose();
+        if (values.new) {
 
-    }
+            //check if values.nombre is not in the list of rolslist
+            if (rolslist.some(rol => rol.nombre === values.nombre)) {
+                setTitleAlert("Error");
+                setMsjAlert("El nombre del rol ya existe");
+                setShowModalAlert(true);
+                return;
+            }
+
+            //Check if the values are empty or not values.nombre and id_recursos
+            if (!values.nombre || !id_recursos) {
+                setTitleAlert("Error");
+                setMsjAlert("Por favor, rellene todos los campos. El rol debe tener al menos un componente");
+                setShowModalAlert(true);
+                return;
+            }
+
+            const data = {
+                nombre: values.nombre,
+                recursos: id_recursos
+            }
+            setLoading(true);
+            handleAddRol(data);
+        } else {
+
+            if (!values.nombre || !id_recursos) {
+                setTitleAlert("Error");
+                setMsjAlert("Por favor, rellene todos los campos");
+                setShowModalAlert(true);
+                return;
+            }
+
+            const data = {
+                id_rol: values.id_rol,
+                nombre: values.nombre,
+                recursos: componentesIncluidos,
+                nuevoRecurso: id_recursos,
+            }
+            setLoading(true);
+            handleEditRol(data);
+        }
+    };
 
     useEffect(() => {
         setValues(allValues);
@@ -287,46 +351,53 @@ export const ModalRolesx = ({ allValues, open, onClose, onSubmit, left, right, c
     return (
         <>
             <Dialog open={open} maxWidth={"lg"} style={{ zIndex: 2 }}>
-                <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
-                <DialogTitle textAlign="center">Agregar o Editar Rol</DialogTitle>
-                <DialogContent>
-                    <form onSubmit={(e) => e.preventDefault()}>
-                        <Stack
-                            sx={{
-                                width: '100%',
-                                minWidth: { xs: '300px', sm: '360px', md: '400px' },
-                                gap: '1.5rem',
-                            }}
-                        >
+                <div style={{ position: 'relative' }}>
+                    {loading && (
+                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '99999' }}>
+                            <CircularProgress />
+                        </div>
+                    )}
+                    <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
+                    <DialogTitle textAlign="center">Agregar o Editar Rol</DialogTitle>
+                    <DialogContent>
+                        <form onSubmit={(e) => e.preventDefault()}>
+                            <Stack
+                                sx={{
+                                    width: '100%',
+                                    minWidth: { xs: '300px', sm: '360px', md: '400px' },
+                                    gap: '1.5rem',
+                                }}
+                            >
 
-                            <div style={{ marginTop: '1px' }}>
+                                <div style={{ marginTop: '1px' }}>
+                                    <Typography variant="h8" gutterBottom component="div">
+                                        Datos del rol
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        label="Nombre"
+                                        name="name"
+                                        value={values.nombre}
+                                        variant="standard"
+                                        onChange={(e) => setValues({ ...values, nombre: e.target.value })}
+                                    />
+                                </div>
+
                                 <Typography variant="h8" gutterBottom component="div">
-                                    Datos del rol
+                                    Permisos componentes
                                 </Typography>
-                                <TextField
-                                    fullWidth
-                                    label="Nombre"
-                                    name="name"
-                                    value={values.nombre}
-                                    variant="standard"
-                                    onChange={(e) => setValues({ ...values, nombre: e.target.value })}
-                                />
-                            </div>
+                                <FormAdministrarRoles getDatos={getDatos} propLeft={leftx} propRight={rightx} />
 
-                            <Typography variant="h8" gutterBottom component="div">
-                                Permisos componentes
-                            </Typography>
-                            <FormAdministrarRoles getDatos={getDatos} propLeft={leftx} propRight={rightx} />
-
-                        </Stack>
-                    </form>
-                </DialogContent>
-                <DialogActions sx={{ p: '1.25rem' }}>
-                    <Button onClick={onClose}>Cancel</Button>
-                    <Button color="primary" onClick={handleSubmit} variant="contained">
-                        Guardar
-                    </Button>
-                </DialogActions>
+                            </Stack>
+                        </form>
+                    </DialogContent>
+                    <DialogActions sx={{ p: '1.25rem' }}>
+                        <Button onClick={onClose}>Cancel</Button>
+                        <Button color="primary" onClick={handleSubmit} variant="contained">
+                            Guardar
+                        </Button>
+                    </DialogActions>
+                </div>
             </Dialog>
         </>
     );

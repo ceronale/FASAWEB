@@ -5,6 +5,8 @@ import { Label, LabelReq, Inputs, Inputp, GrupoInput, RestriccionPass, DivTitulo
 import { NavLink } from "react-router-dom";
 import ModalAlert from '../Modals/ModalAlert';
 import "../../styles/FormPacienteCliente.css";
+import { HomeService } from "../../api/HomeService";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const initialForm = {
 	rut: '',
@@ -36,6 +38,7 @@ const FormPacienteCliente = () => {
 		passwd2: '',
 		terminos: 'false'
 	});
+	const [loading, setLoading] = useState(false);
 
 	const [tokenIsValid, setTokenIsValid] = useState(false);
 	const [showModal, setShowModal] = useState(false);
@@ -123,19 +126,40 @@ const FormPacienteCliente = () => {
 		setToken(event.target.value);
 	}
 
+
+
 	const onSubmit = async (e) => {
 		e.preventDefault();
+		setLoading(true);
 		const respValidar = await Validate(registerData.rut, registerData.ndocumento);
-		var isValidarRut = validarRut(respValidar);
-		var isPassValid = contraseñaValidar();
-		if (isPassValid && isValidarRut) {
-			setShowModal(true)
-			setTitle("Codigo de confirmación")
-			setMsj("Se ha enviado un token de verificación a tu correo.")
-			const respToken = await GenerarToken(registerData.user);
-			setcheckToken(true);
+		var isValidarRut = false;
+		var isPassValid = false;
+		var isUserValid = false;
+
+		isValidarRut = await validarRut(respValidar);
+
+		if (isValidarRut) {
+			isPassValid = await contraseñaValidar();
+			if (isPassValid) {
+				isUserValid = await validateUser(registerData.user);
+				if (isUserValid) {
+					setShowModal(true)
+					setTitle("Codigo de confirmación")
+					setMsj("Se ha enviado un token de verificación a tu correo.")
+					const respToken = await GenerarToken(registerData.user);
+					setcheckToken(true);
+					setLoading(false);
+				} else {
+					setLoading(false);
+				}
+			} else {
+				setLoading(false);
+			}
+		} else {
+			setLoading(false);
 		}
 	};
+
 
 	// Validar RUT y N° Documento
 	function validarRut(respValidar) {
@@ -150,6 +174,22 @@ const FormPacienteCliente = () => {
 		}
 		return false;
 	};
+
+	//function to call the api home service and check if the user exist 
+	const validateUser = async (userData) => {
+		const resp = await HomeService(userData);
+		//Check is the resp.usuario[0].codigo is the resp
+
+		if (resp.usuario[0].codigo === 1) {
+			return true;
+		} else {
+			setShowModal(true)
+			setTitle("Error de usuario")
+			setMsj("El usuario ingresado ya existe.")
+			return false;
+		}
+	}
+
 
 	// Validacion de contraseña (Caracteres)
 	function contraseñaValidar() {
@@ -195,184 +235,191 @@ const FormPacienteCliente = () => {
 
 
 	return (
-		<main>
-			<form onSubmit={onSubmit}>
-				<div className="container text-center">
-					<div className="row">
-						<div className="col">
-							<DivTitulos>
-								<Titulo>Informacion Personal</Titulo>
-							</DivTitulos>
-							<GrupoInput>
-								<Label>RUT <LabelReq> *</LabelReq></Label>
-								<Inputp
-									type="text"
-									placeholder="Sin punto ni guión"
-									name="rut"
-									value={rut}
-									min="8"
-									max="9"
-									onChange={onchange}
-									required
-								/>
-							</GrupoInput>
-							<GrupoInput>
-								<Label>N° Documento <LabelReq> *</LabelReq></Label>
-								<Inputp
-									type="text"
-									placeholder=""
-									name="ndocumento"
-									min="8"
-									max="9"
-									value={ndocumento}
-									onChange={onchange}
-									required
-								/>
-							</GrupoInput>
-							<GrupoInput>
-								<Label>Nombre <LabelReq> *</LabelReq></Label>
-								<Inputs
-									type="text"
-									name="nombre"
-									placeholder=""
-									value={nombre}
-									onChange={onchange}
-									required
-								/>
-							</GrupoInput>
-							<GrupoInput>
-								<Label>1° Apellido <LabelReq> *</LabelReq></Label>
-								<Inputs
-									type="text"
-									name="apellido"
-									placeholder=""
-									value={apellido}
-									onChange={onchange}
-									required
-								/>
-							</GrupoInput>
-							<GrupoInput>
-								<Label>2° Apellido <LabelReq> *</LabelReq></Label>
-								<Inputs
-									type="text"
-									placeholder=""
-									name="apellido2"
-									value={apellido2}
-									onChange={onchange}
-									required
-								/>
-							</GrupoInput>
-							<GrupoInput>
-								<Label>Celular <LabelReq> *</LabelReq></Label>
-								<Inputp
-									type="text"
-									placeholder=""
-									name="celular"
-									min="8"
-									max="8"
-									value={celular}
-									onChange={onchange}
-									required
-								/>
-							</GrupoInput>
-						</div>
-						<div className="col">
-							<DivTitulos>
-								<Titulo>Informacion de la cuenta</Titulo>
-							</DivTitulos>
-							<GrupoInput>
-								<Label>Correo Electronico <LabelReq> *</LabelReq></Label>
-								<Inputs
-									type="email"
-									placeholder=""
-									name="user"
-									value={user}
-									onChange={onchange}
-									required
-								/>
-							</GrupoInput>
-							<GrupoInput>
-								<Label>Contraseña <LabelReq> *</LabelReq></Label>
-								<Inputp
-									type="password"
-									placeholder=""
-									name="passwd"
-									value={passwd}
-									onChange={onchange}
-									min="7"
-									max="20"
-									required
-								/>
-							</GrupoInput>
-							<GrupoInput>
-								<Label>Confirmar Contraseña <LabelReq> *</LabelReq></Label>
-								<Inputp
-									type="password"
-									placeholder=""
-									name="passwd2"
-									value={passwd2}
-									onChange={onchange}
-									min="7"
-									max="20"
-									required
-								/>
-								{checkToken === false && (
-									<RestriccionPass>
-										La contraseña debe contener desde 7 a 20 caracteres,
-										se exige una letra minuscula y una mayuscula, un numero y un caracter especial.
-									</RestriccionPass>
-								)}
-							</GrupoInput>
-							{checkToken === false && (
-								<div>
-									<div className="boxTerminos">
-										<input
-											type="checkbox"
-											name="terminos"
-											value={checkBox}
-											checked={checkBox}
-											onChange={handleClickRemember}
-											required
-										/>
-										<div className="aceptoTerminos">
-											<p> Acepto los <NavLink className="navTerminos" to="">Terminos y condiciones</NavLink></p>
-										</div>
-									</div>
-									<div className="CrearPaciente">
-										<button className="buttomCrearCuenta" type="submit" >Crear Cuenta</button>
-
-										<div className="CampoRequerido">
-											<span>* Campos requeridos</span>
-										</div>
-									</div>
-								</div>
-							)}
-							{checkToken === !false && (
-								<div>
-									<GrupoInput>
+		<div style={{ position: 'relative' }}>
+			{loading && (
+				<div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+					<CircularProgress />
+				</div>
+			)}
+			<main>
+				<form onSubmit={onSubmit}>
+					<div className="container text-center">
+						<div className="row">
+							<div className="col">
+								<DivTitulos>
+									<Titulo>Informacion Personal</Titulo>
+								</DivTitulos>
+								<GrupoInput>
+									<Label>RUT <LabelReq> *</LabelReq></Label>
+									<Inputp
+										type="text"
+										placeholder="Sin punto ni guión"
+										name="rut"
+										value={rut}
+										min="8"
+										max="9"
+										onChange={onchange}
+										required
+									/>
+								</GrupoInput>
+								<GrupoInput>
+									<Label>N° Documento <LabelReq> *</LabelReq></Label>
+									<Inputp
+										type="text"
+										placeholder=""
+										name="ndocumento"
+										min="8"
+										max="9"
+										value={ndocumento}
+										onChange={onchange}
+										required
+									/>
+								</GrupoInput>
+								<GrupoInput>
+									<Label>Nombre <LabelReq> *</LabelReq></Label>
+									<Inputs
+										type="text"
+										name="nombre"
+										placeholder=""
+										value={nombre}
+										onChange={onchange}
+										required
+									/>
+								</GrupoInput>
+								<GrupoInput>
+									<Label>1° Apellido <LabelReq> *</LabelReq></Label>
+									<Inputs
+										type="text"
+										name="apellido"
+										placeholder=""
+										value={apellido}
+										onChange={onchange}
+										required
+									/>
+								</GrupoInput>
+								<GrupoInput>
+									<Label>2° Apellido <LabelReq> *</LabelReq></Label>
+									<Inputs
+										type="text"
+										placeholder=""
+										name="apellido2"
+										value={apellido2}
+										onChange={onchange}
+										required
+									/>
+								</GrupoInput>
+								<GrupoInput>
+									<Label>Celular <LabelReq> *</LabelReq></Label>
+									<Inputp
+										type="text"
+										placeholder=""
+										name="celular"
+										min="8"
+										max="8"
+										value={celular}
+										onChange={onchange}
+										required
+									/>
+								</GrupoInput>
+							</div>
+							<div className="col">
+								<DivTitulos>
+									<Titulo>Informacion de la cuenta</Titulo>
+								</DivTitulos>
+								<GrupoInput>
+									<Label>Correo Electronico <LabelReq> *</LabelReq></Label>
+									<Inputs
+										type="email"
+										placeholder=""
+										name="user"
+										value={user}
+										onChange={onchange}
+										required
+									/>
+								</GrupoInput>
+								<GrupoInput>
+									<Label>Contraseña <LabelReq> *</LabelReq></Label>
+									<Inputp
+										type="password"
+										placeholder=""
+										name="passwd"
+										value={passwd}
+										onChange={onchange}
+										min="7"
+										max="20"
+										required
+									/>
+								</GrupoInput>
+								<GrupoInput>
+									<Label>Confirmar Contraseña <LabelReq> *</LabelReq></Label>
+									<Inputp
+										type="password"
+										placeholder=""
+										name="passwd2"
+										value={passwd2}
+										onChange={onchange}
+										min="7"
+										max="20"
+										required
+									/>
+									{checkToken === false && (
 										<RestriccionPass>
-											Se ha enviado un token de verificación a tu correo
+											La contraseña debe contener desde 7 a 20 caracteres,
+											se exige una letra minuscula y una mayuscula, un numero y un caracter especial.
 										</RestriccionPass>
-										<Label>Confirmar Token <LabelReq> *</LabelReq></Label>
-										<Inputs
-											type="text"
-											placeholder=""
-											name="token"
-											value={token}
-											onChange={onChangeToken}
-											required />
-									</GrupoInput>
-									<div className="CrearPaciente">
-										<button className="buttomCrearCuenta" onClick={handleClickConfirmarToken} >Confirmar Token</button>
+									)}
+								</GrupoInput>
+								{checkToken === false && (
+									<div>
+										<div className="boxTerminos">
+											<input
+												type="checkbox"
+												name="terminos"
+												value={checkBox}
+												checked={checkBox}
+												onChange={handleClickRemember}
+												required
+											/>
+											<div className="aceptoTerminos">
+												<p> Acepto los <NavLink className="navTerminos" to="">Terminos y condiciones</NavLink></p>
+											</div>
+										</div>
+										<div className="CrearPaciente">
+											<button className="buttomCrearCuenta" type="submit" >Crear Cuenta</button>
+
+											<div className="CampoRequerido">
+												<span>* Campos requeridos</span>
+											</div>
+										</div>
 									</div>
-								</div>
-							)}
+								)}
+								{checkToken === !false && (
+									<div>
+										<GrupoInput>
+											<RestriccionPass>
+												Se ha enviado un token de verificación a tu correo
+											</RestriccionPass>
+											<Label>Confirmar Token <LabelReq> *</LabelReq></Label>
+											<Inputs
+												type="text"
+												placeholder=""
+												name="token"
+												value={token}
+												onChange={onChangeToken}
+												required />
+										</GrupoInput>
+										<div className="CrearPaciente">
+											<button className="buttomCrearCuenta" onClick={handleClickConfirmarToken} >Confirmar Token</button>
+										</div>
+									</div>
+								)}
+							</div>
 						</div>
 					</div>
-				</div>
-			</form>
-			<ModalAlert title={title} show={showModal} handleClose={handleCloseToken} msj={msj} />
-		</main >
+				</form>
+				<ModalAlert title={title} show={showModal} handleClose={handleCloseToken} msj={msj} />
+			</main >
+		</div>
 	);
 }
 

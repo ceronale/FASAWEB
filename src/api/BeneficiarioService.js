@@ -24,6 +24,7 @@ export const getBeneficiarios = async (data) => {
 }
 
 export const updateBeneficiario = async (data, user) => {
+    console.log(data)
 
     const config = {
         method: 'post',

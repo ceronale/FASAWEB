@@ -8,30 +8,30 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import ExitToApp from '@mui/icons-material/ExitToApp';
+import PersonIcon from '@mui/icons-material/Person';
 import logoFarmaciasAhumada from '../components/img/logoFarmaciasAhumada.jpg'
 import logoCuenta from '../components/img/logoCuenta.png'
 import { useNavigate, } from 'react-router-dom';
+import { Divider } from '@material-ui/core';
 
 
 function Navbar() {
   const user = localStorage.getItem("user");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigate = useNavigate();
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
 
-  const handleClose = () => {
-    setAnchorEl(null);
+  const handleClick = (event) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
   };
 
   const handleLogOut = () => {
     localStorage.removeItem("user");
     navigate(`/`);
   };
+  const handleHome = () => {
+    navigate(`/`);
+  };
 
-  const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
   return (
     <>
       <nav>
@@ -45,6 +45,44 @@ function Navbar() {
           <div onClick={handleClick}>
             <img src={logoCuenta} height={29} alt="iconocuenta"></img>
             <p className="miCuenta" to="/Home">Mi Cuenta</p>
+
+            <Popover
+              id="simple-popover"
+              open={Boolean(anchorEl)}
+              anchorEl={anchorEl}
+              onClose={handleClick}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'center',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'center',
+              }}
+            >
+              <List
+                sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+                aria-label="contacts"
+              >
+                <ListItem disablePadding>
+                  <ListItemButton onClick={handleHome}>
+                    <ListItemIcon>
+                      <PersonIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="Mi cuenta" />
+                  </ListItemButton>
+                </ListItem>
+                <Divider />
+                <ListItem disablePadding>
+                  <ListItemButton onClick={handleLogOut}>
+                    <ListItemIcon>
+                      <ExitToApp />
+                    </ListItemIcon>
+                    <ListItemText primary="Log out" />
+                  </ListItemButton>
+                </ListItem>
+              </List>
+            </Popover>
           </div>
 
           <ul className="navbar">
@@ -53,36 +91,7 @@ function Navbar() {
                 ?
                 null
                 :
-                <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                  }}
-                >
-                  <List
-                    sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-                    aria-label="contacts"
-                  >
-                    <ListItem disablePadding>
-                      <ListItemButton onClick={handleLogOut}>
-                        <ListItemIcon>
-                          <ExitToApp />
-                        </ListItemIcon>
-                        <ListItemText primary="Log out" />
-                      </ListItemButton>
-                    </ListItem>
-                  </List>
-
-
-                </Popover>
+                null
             }
           </ul>
 

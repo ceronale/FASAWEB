@@ -30,9 +30,6 @@ const ListarBeneficiarios = (user) => {
   //state of the loading
   const [loading, setLoading] = useState(false);
 
-
-
-
   const [convenio, setConvenio] = useState(null);
   const [rut, setRut] = useState('');
   const [formattedRut, setFormattedRut] = useState('');
@@ -108,12 +105,11 @@ const ListarBeneficiarios = (user) => {
   return (
     <main>
       <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
-
       <ContenedorTitulo>
         <Titulo>Beneficiario</Titulo>
       </ContenedorTitulo>
       <div id="notaLogin">
-        En esta seccion podras visualizar las los beneficiarios.
+        En esta seccion podras visualizar los beneficiarios.
       </div>
       <Form >
         <Box sx={{ flexGrow: 1, marginBottom: 2 }}>

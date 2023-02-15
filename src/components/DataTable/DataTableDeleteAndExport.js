@@ -3,7 +3,7 @@ import MaterialReactTable, {
   MRT_FullScreenToggleButton, MRT_ToggleGlobalFilterButton, MRT_ToggleFiltersButton
 } from 'material-react-table';
 import Delete from '@mui/icons-material/Delete';
-import Edit from '@mui/icons-material/Edit';
+import PersonIcon from '@mui/icons-material/Person';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { ExportToCsv } from 'export-to-csv-fix-source-map';
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
@@ -22,7 +22,8 @@ import {
   FormControl, TextField, Autocomplete
 } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import { getRoles } from "../../api/RolesServices";
+import { getRoles, getComponentesAndRolByUser, setUserAndRol, updateUserAndRol } from "../../api/RolesServices";
+
 
 
 const DataTableDeleteAndExport = props => {
@@ -95,8 +96,21 @@ const DataTableDeleteAndExport = props => {
 
   const handleEditRol = useCallback(
     (row) => {
-      setValues(row.original);
-      setRolModalOpen(true);
+      setLoading(true);
+      getComponentesAndRolByUser(row.original.id).then((response) => {
+        if (!response.rolUsuario[0].codigo) {
+          row.original.id_rol = response.rolUsuario[0].id_rol
+        }
+        setValues(row.original);
+        setRolModalOpen(true);
+        setLoading(false);
+      }).catch(() => {
+        setTitle("Error");
+        setMsj("Error al obtener los roles");
+        setShowModal(true);
+        setLoading(false);
+      });
+
     },
     [tableData],
   );
@@ -104,6 +118,14 @@ const DataTableDeleteAndExport = props => {
 
   const handleCloseConfirmar = () => {
     setShowModalConfirmar(false);
+  }
+
+  //metodo para abrir un modal de exito el usuario se ha actualizado correctamente
+  const handleOpenModal = () => {
+    setTitleModal("Exito");
+    setMsjModal("El usuario se ha actualizado correctamente");
+    setShowModal(true);
+    setRolModalOpen(false);
   }
 
 
@@ -114,7 +136,6 @@ const DataTableDeleteAndExport = props => {
         return { value: rol.id_rol, label: rol.nombre };
       });
       setRoles(rolFormat);
-      console.log(rolFormat)
       setLoading(false);
     }).catch(() => {
       setTitle("Error");
@@ -157,7 +178,7 @@ const DataTableDeleteAndExport = props => {
                 <Grid xs={6}>
                   <Tooltip arrow placement="left" title="Editar">
                     <IconButton onClick={() => handleEditRol(row, table)}>
-                      <Edit />
+                      <PersonIcon />
                     </IconButton>
                   </Tooltip>
                 </Grid>
@@ -205,6 +226,7 @@ const DataTableDeleteAndExport = props => {
           onClose={() => setRolModalOpen(false)}
           allValues={values}
           roles={roles}
+          handleOpenModal={handleOpenModal}
         />
         }
       </div>
@@ -213,21 +235,74 @@ const DataTableDeleteAndExport = props => {
 };
 
 
-export const SetRoleModal = ({ open, onClose, allValues, roles }) => {
+export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal }) => {
   const [titleAlert, setTitleAlert] = useState();
   const [msjAlert, setMsjAlert] = useState();
   const [showModalAlert, setShowModalAlert] = useState(false);
   const [value, setValue] = useState(allValues);
-  const [rol, setRol] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [rol, setRol] = useState(roles.filter(function (item) {
+    if (allValues.id_rol) {
+      return item.value === allValues.id_rol;
+    } else {
+      return ''
+    }
+  })[0]);
 
   const handleCloseAlert = () => {
     setShowModalAlert(false);
   }
 
   const handleSubmit = () => {
-    console.log(rol);
-    console.log(value);
+    //create a variable call data and asing the value rol and id usuario
+    setLoading(true);
+    if (!value.id_rol) {
+      let data = {
+        id_rol: rol.value,
+        id_usuario: value.id
+      }
+      //call the api and send the data setUserAndRol
+      setUserAndRol(data).then((response) => {
+        if (response.response1[0].codigo === 1) {
+          handleOpenModal();
+        } else {
 
+          setTitleAlert("Error");
+          setMsjAlert("Error al actualizar el usuario");
+          setShowModalAlert(true);
+        }
+        console.log(response)
+      }).catch(() => {
+        setTitleAlert("Error");
+        setMsjAlert("Error al actualizar el usuario");
+        setShowModalAlert(true);
+      });
+    } else {
+      let data = {
+        id_rol: value.id_rol,
+        id_usuario: value.id,
+        id_rolNuevo: rol.value
+      }
+      //call the api and send the data updateUserAndRol
+      updateUserAndRol(data).then((response) => {
+        if (response.response1[0].codigo === 0) {
+          handleOpenModal();
+
+        } else {
+          setTitleAlert("Error");
+          setMsjAlert("Error al actualizar el usuario");
+          setShowModalAlert(true);
+        }
+        console.log(response)
+      }).catch(() => {
+        setTitleAlert("Error");
+        setMsjAlert("Error al actualizar el usuario");
+        setShowModalAlert(true);
+      }
+
+      );
+
+    }
   }
 
   return (
@@ -236,6 +311,7 @@ export const SetRoleModal = ({ open, onClose, allValues, roles }) => {
         <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
         <DialogTitle textAlign="center">Actualizar rol del usuario</DialogTitle>
         <DialogContent>
+
           <form onSubmit={(e) => e.preventDefault()}>
             <Stack
               sx={{
@@ -245,21 +321,29 @@ export const SetRoleModal = ({ open, onClose, allValues, roles }) => {
                 gap: '1.5rem',
               }}
             >
-              <FormControl fullWidth>
-                <Autocomplete
-                  value={rol}
-                  onChange={(event, newValue) => {
-                    setRol(newValue);
-                  }}
-                  variant="standard"
-                  id="select-convenio"
-                  options={roles}
-                  renderInput={(params) => <TextField {...params} label="Rol del usuario" />}
-                />
+              <div style={{ position: 'relative' }}>
+                {loading && (
+                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+                    <CircularProgress />
+                  </div>
+                )}
+                <FormControl fullWidth>
+                  <Autocomplete
+                    value={rol}
+                    onChange={(event, newValue) => {
+                      setRol(newValue);
+                    }}
+                    variant="standard"
+                    id="select-convenio"
+                    options={roles}
+                    renderInput={(params) => <TextField {...params} label="Rol del usuario" />}
+                  />
 
-              </FormControl>
+                </FormControl>
+              </div>
             </Stack>
           </form>
+
         </DialogContent>
         <DialogActions sx={{ p: '1.25rem' }}>
           <Button onClick={onClose}>Cancel</Button>

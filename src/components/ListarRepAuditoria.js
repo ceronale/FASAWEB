@@ -119,48 +119,44 @@ const ListarRepAuditoria = (user) => {
   const eliminar = [
     {
       value: 'eliminarRutListaMedicos',
-      label: 'Eliminar Medico',
+      label: 'Medico',
     },
     {
       value: 'eliminarUsuario',
-      label: 'Eliminar Usuario',
+      label: 'Usuario',
     },
   ];
   const cargaMasiva = [
     {
       value: 'cargaMasivaMedicos',
-      label: 'Carga masiva medicos',
+      label: 'Medicos',
     },
     {
       value: 'cargaMasivaPolizas',
-      label: 'Carga masiva polizas',
+      label: 'Polizas',
     },
     {
       value: 'cargaMasivaBeneficiarios',
-      label: 'Carga masiva beneficiarios',
+      label: 'Beneficiarios',
     },
   ];
 
   const actualizar = [
     {
       value: 'actualizarPwd',
-      label: 'Actualizar Password',
-    },
-    {
-      value: 'actualizarConvenio',
-      label: 'Actualizar Convenio',
+      label: 'Password',
     },
     {
       value: 'actualizarListaMedicos',
-      label: 'Actualizar Medicos',
+      label: 'Medicos',
     },
     {
       value: 'actualizarPoliza',
-      label: 'Actualizar Poliza',
+      label: 'Poliza',
     },
     {
       value: 'actualizarBeneficiario',
-      label: 'Actualizar Beneficiario',
+      label: 'Beneficiario',
     },
 
   ];
@@ -168,19 +164,15 @@ const ListarRepAuditoria = (user) => {
   const crear = [
     {
       value: 'insertarPaciente',
-      label: 'Insertar Paciente',
+      label: 'Paciente',
     },
     {
       value: 'insertarEmpresa',
-      label: 'Insertar Empresa',
+      label: 'Empresa',
     },
     {
-      value: 'insertarMedico',
-      label: 'Insertar Medico',
-    },
-    {
-      value: 'cargarDocumento',
-      label: 'Cargar Documento',
+      value: 'insertarListaMedicos',
+      label: 'Medico',
     },
     {
       value: 'cargarDocumento',
@@ -312,9 +304,6 @@ const ListarRepAuditoria = (user) => {
                     </Select>
                   </FormControl>
                 </Grid>
-
-
-
                 <Grid xs={3}>
                   <LocalizationProvider dateAdapter={AdapterDayjs} size="small">
                     <DatePicker
@@ -352,7 +341,7 @@ const ListarRepAuditoria = (user) => {
               ?
               null
               :
-              <DataTable data={dataTable} columns={columns} />
+              <DataTable data={dataTable} columns={columns} export={true} />
           }
         </div>
       </div>

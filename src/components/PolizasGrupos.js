@@ -27,6 +27,8 @@ const PolizasGrupos = ({ user }) => {
     //state of the loading
     const [loading, setLoading] = useState(false);
 
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
     const showData = async () => {
         try {
             //check if the user has selected a value
@@ -38,13 +40,13 @@ const PolizasGrupos = ({ user }) => {
             setLoading(true);
             const response = await PolizaService(filtrarValue.value);
             if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
-
                 setLoading(false);
                 handleModal("Error", "No se pudo obtener la información de las pólizas y grupos");
             } else {
                 setLoading(false);
                 setDataTable(undefined)
                 setDataTable(response.response);
+                setIsButtonDisabled(false);
             }
         } catch (error) {
             setLoading(false);
@@ -113,9 +115,8 @@ const PolizasGrupos = ({ user }) => {
                         (dataTable === undefined)
                             ?
                             null
-                            : <DataTableEditAndExport data={dataTable} user={usuario} />
+                            : <DataTableEditAndExport data={dataTable} user={usuario} isButtonDisabled={isButtonDisabled} convenio={filtrarValue} />
                     }
-
                 </div>
                 <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
             </div>

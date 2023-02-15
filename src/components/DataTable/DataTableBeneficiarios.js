@@ -47,8 +47,9 @@ const DataTableBeneficiarios = props => {
 
     // State variables to handle form validation errors and loading state
     const [validationErrors, setValidationErrors] = useState({});
-    const [loading, setLoading] = useState(false);
     const [hasValidationError, setHasValidationError] = useState(false);
+    const [loading, setLoading] = useState(false);
+
 
     // State variables for the modal
     const [title, setTitle] = useState();
@@ -118,243 +119,7 @@ const DataTableBeneficiarios = props => {
 
     // Regular expression for date format
     const dateFormat = /^\d{2}-\d{2}-\d{4}$/;
-
-
     const columns = [
-        {
-            accessorKey: 'id',
-            header: 'ID',
-            size: 100,
-            enableEditing: false,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.id,
-                helperText: validationErrors.id,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, id: 'ID es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.id;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-        },
-        {
-            accessorKey: 'rutBeneficiario', header: 'Rut Beneficiario', size: 100, enableEditing: false, muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.rutBeneficiario, helperText: validationErrors.rutBeneficiario, value: formatRut(values.rutBeneficiario),
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, rutBeneficiario: 'Rut Beneficiario es requerido' }));
-                        setHasValidationError(true);
-                    } else if (value.length > 12) {
-                        setValidationErrors((prev) => ({ ...prev, rutBeneficiario: 'Rut Beneficiario debe tener maximo 12 caracteres' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.rutBeneficiario;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                    setValues((prev) => ({ ...prev, rutBeneficiario: value }));
-                },
-            },
-        },
-        {
-            accessorKey: 'apellido1',
-            header: 'Apellido Paterno',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.apellido1,
-                helperText: validationErrors.apellido1,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, apellido1: 'Apellido Paterno es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.apellido1;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-
-
-        },
-        {
-            accessorKey: 'apellido2',
-            header: 'Apellido Materno',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.apellido2,
-                helperText: validationErrors.apellido2,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, apellido2: 'Apellido Materno es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.apellido2;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-        },
-        {
-            accessorKey: 'nombre',
-            header: 'Nombre',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.nombre,
-                helperText: validationErrors.nombre,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, nombre: 'Nombre es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.nombre;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-
-        },
-        {
-            accessorKey: 'genero',
-            header: 'Genero',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.genero,
-                helperText: validationErrors.genero,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, genero: 'Genero es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.genero;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-        },
-        {
-            accessorKey: 'direccion',
-            header: 'Direccion',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.direccion,
-                helperText: validationErrors.direccion,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, direccion: 'Direccion es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.direccion;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-
-        },
-        {
-            accessorKey: 'fechaNacimiento',
-            header: 'Fecha Nacimiento',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.fechaNacimiento,
-                helperText: validationErrors.fechaNacimiento,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, fechaNacimiento: 'Fecha Nacimiento es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        var dateFormat = /^\d{2}-\d{2}-\d{4}$/;
-                        if (!value.match(dateFormat)) {
-                            setValidationErrors((prev) => ({ ...prev, fechaNacimiento: 'Formato de fecha no válido, debe ser DD-MM-YYYY' }));
-                            setHasValidationError(true);
-                        } else {
-                            delete validationErrors.fechaNacimiento;
-                            setValidationErrors({ ...validationErrors });
-                            setHasValidationError(false);
-                        }
-                    }
-                },
-            },
-        },
-        {
-            accessorKey: 'comuna',
-            header: 'Comuna',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.comuna,
-                helperText: validationErrors.comuna,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, comuna: 'Comuna es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.comuna;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-        },
-        {
-            accessorKey: 'ciudad',
-            header: 'Ciudad',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.ciudad,
-                helperText: validationErrors.ciudad,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, ciudad: 'Ciudad es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.ciudad;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-
-
-        },
-        {
-            accessorKey: 'codigoCarga',
-            header: 'Codigo de Carga',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.codigoCarga,
-                helperText: validationErrors.codigoCarga,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, codigoCarga: 'Codigo de Carga es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.codigoCarga;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-
-        },
         {
             accessorKey: 'codigoConvenio',
             header: 'Codigo de Convenio',
@@ -369,6 +134,9 @@ const DataTableBeneficiarios = props => {
                     if (!value) {
                         setValidationErrors((prev) => ({ ...prev, codigoConvenio: 'Codigo de Convenio es requerido' }));
                         setHasValidationError(true);
+                    } else if (value.length > 15) {
+                        setValidationErrors((prev) => ({ ...prev, grupo: 'Codigo de Convenio debe tener maximo 15 caracteres' }));
+                        setHasValidationError(true);
                     } else {
                         delete validationErrors.codigoConvenio;
                         setValidationErrors({ ...validationErrors });
@@ -376,55 +144,6 @@ const DataTableBeneficiarios = props => {
                     }
                 },
             },
-        },
-        {
-            accessorKey: 'codigoRelacion',
-            header: 'Codigo de Relacion',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.codigoRelacion,
-                helperText: validationErrors.codigoRelacion,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, codigoRelacion: 'Codigo de Relacion es requerido' }));
-                        setHasValidationError(true);
-                    } else if (value < 1 || value > 4) {
-                        setValidationErrors((prev) => ({ ...prev, codigoRelacion: 'Codigo de Relacion debe estar entre 1 y 4' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.codigoRelacion;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-
-            },
-
-
-        },
-        {
-            accessorKey: 'credenciales',
-            header: 'Credenciales',
-            size: 100,
-            enableEditing: false,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.credenciales,
-                helperText: validationErrors.credenciales,
-
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, credenciales: 'Credenciales es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.credenciales;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-
         },
         {
             accessorKey: 'grupo',
@@ -438,57 +157,11 @@ const DataTableBeneficiarios = props => {
                     if (!value) {
                         setValidationErrors((prev) => ({ ...prev, grupo: 'Grupo es requerido' }));
                         setHasValidationError(true);
+                    } else if (value.length > 15) {
+                        setValidationErrors((prev) => ({ ...prev, grupo: 'Grupo debe tener maximo 15 caracteres' }));
+                        setHasValidationError(true);
                     } else {
                         delete validationErrors.grupo;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-
-        },
-
-        {
-            accessorKey: 'mail',
-            header: 'Correo Electronico',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.mail,
-                helperText: validationErrors.mail,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, mail: 'Correo Electronico es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        // RegEx to check if email is in correct format
-                        const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                        if (!emailRegex.test(value)) {
-                            setValidationErrors((prev) => ({ ...prev, mail: 'Correo Electronico no es valido' }));
-                            setHasValidationError(true);
-                        } else {
-                            delete validationErrors.mail;
-                            setValidationErrors({ ...validationErrors });
-                            setHasValidationError(false);
-                        }
-                    }
-                },
-            },
-        },
-        {
-            accessorKey: 'poliza',
-            header: 'Poliza',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.poliza,
-                helperText: validationErrors.poliza,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, poliza: 'Poliza es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.poliza;
                         setValidationErrors({ ...validationErrors });
                         setHasValidationError(false);
                     }
@@ -524,22 +197,212 @@ const DataTableBeneficiarios = props => {
 
         },
         {
-            accessorKey: 'termino',
-            header: 'Termino',
-            size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.termino,
-                helperText: validationErrors.termino,
+            accessorKey: 'rutBeneficiario', header: 'Rut Beneficiario', size: 100, enableEditing: false, muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.rutBeneficiario, helperText: validationErrors.rutBeneficiario, value: formatRut(values.rutBeneficiario),
                 onChange: (event) => {
                     const value = event.target.value;
                     if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, termino: 'Termino es requerido' }));
+                        setValidationErrors((prev) => ({ ...prev, rutBeneficiario: 'Rut Beneficiario es requerido' }));
                         setHasValidationError(true);
-                    } else if (!dateFormat.test(value)) {
-                        setValidationErrors((prev) => ({ ...prev, termino: 'Termino debe tener el formato DD-MM-YYYY' }));
+                    } else if (value.length > 12) {
+                        setValidationErrors((prev) => ({ ...prev, rutBeneficiario: 'Rut Beneficiario debe tener maximo 12 caracteres' }));
                         setHasValidationError(true);
                     } else {
-                        delete validationErrors.termino;
+                        delete validationErrors.rutBeneficiario;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                    setValues((prev) => ({ ...prev, rutBeneficiario: value }));
+                },
+            },
+        },
+        {
+            accessorKey: 'codigoCarga',
+            header: 'Codigo de Carga',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.codigoCarga,
+                helperText: validationErrors.codigoCarga,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, codigoCarga: 'Codigo de Carga es requerido' }));
+                        setHasValidationError(true);
+                    } else if (!/^\d{1,3}$/.test(value)) {
+                        setValidationErrors((prev) => ({ ...prev, codigoCarga: 'El codigo de carga solo puede tener 3 caracteres numericos como maximo' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.codigoCarga;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+
+        },
+        {
+            accessorKey: 'poliza',
+            header: 'Poliza',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.poliza,
+                helperText: validationErrors.poliza,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        // No validation error if value is not provided (not required)
+                    } else if (!/^\d{1,15}$/.test(value)) {
+                        setValidationErrors((prev) => ({ ...prev, poliza: 'La poliza solo puede tener 15 caracteres numericos como maximo' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.poliza;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+
+        },
+        {
+            accessorKey: 'codigoRelacion',
+            header: 'Codigo de Relacion',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.codigoRelacion,
+                helperText: validationErrors.codigoRelacion,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, codigoRelacion: 'Codigo de Relacion es requerido' }));
+                        setHasValidationError(true);
+                    } else if (!/^\d{1,2}$/.test(value)) {
+                        setValidationErrors((prev) => ({ ...prev, codigoRelacion: 'El codigo de relacion solo puede tener 2 caracteres numericos como maximo' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.codigoRelacion;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+
+            },
+
+
+        },
+        {
+            accessorKey: 'nombre',
+            header: 'Nombre',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.nombre,
+                helperText: validationErrors.nombre,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, nombre: 'Nombre es requerido' }));
+                        setHasValidationError(true);
+                    } else if (value.length > 15) {
+                        setValidationErrors((prev) => ({ ...prev, nombre: 'El nombre solo puede tener 15 caracteres como maximo' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.nombre;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+
+        },
+        {
+            accessorKey: 'apellido1',
+            header: 'Apellido 1',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.apellido1,
+                helperText: validationErrors.apellido1,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, apellido1: 'Apellido 1 es requerido' }));
+                        setHasValidationError(true);
+                    } else if (value.length > 20) {
+                        setValidationErrors((prev) => ({ ...prev, apellido1: 'El apellido 1 solo puede tener 20 caracteres como maximo' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.apellido1;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+        },
+        {
+            accessorKey: 'apellido2',
+            header: 'Apellido 2',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.apellido2,
+                helperText: validationErrors.apellido2,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, apellido2: 'Apellido 2 es requerido' }));
+                        setHasValidationError(true);
+                    } else if (value.length > 15) {
+                        setValidationErrors((prev) => ({ ...prev, apellido2: 'El apellido 2 solo puede tener 15 caracteres como maximo' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.apellido2;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+        },
+        {
+            accessorKey: 'fechaNacimiento',
+            header: 'Fecha Nacimiento',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.fechaNacimiento,
+                helperText: validationErrors.fechaNacimiento,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, fechaNacimiento: 'Fecha Nacimiento es requerido' }));
+                        setHasValidationError(true);
+                    } else {
+                        var dateFormat = /^\d{2}-\d{2}-\d{4}$/;
+                        if (!value.match(dateFormat)) {
+                            setValidationErrors((prev) => ({ ...prev, fechaNacimiento: 'Formato de fecha no válido, debe ser DD-MM-YYYY' }));
+                            setHasValidationError(true);
+                        } else {
+                            delete validationErrors.fechaNacimiento;
+                            setValidationErrors({ ...validationErrors });
+                            setHasValidationError(false);
+                        }
+                    }
+                },
+            },
+        },
+
+        {
+            accessorKey: 'genero',
+            header: 'Genero',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.genero,
+                helperText: validationErrors.genero,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, genero: 'Genero es requerido' }));
+                        setHasValidationError(true);
+                    } else if (value !== "femenino" && value !== "masculino") {
+                        setValidationErrors((prev) => ({ ...prev, genero: 'Genero debe ser "femenino" o "masculino"' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.genero;
                         setValidationErrors({ ...validationErrors });
                         setHasValidationError(false);
                     }
@@ -573,7 +436,156 @@ const DataTableBeneficiarios = props => {
                 },
             },
         },
-    ];
+        {
+            accessorKey: 'termino',
+            header: 'Termino',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.termino,
+                helperText: validationErrors.termino,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, termino: 'Termino es requerido' }));
+                        setHasValidationError(true);
+                    } else if (!dateFormat.test(value)) {
+                        setValidationErrors((prev) => ({ ...prev, termino: 'Termino debe tener el formato DD-MM-YYYY' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.termino;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+        },
+
+        {
+            accessorKey: 'mail',
+            header: 'Correo Electronico',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.mail,
+                helperText: validationErrors.mail,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, mail: 'Correo Electronico es requerido' }));
+                        setHasValidationError(true);
+                    } else {
+                        // RegEx to check if email is in correct format
+                        const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                        if (!emailRegex.test(value)) {
+                            setValidationErrors((prev) => ({ ...prev, mail: 'Correo Electronico no es valido' }));
+                            setHasValidationError(true);
+                        } else {
+                            delete validationErrors.mail;
+                            setValidationErrors({ ...validationErrors });
+                            setHasValidationError(false);
+                        }
+                    }
+                },
+            },
+        },
+        {
+            accessorKey: 'direccion',
+            header: 'Direccion',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.direccion,
+                helperText: validationErrors.direccion,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        delete validationErrors.direccion;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    } else if (value.length > 60) {
+                        setValidationErrors((prev) => ({ ...prev, direccion: 'Maximo 60 caracteres permitidos' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.direccion;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+
+        },
+
+        {
+            accessorKey: 'comuna',
+            header: 'Comuna',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.comuna,
+                helperText: validationErrors.comuna,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        delete validationErrors.comuna;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    } else if (value.length > 20) {
+                        setValidationErrors((prev) => ({ ...prev, comuna: 'Maximo 20 caracteres permitidos' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.comuna;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+        },
+        {
+            accessorKey: 'ciudad',
+            header: 'Ciudad',
+            size: 100,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.ciudad,
+                helperText: validationErrors.ciudad,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        delete validationErrors.ciudad;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    } else if (value.length > 20) {
+                        setValidationErrors((prev) => ({ ...prev, ciudad: 'Maximo 20 caracteres permitidos' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.ciudad;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+        },
+        {
+            accessorKey: 'credenciales',
+            header: 'Credenciales',
+            size: 100,
+            enableEditing: false,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.credenciales,
+                helperText: validationErrors.credenciales,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, credenciales: 'Credenciales es requerido' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.credenciales;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+
+        },
+    ]
+
+
 
 
     // Initialize the tableData state variable with the data passed in as props
@@ -614,7 +626,6 @@ const DataTableBeneficiarios = props => {
         try {
             // Make API call to update beneficiario
             const response = await updateBeneficiario(values, props.user.correo);
-            console.log(response);
 
             // Handle network error
             if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {

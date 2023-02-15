@@ -17,7 +17,7 @@ import { getCartola } from "../api/CartolaBeneficiario";
 
 
 
-const CartolaVentas = (user) => {
+const ListarCartolaBeneficiarios = (user) => {
   //Obetner usuario
   const usuario = (JSON.parse(user.user));
 
@@ -28,26 +28,16 @@ const CartolaVentas = (user) => {
   const [convenio, setConvenio] = useState(null);
   const [rut, setRut] = useState('');
   const [formattedRut, setFormattedRut] = useState('');
-  const [tipo, setTipo] = useState(null);
+
   const [loading, setLoading] = useState(false);
-  const tipoUsuario = [
-    {
-      value: 'Paciente',
-      label: 'Paciente',
-    },
-    {
-      value: 'Empresa',
-      label: 'Empresa',
-    },
-  ];
+
   // Declare state variables for the modal
   const [title, setTitle] = useState();
   const [msj, setMsj] = useState();
   const [showModal, setShowModal] = useState(false);
 
   // Define the columns of the table
-  const columns = [{ accessorKey: 'SAP', header: 'SAP', }, { accessorKey: 'boleta', header: 'Boleta', }, { accessorKey: 'bonificado', header: 'Bonificado', }, { accessorKey: 'cantidad', header: 'Cantidad', }, { accessorKey: 'comuna', header: 'Comuna', }, { accessorKey: 'copago', header: 'Copago', }, { accessorKey: 'decripcion_producto', header: 'Decripcion Producto', }, { accessorKey: 'descto', header: 'Descto', }, { accessorKey: 'direccion', header: 'Direccion', }, { accessorKey: 'estado', header: 'Estado', }, { accessorKey: 'farmacia', header: 'Farmacia', }, { accessorKey: 'fecha', header: 'Fecha', }, { accessorKey: 'guia', header: 'Guia', }, { accessorKey: 'id_receta', header: 'Id Receta', }, { accessorKey: 'precio', header: 'Precio', }, { accessorKey: 'tipo', header: 'Tipo', }, { accessorKey: 'total', header: 'Total', },];
-  // Function to handle closing the modal
+  const columns = [{ accessorKey: 'estado', header: 'Estado', }, { accessorKey: 'fecha', header: 'Fecha', }, { accessorKey: 'farmacia', header: 'Farmacia', }, { accessorKey: 'id_receta', header: 'Id Receta', }, { accessorKey: 'direccion', header: 'Direccion', }, { accessorKey: 'comuna', header: 'Comuna', }, { accessorKey: 'boleta', header: 'Boleta', }, { accessorKey: 'guia', header: 'Guia', }, { accessorKey: 'SAP', header: 'SAP', }, { accessorKey: 'decripcion_producto', header: 'Descripcion', }, { accessorKey: 'tipo', header: 'Tipo', }, { accessorKey: 'cantidad', header: 'Cantidad', }, { accessorKey: 'precio', header: 'Precio', }, { accessorKey: 'descto', header: 'Descuento', }, { accessorKey: 'bonificado', header: 'Bonificado', }, { accessorKey: 'copago', header: 'Copago', }, { accessorKey: 'total', header: 'Total', },]; // Function to handle closing the modal
   const handleClose = () => {
     setShowModal(false);
   }
@@ -60,7 +50,7 @@ const CartolaVentas = (user) => {
     //format rut without dots or hyhen
     const rutNoFormat = rut.replace(/\.|-/g, '');
 
-    if (!rut || !convenio || !desde || !hasta || !tipo) {
+    if (!rut || !convenio || !desde || !hasta) {
       // show error message in modal if any of the fields is empty
       setTitle("Error");
       setMsj("Debe completar todos los campos.");
@@ -84,7 +74,7 @@ const CartolaVentas = (user) => {
         convenio: convenio.value,
         fechaIni: formattedDesde,
         fechaFin: formattedHasta,
-        tipo: tipo.value
+
       };
 
       setLoading(true);
@@ -132,17 +122,6 @@ const CartolaVentas = (user) => {
                   id="controllable-states-demo"
                   options={convenios}
                   renderInput={(params) => <TextField {...params} label="Convenio" />}
-                />
-              </Grid>
-              <Grid xs={3}>
-                <Autocomplete
-                  value={tipo}
-                  onChange={(event, newValue) => {
-                    setTipo(newValue);
-                  }}
-                  id="controllable-states-demxo"
-                  options={tipoUsuario}
-                  renderInput={(params) => <TextField {...params} label="Tipo" />}
                 />
               </Grid>
               <Grid xs={3}>
@@ -205,4 +184,4 @@ const CartolaVentas = (user) => {
   );
 }
 
-export default CartolaVentas;
+export default ListarCartolaBeneficiarios;
