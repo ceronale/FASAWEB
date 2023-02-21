@@ -258,29 +258,9 @@ const DataTableMedicos = props => {
                         columns={props.columns}
                         data={tableData}
                         positionToolbarAlertBanner="bottom"
-                        editingMode="modal"
-                        enableEditing
                         onEditingRowCancel={handleCancelRowEdits}
                         onEditingRowSave={handleSaveRowEdits}
                         localization={MRT_Localization_ES}
-                        renderRowActions={({ row, table }) => (
-                            <Grid container spacing={2}>
-                                <Grid xs={6}>
-                                    <Tooltip arrow placement="left" title="Editar">
-                                        <IconButton onClick={() => handleEditRow(row, table)}>
-                                            <Edit />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Grid>
-                                <Grid xs={6}>
-                                    <Tooltip title="Eliminar">
-                                        <IconButton color="error" onClick={() => handleDeleteRow(row)}>
-                                            <Delete />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Grid>
-                            </Grid>
-                        )}
                         renderTopToolbarCustomActions={() => (
                             <Button
                                 variant="contained"

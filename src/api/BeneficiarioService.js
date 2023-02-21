@@ -24,8 +24,6 @@ export const getBeneficiarios = async (data) => {
 }
 
 export const updateBeneficiario = async (data, user) => {
-    console.log(data)
-
     const config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/beneUp/services/actualizar/beneficiario',
@@ -56,7 +54,6 @@ export const updateBeneficiario = async (data, user) => {
         }
     };
 
-    console.log(config)
 
     const response = axios(config)
         .then(({ data: out }) => {

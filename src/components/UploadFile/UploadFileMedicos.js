@@ -21,46 +21,56 @@ const UploadFileMedicos = props => {
         const file = files;
         const reader = new FileReader();
         reader.onload = (event) => {
-            const wb = XLSX.read(event.target.result);
+            const wb = XLSX.read(event.target.result, { type: 'binary', dateNF: 'mm/dd/yyyy;@', cellText: true });
             const sheets = wb.SheetNames;
+            var XL_row_object = XLSX.utils.sheet_to_row_object_array(wb.Sheets[sheets[0]], { raw: false });
+
+
             if (sheets.length) {
-
-                const jsonRows = XLSX.utils.sheet_to_json(wb.Sheets[sheets[0]], { raw: false });
-
                 const properties = ['codigoLista', 'exc_Inc', 'fechaDesde', 'nombre', 'rutMedico'];
+                const dateVariables = ['fechaDesde'];
+                let justJson = XL_row_object;
 
-                for (let i = 0; i < jsonRows.length; i++) {
-
-                    for (let j = 0; j < properties.length; j++) {
-                        jsonRows[i][properties[j]] = jsonRows[i][properties[j]] ?? '';
-                        if (properties[j] !== 'nombre') {
-                            jsonRows[i][properties[j]] = jsonRows[i][properties[j]].trim();
-                        }
-                        if (properties[j] === 'nombre') {
-                            jsonRows[i][properties[j]] = jsonRows[i][properties[j]].replaceAll(',', '');
-                        }
+                justJson.forEach(row => {
+                    if (row.rutMedico !== undefined) {
+                        row.rutMedico = row.rutMedico.replace(/[^0-9kK]/g, '');
                     }
-
-                    //Excute the if just if the fechaDesde is not empty
-                    if (jsonRows[i].fechaDesde !== undefined) {
-                        if (jsonRows[i].fechaDesde.includes("/")) {
-                            var dateString = jsonRows[i].fechaDesde.replaceAll('-', '/')
-                            var dateObject = new Date(dateString);
-                            var day = dateObject.getDate();
-                            var month = dateObject.getMonth();
-                            var year = dateObject.getFullYear();
-                            dateObject = `${day}-${month}-${year}`;
-                            jsonRows[i].fechaDesde = dateObject;
-                        }
+                    //if row.nombre has a comma remove it
+                    if (row.nombre !== undefined) {
+                        row.nombre = row.nombre.replace(/,/g, '');
                     }
-                }
-                const out = jsonToCsv(jsonRows, properties);
+                    console.log(row);
 
+                    dateVariables.forEach(dateVariable => {
+                        if (row[dateVariable] !== undefined) {
+                            row[dateVariable] = formatDate(row[dateVariable]);
+                        }
+                    });
+                });
+
+                const out = jsonToCsv(justJson, properties);
+                console.log(out)
                 setState({ selectedFile: out });;
             }
         }
         reader.readAsArrayBuffer(file);
     };
+
+
+    const formatDate = (date) => {
+        console.log(date);
+        if (!date) return null;
+
+        if (!/^\d{2}[\/-]\d{2}[\/-]\d{4}$/.test(date)) {
+            return null;
+        }
+        let dateArray = date.split(/[\/-]/);
+        let year = dateArray[2];
+        let month = dateArray[1];
+        let day = dateArray[0];
+
+        return year + "-" + month.padStart(2, '0') + "-" + day.padStart(2, '0');
+    }
 
     function jsonToCsv(json, keys) {
         const rows = json.map(obj => keys.map(key => obj[key]));

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../styles/PolizasGrupos.css";
 import { ContenedorTitulo, Titulo } from "./Formularios";
-import { ReporteAuditoriaService } from "../api/ReporteAuditoriaService";
+import { ReporteAuditoriaService, getUsuarios } from "../api/ReporteAuditoriaService";
 import DataTable from "./DataTable/DataTable";
 import Form from 'react-bootstrap/Form';
 import Button from '@mui/material/Button';
@@ -17,9 +17,11 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import ModalAlert from './Modals/ModalAlert';
 import CircularProgress from '@mui/material/CircularProgress';
+import Autocomplete from '@mui/material/Autocomplete';
 
 const ListarRepAuditoria = (user) => {
   const [loading, setLoading] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const columns = [
     {
       accessorKey: 'accion',
@@ -61,9 +63,7 @@ const ListarRepAuditoria = (user) => {
 
   // 2.-Funcion para mostrar los datos
   const showData = async () => {
-
-
-    if (!usuario.correo || !servicioSelected || !accion || !desde || !hasta) {
+    if (!servicioSelected || !accion || !desde || !hasta) {
       setTitle("Error");
       setMsj("Debe completar todos los campos.");
       setShowModal(true);
@@ -74,18 +74,23 @@ const ListarRepAuditoria = (user) => {
     } else {
       const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
       const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
-      const data = {
+      //intialize data if usuarioselected is diferent to null
+      const data = usuarioInputSelected ? {
+        user: usuarioInputSelected.value,
+        servicio: servicioSelected,
+        accion: accion,
+        fechaDesde: formattedDesde,
+        fechaHasta: formattedHasta,
+      } : {
         user: usuario.correo,
         servicio: servicioSelected,
         accion: accion,
         fechaDesde: formattedDesde,
         fechaHasta: formattedHasta,
       };
+
       setDataTable(undefined);
-      console.log(data);
       setLoading(true);
-
-
 
       const response = await ReporteAuditoriaService(data);
       //Check if the response is ok response.auditoria[0].codigo === 0 is ok and response.auditoria[0].codigo === 1 is error
@@ -95,8 +100,8 @@ const ListarRepAuditoria = (user) => {
         setShowModal(true);
         setDataTable({});
       } else {
+        setIsButtonDisabled(false);
         setDataTable(response.auditoria);
-
       }
       setLoading(false);
     }
@@ -108,7 +113,7 @@ const ListarRepAuditoria = (user) => {
   const [servicioSelected, setServicioSelected] = useState('');
 
   const [usuarioInput, setusuarioInput] = useState([]);
-  const [usuarioInputSelected, setUsuarioInputSelected] = useState('');
+  const [usuarioInputSelected, setUsuarioInputSelected] = useState(null);
 
   const [isServicioDisabled, setIsServicioDisabled] = useState(true);
   const [desde, setDesde] = useState(null);
@@ -199,25 +204,22 @@ const ListarRepAuditoria = (user) => {
 
   //Call an api to get the data of usuarioInput
   useEffect(() => {
-    //const response = await algunaCosaParaListarUsuario();
-    //setusuarioInput(response.usuarios);
-    //create example data to set in usuarioInput  
-    const data = [
-      {
-        value: 'usuario1',
-        label: 'usuario1',
-      },
-      {
-        value: 'usuario2',
-        label: 'usuario2',
-      },
-      {
-        value: 'usuario3',
-        label: 'usuario3',
-      },
-    ];
-    setusuarioInput(data);
+    const fetchData = async () => {
+      const response = await getUsuarios();
+      //set response like this value: response.usuario[0].corre, label: response.usuario[0].correo
+      const data = response.usuario.map((item, index) => {
+        const correo = item.correo !== undefined ? item.correo.toString() : '';
+        return {
+          value: correo,
+          label: correo,
+        };
+      });
 
+
+      setusuarioInput(data);
+    };
+
+    fetchData();
   }, []);
 
 
@@ -229,7 +231,7 @@ const ListarRepAuditoria = (user) => {
     setUsuarioInputSelected(event.target.value);
   };
 
-
+  const getOptionSelected = (option, value) => option.value === value.value;
   return (
     <main>
       <div style={{ position: 'relative' }}>
@@ -251,20 +253,16 @@ const ListarRepAuditoria = (user) => {
               <Grid container spacing={2}>
                 <Grid xs={4}>
                   <FormControl fullWidth >
-                    <InputLabel id="usuario-select">Usuario</InputLabel>
-                    <Select
-                      labelId="usuario-select"
-                      id="usuario-select"
-                      label="Usuario"
+
+                    <Autocomplete
                       value={usuarioInputSelected}
-                      onChange={handleChangeUsuario}
-                    >
-                      {usuarioInput.map((u) => (
-                        <MenuItem key={u.value} value={u.value}>
-                          {u.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                      onChange={(event, newValue) => {
+                        setUsuarioInputSelected(newValue);
+                      }}
+                      id="controllable-states-demo"
+                      options={usuarioInput}
+                      renderInput={(params) => <TextField {...params} label="usuario" />}
+                    />
                   </FormControl>
                 </Grid>
 
@@ -341,7 +339,7 @@ const ListarRepAuditoria = (user) => {
               ?
               null
               :
-              <DataTable data={dataTable} columns={columns} export={true} />
+              <DataTable data={dataTable} columns={columns} export={true} isButtonDisabled={isButtonDisabled} />
           }
         </div>
       </div>

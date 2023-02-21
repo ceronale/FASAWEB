@@ -51,7 +51,6 @@ const AdministrarUsuarios = (user) => {
     const showData = async () => {
         setLoading(true);
         const response = await ListarUsuarios()
-        console.log(response)
         setLoading(true)
         setData(undefined)
         setData(response.usuario)

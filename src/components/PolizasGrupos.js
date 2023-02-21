@@ -115,7 +115,7 @@ const PolizasGrupos = ({ user }) => {
                         (dataTable === undefined)
                             ?
                             null
-                            : <DataTableEditAndExport data={dataTable} user={usuario} isButtonDisabled={isButtonDisabled} convenio={filtrarValue} />
+                            : <DataTableEditAndExport data={dataTable} user={usuario} isButtonDisabled={isButtonDisabled} convenio={filtrarValue} updateData={showData} />
                     }
                 </div>
                 <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />

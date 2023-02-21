@@ -13,7 +13,7 @@ const BarraOpciones = (user) => {
         usuario = {};
         usuario.rol = "norol"
     }
-    console.log(usuario)
+
     return (
         <div className="Barra">
 

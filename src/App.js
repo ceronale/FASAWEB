@@ -20,14 +20,10 @@ import Medicos from "./screens/Medicos";
 import Documentos from "./screens/Documentos";
 import ReporteAuditoria from "./screens/ReporteAuditoria";
 import PrivateRoutes from './utils/PrivateRoutes';
-import PacienteRoutes from './utils/PacienteRoutes';
-import EmpresaRoutes from './utils/EmpresaRoutes';
 import LoginRoutes from './utils/LoginRoutes';
 import RestaurarRoutes from './utils/RestaurarRoutes';
-
 import AutorizacionesPrevias from './screens/AutorizacionesPrevias';
 import AutorizacionesPreviaAdd from './screens/AutorizacionesPreviaAdd';
-
 import AdministrarUsuariosRoutes from './utils/AdministrarUsuariosRoutes';
 import AdministrarRolesRoutes from './utils/AdministrarRolesRoutes';
 import PolizasGruposRoutes from './utils/PolizasGruposRoutes';

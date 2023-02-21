@@ -20,7 +20,6 @@ const ModalUploadFile = ({ show, handleClose, msj, title, convenio }) => {
                 <UploadFilePolizas convenio={convenio}>
 
                 </UploadFilePolizas>
-
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="contained" onClick={handleClose}>

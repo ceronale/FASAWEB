@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { LoginService } from '../../api/LoginService';
 import { useNavigate, } from 'react-router-dom';
 import styles from './styles.module.css';
@@ -15,31 +15,21 @@ import {
 	Titulo,
 	DivTitulos
 } from "../Formularios";
-
 import ModalAlert from '../Modals/ModalAlert';
 import { HomeServiceEmpresa } from "../../api/HomeEmpresaService";
-import { HomeService } from "../../api/HomeService";
 import { getComponentesAndRolByUser } from "../../api/RolesServices";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const FormLogin = () => {
 
-	useEffect(() => {
-		const loggedInUser = localStorage.getItem("user");
-
-	}, []);
 
 	const [showModal, setShowModal] = useState(false);
 	const handleClose = () => setShowModal(false);
 	const [msj, setMsj] = useState();
 	const [title, setTitle] = useState();
-
-	//const handleClose = () => {
-	//	setShowModal(false);
-	//}
+	const [loading, setLoading] = useState(false);
 	const [btnValid, setBtnValid] = useState(false);
-
 	const navigate = useNavigate();
-
 	const captcha = useRef(null);
 
 	const validCaptcha = () => {
@@ -73,6 +63,7 @@ const FormLogin = () => {
 		let usuario;
 		let convenios = {};
 		try {
+			setLoading(true);
 			// Realiza una llamada a la API de inicio de sesión y obtiene la respuesta
 			const resp = await LoginService(registerData);
 			// Extrae la información relevante de la respuesta
@@ -128,71 +119,80 @@ const FormLogin = () => {
 			}
 		} catch (error) {
 			console.error(error);
+			setLoading(false);
 		}
+		setLoading(false);
 	};
 
 	return (
-		<div className="row align-items-center">
-			<div className="col-md-8">
-				<div>
-					<DivTitulos>
-						<Titulo>Usuarios Registrados</Titulo>
-					</DivTitulos>
-					<div id="notaLogin">
-						Si tiene una cuenta, inicie sesión con su dirección de correo
-						electrónico.
+		<div style={{ position: 'relative' }}>
+			{loading && (
+				<div style={{ position: 'absolute', top: '50%', left: '100%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+					<CircularProgress />
+				</div>
+			)}
+			<div className="row align-items-center">
+				<div className="col-md-8">
+					<div>
+						<DivTitulos>
+							<Titulo>Usuarios Registrados</Titulo>
+						</DivTitulos>
+						<div id="notaLogin">
+							Si tiene una cuenta, inicie sesión con su dirección de correo
+							electrónico.
+						</div>
+						<form className={styles.form} onSubmit={onSubmit}>
+							<GrupoInput>
+								<Label>Correo Electronico <LabelReq> *</LabelReq></Label>
+								<Inputs
+									type="email"
+									placeholder=""
+									name="email"
+									value={email}
+									onChange={onchange}
+									required
+								/>
+							</GrupoInput>
+							<GrupoInput>
+								<Label>Contraseña <LabelReq> *</LabelReq></Label>
+								<Inputp
+									type="password"
+									name="password"
+									placeholder=""
+									min="7"
+									max="20"
+									value={password}
+									onChange={onchange}
+									required
+								/>
+							</GrupoInput>
+							<div className="recaptcha">
+								<ReCAPTCHA
+									ref={captcha}
+									sitekey="6Lek9tsiAAAAAOUyn_NBrROccYIf_-w38fsocNlN"
+									onChange={validCaptcha}
+								/>
+							</div>
+							<div className='accionLogin'>
+								<div >
+									{btnValid === !false && (
+										<Button variant="contained" color="error" type="submit">Inicio Sesion</Button>
+									)}
+								</div>
+								<div className="olvidasteContraseña">
+									<li id="li-contraseña">
+										<NavLink to="/OlvidasteContraseña">
+											¿Olvidaste tu contraseña?
+										</NavLink>
+									</li>
+								</div>
+								<div id="requerido">
+									<span>* Campos requeridos</span>
+								</div>
+							</div>
+						</form>
+						<ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
 					</div>
-					<form className={styles.form} onSubmit={onSubmit}>
-						<GrupoInput>
-							<Label>Correo Electronico <LabelReq> *</LabelReq></Label>
-							<Inputs
-								type="email"
-								placeholder=""
-								name="email"
-								value={email}
-								onChange={onchange}
-								required
-							/>
-						</GrupoInput>
-						<GrupoInput>
-							<Label>Contraseña <LabelReq> *</LabelReq></Label>
-							<Inputp
-								type="password"
-								name="password"
-								placeholder=""
-								min="7"
-								max="20"
-								value={password}
-								onChange={onchange}
-								required
-							/>
-						</GrupoInput>
-						<div className="recaptcha">
-							<ReCAPTCHA
-								ref={captcha}
-								sitekey="6Lek9tsiAAAAAOUyn_NBrROccYIf_-w38fsocNlN"
-								onChange={validCaptcha}
-							/>
-						</div>
-						<div className='accionLogin'>
-							<div >
-								{btnValid === !false && (
-									<Button variant="contained" color="error" type="submit">Inicio Sesion</Button>
-								)}
-							</div>
-							<div className="olvidasteContraseña">
-								<li id="li-contraseña">
-									<NavLink to="/OlvidasteContraseña">
-										¿Olvidaste tu contraseña?
-									</NavLink>
-								</li>
-							</div>
-							<div id="requerido">
-								<span>* Campos requeridos</span>
-							</div>
-						</div>
-					</form>
-					<ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
 				</div>
 			</div>
 		</div>

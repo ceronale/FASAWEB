@@ -9,27 +9,29 @@ import Grid from '@mui/material/Unstable_Grid2';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { setAutorizaciones } from '../api/AutorizacionesPreviasService';
+import { getAutorizaciones } from '../api/AutorizacionesPreviasService';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import DataTableAutorizacionPrevia from "./DataTable/DataTableAutorizacionPrevia";;
 
 
-const AutorizacionPrevia = (user) => {
 
+const AutorizacionPrevia = (user) => {
     //State to handle the user data
     const [usuario] = useState(JSON.parse(user.user));
     //State to handle the convenios of the user
     const [convenios, setConvenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
     const [rut, setRut] = useState('');
     const [formattedRut, setFormattedRut] = useState('');
-    const [dataTable, setDataTable] = useState({})
+    const [dataTable, setDataTable] = useState({});
     const [convenioSelected, setConvenioSelected] = useState('')
     const [title, setTitle] = useState();
     const [msj, setMsj] = useState();
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
     const [listaSelected, setListaSelected] = useState('')
+    const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+
     //Function to handle the close of the modal
     const handleClose = () => {
         setShowModal(false);
@@ -51,13 +53,61 @@ const AutorizacionPrevia = (user) => {
         setShowModal(true);
     }
     //show data
-    const handleShowData = () => {
-        // console.log(formattedRut, convenioSelected);
-    }
+    const handleShowData = async () => {
+        try {
+            //Check if the convenio
+            if (convenioSelected === null) {
+                handleModal("Error", "Debe seleccionar un convenio");
+                return;
+            }
+            //Check if the rut is empty
+            if (rut === '') {
+                handleModal("Error", "Debe ingresar un rut");
+                return;
+            }
 
+            const data = {
+                convenio: convenioSelected.value,
+                rut: rut.replace(/\./g, '').replace(/\-/g, ''),
+            }
+
+            //call the service to get the data
+            setLoading(true);
+            const response = await getAutorizaciones(data);
+
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+
+                setLoading(false);
+
+                handleModal("Error", "No se pudo obtener la información de los beneficiarios");
+            } else {
+                //response.autorizacionPrevia[0].codigo === 1 is the error code
+                console.log(response)
+                if (response.autorizacionPrevia[0].codigo === 1) {
+                    handleModal("Error", response.autorizacionPrevia[0].detalle);
+                    setLoading(false);
+                    return;
+                } else if (response.autorizacionPrevia[0].codigo === 0) {
+                    setLoading(false);
+                    setDataTable(undefined)
+                    setDataTable(response.autorizacionPrevia);
+                    setIsButtonDisabled(false)
+                }
+            }
+        } catch (error) {
+            setLoading(false);
+            handleModal("Error", "No se pudo obtener la información de los beneficiarios");
+        }
+    }
+    //create function to handle the modal
+    const handleModal = (title, msj) => {
+        setTitle(title);
+        setMsj(msj);
+        setShowModal(true);
+    };
     const columns = useMemo(
-        () => [{ accessorKey: 'ID', header: 'ID', enableEditing: false, }, { accessorKey: 'codigoCarga', header: 'Código Carga', enableEditing: false, }, { accessorKey: 'nombreCampo', header: 'Nombre Campo', }, { accessorKey: 'valorCampo', header: 'Valor Campo', }, { accessorKey: 'exc_Inc', header: 'Exclusión/Inclusión', }, { accessorKey: 'fechaInicio', header: 'Fecha Inicio', }, { accessorKey: 'fechaTermino', header: 'Fecha Término', }, { accessorKey: 'maxEnvases', header: 'Max Envases', }, { accessorKey: 'acumulados', header: 'Acumulados', }],
-        [],
+        () => [{ accessorKey: 'LAPB_416_ID_AP', header: 'ID', enableEditing: false }, { accessorKey: 'LAPB_ACUMULADO_ENVASES_MENSUAL', header: 'Acumulados', enableEditing: false }, { accessorKey: 'LAPB_FECHA_INICIO', header: 'Fecha Inicio' }, { accessorKey: 'LAPB_FECHA_TERMINO', header: 'Fecha Término' }, { accessorKey: 'LAPB_INCLUIR_EXCLUIR', header: 'Exclusión/Inclusión' }, { accessorKey: 'LAPB_MEDICO_INCEXC', header: 'Exclusión/Inclusión Medico' }, { accessorKey: 'LAPB_Q_ENVASES_MENSUAL', header: 'Max Envases' }, { accessorKey: 'LAPB_VALOR_CAMPO', header: 'Valor Campo' }, { accessorKey: 'LMA_ID_MEDICO', header: 'Rut Medico' }, { accessorKey: 'campo', header: 'Nombre Campo' }, { accessorKey: 'codigo', header: 'Código Carga' }, { accessorKey: 'codigoPersona', header: 'Código Persona' }, { accessorKey: 'credencial', header: 'Credencial' }],
+        []
     );
 
     return (
@@ -123,7 +173,7 @@ const AutorizacionPrevia = (user) => {
                     (dataTable === undefined)
                         ?
                         null
-                        : <DataTableAutorizacionPrevia data={dataTable} columns={columns} user={usuario.correo} codigoLista={listaSelected} showData={handleShowData} isButtonDisabled={false} />
+                        : <DataTableAutorizacionPrevia data={dataTable} columns={columns} user={usuario.correo} codigoLista={listaSelected} showData={handleShowData} isButtonDisabled={isButtonDisabled} />
                 }
             </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import MaterialReactTable from 'material-react-table';
 
 import ModalConfirmar from "../Modals/ModalConfirmar";
@@ -22,12 +22,10 @@ import {
     DialogContent,
     DialogTitle,
     IconButton,
-    MenuItem,
     Stack,
     TextField,
     Tooltip,
 } from '@mui/material';
-
 
 const checkDate = (date) => {
     const dateArray = date.split("-");
@@ -61,11 +59,113 @@ const DataTableAutorizacionPrevia = props => {
     const [loading, setLoading] = useState(false);
     const [createModalOpen, setCreateModalOpen] = useState(false);
 
+    const [validationErrors, setValidationErrors] = useState({});
+
+    //Validacion de fecha dd-mm-yyyy
+    const validateDate = (date) => {
+        var dateRegex = /^([0-9]{2})-([0-9]{2})-([0-9]{4})$/;
+        if (dateRegex.test(date)) {
+            var parts = date.split("-");
+            var day = parseInt(parts[0], 10);
+            var month = parseInt(parts[1], 10);
+            var year = parseInt(parts[2], 10);
+            if (year < 1000 || year > 3000 || month === 0 || month > 12) {
+                return false;
+            }
+            var monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            if (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)) {
+                monthLength[1] = 29;
+            }
+            return day > 0 && day <= monthLength[month - 1];
+        } else {
+
+            return false;
+        }
+    }
+
+    const validateRequired = (value) => !!value.length;
+
+    //Function to validate id the value is E or I or i or e
+    const validateExcInc = (value) => {
+        if (value === 'E' || value === 'e' || value === 'I' || value === 'i') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    const getCommonEditTextFieldProps = useCallback(
+        (cell) => {
+            return {
+                error: !!validationErrors[cell.id],
+                helperText: validationErrors[cell.id],
+                onBlur: (event) => {
+                    const isValid =
+                        cell.column.id === 'fechaDesde'
+                            ? validateDate(event.target.value)
+                            : cell.column.id === 'exc_Inc'
+                                ? validateExcInc(event.target.value)
+                                : validateRequired(event.target.value);
+                    if (!isValid) {
+                        //set validation error for cell if invalid depending on column if bioequivalente must say 0 or 1
+                        setValidationErrors({
+                            ...validationErrors,
+                            [cell.id]: cell.column.id === 'fechaDesde' ? `${cell.column.columnDef.header} debe ser dd-mm-yyyy` :
+                                cell.column.id === 'exc_Inc' ? `${cell.column.columnDef.header} debe ser E o I` :
+                                    `${cell.column.columnDef.header} es requerido`,
+                        });
+
+                    } else {
+                        //remove validation error for cell if valid
+                        delete validationErrors[cell.id];
+                        setValidationErrors({
+                            ...validationErrors,
+                        });
+                    }
+                },
+            };
+        },
+        [validationErrors],
+    );
+
+    //Use memo to create the columns of the table
+    const columns = [
+        {
+            accessorKey: 'rutMedico',
+            header: 'Rut Medico',
+            enableEditing: false,
+        },
+        {
+            accessorKey: 'nombre',
+            header: 'Nombre',
+            enableEditing: false,
+        },
+        {
+            accessorKey: 'fechaDesde',
+            header: 'Fecha Desde',
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 10 },
+            }),
+        },
+        {
+            accessorKey: 'exc_Inc', //normal accessorKey
+            header: 'Inclusión / Exclusión',
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 1 },
+            }),
+        }
+    ];
+
+
+
     const handleCloseConfirmar = () => {
         setShowModalConfirmar(false);
     }
 
     const handleCloseUpload = () => {
+        props.updateData();
         setShowModalUpload(false);
     }
 
@@ -162,12 +262,14 @@ const DataTableAutorizacionPrevia = props => {
 
     //Metodo para handle la edicion de informacion de la table
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
-        setTitle("¿Desea continuar?")
-        setMsj("Seleccione confirmar si desea editar el campo")
-        setShowModalConfirmar(true)
         setValues(values);
         setRow(row);
-        exitEditingMode();
+        if (!Object.keys(validationErrors).length) {
+            setTitle("¿Desea continuar?")
+            setMsj("Seleccione confirmar si desea editar el campo")
+            setShowModalConfirmar(true)
+            exitEditingMode();
+        }
     };
 
     //Metodo para handle la cancelacion de la edicion de informacion de la table
@@ -200,11 +302,23 @@ const DataTableAutorizacionPrevia = props => {
     );
 
     const getRows = (row) => {
+
         delete row.tableData;
-        row.original.rutMedico = row.original.rutMedico || " ";
-        row.original.fechaDesde = row.original.fechaDesde || " ";
-        row.original.exc_Inc = row.original.exc_Inc || " ";
-        return row.original;
+        Object.entries(row.original).forEach(([key, value]) => {
+            if (value === undefined) {
+                row.original[key] = " ";
+            }
+        });
+
+        const reorderedRow = {
+            rutMedico: row.original.rutMedico,
+            nombre: row.original.nombre,
+            fechaDesde: row.original.fechaDesde,
+            exc_Inc: row.original.exc_Inc,
+            codigoLista: row.original.codigoLista
+        };
+
+        return reorderedRow;
     };
 
 
@@ -255,7 +369,7 @@ const DataTableAutorizacionPrevia = props => {
                 )}
                 <div className="boxTable">
                     <MaterialReactTable
-                        columns={props.columns}
+                        columns={columns}
                         data={tableData}
                         positionToolbarAlertBanner="bottom"
                         editingMode="modal"
@@ -296,6 +410,7 @@ const DataTableAutorizacionPrevia = props => {
                                 <Button
                                     variant="contained"
                                     onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
+                                    disabled={props.isButtonDisabled}
                                 >
                                     Exportar
 
@@ -303,6 +418,7 @@ const DataTableAutorizacionPrevia = props => {
                                 <Button
                                     variant="contained"
                                     onClick={() => { setShowModalUpload(true) }}
+                                    disabled={props.isButtonDisabled}
                                 >
                                     Importar
                                 </Button>
@@ -336,7 +452,7 @@ const DataTableAutorizacionPrevia = props => {
                     codigoLista={props.codigoLista}
                 />
                 <CreateNewAccountModal
-                    columns={props.columns}
+                    columns={columns}
                     open={createModalOpen}
                     onClose={() => setCreateModalOpen(false)}
                     onSubmit={handleCreateNewRow}

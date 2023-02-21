@@ -90,11 +90,13 @@ const DataTableBeneficiarios = props => {
 
     const [, setRow] = useState();
 
+
     // Handlers for closing modals
     const handleCloseConfirmar = () => {
         setShowModalConfirmar(false);
     }
     const handleCloseUpload = () => {
+        props.updateData();
         setShowModalUpload(false);
     }
     const handleCloseAlert = () => {
@@ -162,6 +164,28 @@ const DataTableBeneficiarios = props => {
                         setHasValidationError(true);
                     } else {
                         delete validationErrors.grupo;
+                        setValidationErrors({ ...validationErrors });
+                        setHasValidationError(false);
+                    }
+                },
+            },
+
+        },
+        {
+            accessorKey: 'credenciales',
+            header: 'Credenciales',
+            size: 100,
+            enableEditing: false,
+            muiTableBodyCellEditTextFieldProps: {
+                error: !!validationErrors.credenciales,
+                helperText: validationErrors.credenciales,
+                onChange: (event) => {
+                    const value = event.target.value;
+                    if (!value) {
+                        setValidationErrors((prev) => ({ ...prev, credenciales: 'Credenciales es requerido' }));
+                        setHasValidationError(true);
+                    } else {
+                        delete validationErrors.credenciales;
                         setValidationErrors({ ...validationErrors });
                         setHasValidationError(false);
                     }
@@ -561,32 +585,8 @@ const DataTableBeneficiarios = props => {
                 },
             },
         },
-        {
-            accessorKey: 'credenciales',
-            header: 'Credenciales',
-            size: 100,
-            enableEditing: false,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.credenciales,
-                helperText: validationErrors.credenciales,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, credenciales: 'Credenciales es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.credenciales;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
 
-        },
     ]
-
-
-
 
     // Initialize the tableData state variable with the data passed in as props
     const [tableData, setTableData] = useState(() => props.data)
@@ -698,7 +698,7 @@ const DataTableBeneficiarios = props => {
 
                 // Make API call to update beneficiario
                 const response = await updateBeneficiario(values, props.user.correo);
-                console.log(response);
+
 
                 // Handle network error
                 if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
@@ -754,6 +754,7 @@ const DataTableBeneficiarios = props => {
 
 
     const getRows = (row) => {
+        console.log(row.original);
         delete row.tableData;
         Object.entries(row.original).forEach(([key, value]) => {
             if (value === undefined) {
@@ -761,7 +762,30 @@ const DataTableBeneficiarios = props => {
             }
         });
 
-        return row.original;
+        const reorderedRow = {
+            codigoConvenio: row.original.codigoConvenio,
+            grupo: row.original.grupo,
+            credenciales: row.original.credenciales,
+            rutTitular: row.original.rutTitular,
+            rutBeneficiario: row.original.rutBeneficiario,
+            codigoCarga: row.original.codigoCarga,
+            poliza: row.original.poliza,
+            codigoRelacion: row.original.codigoRelacion,
+            nombre: row.original.nombre,
+            apellido1: row.original.apellido1,
+            apellido2: row.original.apellido2,
+            fechaNacimiento: row.original.fechaNacimiento,
+            genero: row.original.genero,
+            vigencia: row.original.vigencia,
+            termino: row.original.termino,
+            mail: row.original.mail,
+            direccion: row.original.direccion,
+            comuna: row.original.comuna,
+            ciudad: row.original.ciudad,
+            id: row.original.id
+        };
+
+        return reorderedRow;
     };
 
     // Metodo para eliminar
@@ -769,7 +793,7 @@ const DataTableBeneficiarios = props => {
         (row, table) => {
             setRows(row);
             setValues(row.original);
-            console.log(values);
+
             setCreateModalOpen(true)
         },
         [tableData],
@@ -830,6 +854,7 @@ const DataTableBeneficiarios = props => {
                                 <Button
                                     variant="contained"
                                     onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
+                                    disabled={props.isButtonDisabled}
                                 >
                                     Exportar
 
@@ -837,6 +862,7 @@ const DataTableBeneficiarios = props => {
                                 <Button
                                     variant="contained"
                                     onClick={() => { setShowModalUpload(true) }}
+                                    disabled={props.isButtonDisabled}
                                 >
                                     Importar
                                 </Button>
@@ -860,6 +886,7 @@ const DataTableBeneficiarios = props => {
                 msj={"Cargue el archivo xlx con el cual desea actualizar los registros"}
                 show={showModalUpload}
                 handleClose={handleCloseUpload}
+                convenio={props.convenio}
             />
             {createModalOpen && <CreateNewAccountModal
                 columns={props.columns}
@@ -883,12 +910,12 @@ export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) =>
     const handleCloseAlert = () => {
         setShowModalAlert(false);
     }
-    console.log(values.termino)
+
 
     const parts = values.termino.split('-');
     const datex = new Date(parts[1] + '/' + parts[0] + '/' + parts[2]);
     const [date, setDate] = useState(datex);
-    console.log(date);
+
     const handleSubmit = () => {
         var dd = String(date.$d.getDate()).padStart(2, '0');
         var mm = String(date.$d.getMonth() + 1).padStart(2, '0');

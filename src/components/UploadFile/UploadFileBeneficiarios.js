@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { UploadExcelBeneficiarios } from '../../api/UploadExcelBeneficiarios';
+
 import moment from 'moment';
 
 
@@ -40,7 +41,7 @@ class UploadFileBeneficiarios extends Component {
         const file = files;
         const reader = new FileReader();
         reader.onload = (event) => {
-            const wb = XLSX.read(event.target.result, { type: 'binary', dateNF: 'dd/mm/yyyy;@', cellDates: true });
+            const wb = XLSX.read(event.target.result, { type: 'binary', dateNF: 'mm/dd/yyyy;@', cellText: true });
             const sheets = wb.SheetNames;
             var XL_row_object = XLSX.utils.sheet_to_row_object_array(wb.Sheets[sheets[0]], { raw: false });
             var json_object = JSON.stringify(XL_row_object);
@@ -75,7 +76,7 @@ class UploadFileBeneficiarios extends Component {
                 });
 
                 const out = this.jsonToCsv(justJson, properties);
-
+                console.log(out)
                 this.setState({ selectedFile: out });;
             }
         }
@@ -91,11 +92,11 @@ class UploadFileBeneficiarios extends Component {
 
 
     // On file upload (click the upload button)
-    onFileUpload = async (e) => {
+    onFileUpload = async (e, convenioValue) => {
         e.preventDefault();
         if (this.state.selectedFile !== null) {
             const blob = new Blob([this.state.selectedFile], { type: 'text/csv' });
-            var resp = await UploadExcelBeneficiarios(blob);
+            var resp = await UploadExcelBeneficiarios(blob, convenioValue);
             this.setState({ msj: resp.actualizaResponse[0].detalle });;
         }
     };
@@ -105,9 +106,11 @@ class UploadFileBeneficiarios extends Component {
     };
 
     render() {
+        const { convenio } = this.props;
+        const convenioValue = convenio.value;
         return (
             <>
-                <Form onSubmit={this.onFileUpload}>
+                <Form onSubmit={(e) => this.onFileUpload(e, convenioValue)}>
                     <Row>
                         <Col xs={7}>
                             <Form.Control required onChange={this.onFileChange} onClick={this.handleClick} type="file" />

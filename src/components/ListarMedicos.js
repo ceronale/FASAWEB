@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { ContenedorTitulo, Titulo } from './Formularios';
 import { getLista, getMedicos } from "../api/MedicosService";
 import Grid from '@mui/material/Unstable_Grid2';
@@ -38,36 +38,12 @@ const ListarMedicos = (user) => {
   //State to handle the disable/enable of the button
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
+
+
   //Function to handle the close of the modal
   const handleClose = () => {
     setShowModal(false);
   }
-
-  //Use memo to create the columns of the table
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: 'rutMedico',
-        header: 'Rut Medico',
-        enableEditing: false,
-      },
-      {
-        accessorKey: 'nombre',
-        header: 'Nombre',
-        enableEditing: false,
-      },
-      {
-        accessorKey: 'fechaDesde',
-        header: 'Fecha Desde',
-      },
-      {
-        accessorKey: 'exc_Inc', //normal accessorKey
-        header: 'Inclusión / Exclusión',
-      }
-    ],
-    [],
-  );
-
 
 
   //Function to handle the change of the convenio select
@@ -125,6 +101,7 @@ const ListarMedicos = (user) => {
       }
     }
   }
+
   //Function to handle the click of the show data button
   const showData2 = async () => {
     //Validate all inputs are filled before sending the request
@@ -133,7 +110,6 @@ const ListarMedicos = (user) => {
       setTitle("Error");
       setMsj("Debe seleccionar un convenio y una lista");
       setShowModal(true);
-
     } else {
       //create a try and catrch block to handle the error of the request and show the modal with the error message
       try {
@@ -227,7 +203,7 @@ const ListarMedicos = (user) => {
               (dataTable === undefined)
                 ?
                 null
-                : <DataTableMedicos data={dataTable} columns={columns} user={usuario.correo} codigoLista={listaSelected} showData={showData2} isButtonDisabled={isButtonDisabled} />
+                : <DataTableMedicos data={dataTable} user={usuario.correo} codigoLista={listaSelected} showData={showData2} updateData={showData} isButtonDisabled={isButtonDisabled} />
             }
 
             <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />

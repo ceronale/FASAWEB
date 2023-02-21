@@ -17,6 +17,7 @@ import { Divider } from '@material-ui/core';
 
 function Navbar() {
   const user = localStorage.getItem("user");
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigate = useNavigate();
 
@@ -40,62 +41,70 @@ function Navbar() {
             <img src={logoFarmaciasAhumada} height={53} alt="logo"></img>
           </a>
         </div>
-        <div className="iconoNavbar">
 
-          <div onClick={handleClick}>
-            <img src={logoCuenta} height={29} alt="iconocuenta"></img>
-            <p className="miCuenta" to="/Home">Mi Cuenta</p>
+        {
+          (user === null)
+            ?
+            null
+            :
+            <div className="iconoNavbar">
 
-            <Popover
-              id="simple-popover"
-              open={Boolean(anchorEl)}
-              anchorEl={anchorEl}
-              onClose={handleClick}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-            >
-              <List
-                sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-                aria-label="contacts"
-              >
-                <ListItem disablePadding>
-                  <ListItemButton onClick={handleHome}>
-                    <ListItemIcon>
-                      <PersonIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Mi cuenta" />
-                  </ListItemButton>
-                </ListItem>
-                <Divider />
-                <ListItem disablePadding>
-                  <ListItemButton onClick={handleLogOut}>
-                    <ListItemIcon>
-                      <ExitToApp />
-                    </ListItemIcon>
-                    <ListItemText primary="Log out" />
-                  </ListItemButton>
-                </ListItem>
-              </List>
-            </Popover>
-          </div>
+              <div onClick={handleClick}>
+                <img src={logoCuenta} height={29} alt="iconocuenta"></img>
+                <p className="miCuenta" to="/Home">Mi Cuenta</p>
 
-          <ul className="navbar">
-            {
-              (user === null)
-                ?
-                null
-                :
-                null
-            }
-          </ul>
+                <Popover
+                  id="simple-popover"
+                  open={Boolean(anchorEl)}
+                  anchorEl={anchorEl}
+                  onClose={handleClick}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}
+                >
+                  <List
+                    sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+                    aria-label="contacts"
+                  >
+                    <ListItem disablePadding>
+                      <ListItemButton onClick={handleHome}>
+                        <ListItemIcon>
+                          <PersonIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Mi cuenta" />
+                      </ListItemButton>
+                    </ListItem>
+                    <Divider />
+                    <ListItem disablePadding>
+                      <ListItemButton onClick={handleLogOut}>
+                        <ListItemIcon>
+                          <ExitToApp />
+                        </ListItemIcon>
+                        <ListItemText primary="Log out" />
+                      </ListItemButton>
+                    </ListItem>
+                  </List>
+                </Popover>
+              </div>
 
-        </div>
+              <ul className="navbar">
+                {
+                  (user === null)
+                    ?
+                    null
+                    :
+                    null
+                }
+              </ul>
+
+            </div>
+        }
+
       </nav>
     </>
   )

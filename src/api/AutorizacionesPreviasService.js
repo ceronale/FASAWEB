@@ -29,3 +29,26 @@ export const setAutorizaciones = async (data, user) => {
 
     return response;
 }
+
+
+export const getAutorizaciones = async (data) => {
+
+    const config = {
+        method: 'get',
+        url: 'http://150.100.253.61:8181/cxf/list/services/listar/autorizaciones',
+        headers: {
+            'rut': data.rut,
+            'convenio': "ABCD"
+        }
+    };
+
+    const response = axios(config)
+        .then(({ data: out }) => {
+            return out;
+        })
+        .catch((error) => {
+            return error;
+        });
+
+    return response;
+}

@@ -18,7 +18,7 @@ const ListarBeneficiarios = (user) => {
   // state to store the selected filter value
   const [filtrarValue, setFiltrarValue] = useState(null);
   // state to store the options for the select input
-  const [convenios, setConvenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
+  const [convenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
   // state to store the data for the DataTable component
   const [dataTable, setDataTable] = useState({});
   // state to store the title of the modal
@@ -33,8 +33,7 @@ const ListarBeneficiarios = (user) => {
   const [convenio, setConvenio] = useState(null);
   const [rut, setRut] = useState('');
   const [formattedRut, setFormattedRut] = useState('');
-
-
+  const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   const showData = async () => {
     try {
@@ -68,17 +67,14 @@ const ListarBeneficiarios = (user) => {
         setLoading(false);
         setDataTable(undefined)
         setDataTable(response.response);
-        //print just the keys of the object separated by commas
-        console.log(Object.keys(response.response[0]).join(","));
+        setIsButtonDisabled(false)
 
-        console.log(response.response);
       }
     } catch (error) {
       setLoading(false);
       handleModal("Error", "No se pudo obtener la información de los beneficiarios");
     }
   };
-
 
 
   //create function to handle the modal
@@ -102,6 +98,8 @@ const ListarBeneficiarios = (user) => {
     rut = rut.replace(/^([\d]{1,2})([\d]{3})([\d]{3})([\dkK])$/, '$1.$2.$3-$4');
     return rut;
   }
+
+
   return (
     <main>
       <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
@@ -151,7 +149,7 @@ const ListarBeneficiarios = (user) => {
         (dataTable === undefined)
           ?
           null
-          : <DataTableBeneficiarios data={dataTable} user={usuario} />
+          : <DataTableBeneficiarios data={dataTable} user={usuario} isButtonDisabled={isButtonDisabled} updateData={showData} convenio={convenio} />
       }
 
 
@@ -159,5 +157,8 @@ const ListarBeneficiarios = (user) => {
 
   );
 }
+
+
+
 
 export default ListarBeneficiarios;

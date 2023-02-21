@@ -34,6 +34,7 @@ const DataTablePoliza = props => {
   }
 
   const handleCloseUpload = () => {
+    props.updateData();
     setShowModalUpload(false);
   }
 
@@ -138,7 +139,6 @@ const DataTablePoliza = props => {
         error: !!validationErrors[cell.id],
         helperText: validationErrors[cell.id],
         onBlur: (event) => {
-          console.log(event.target.value)
           const isValid =
             cell.column.id === 'email'
               ? validateEmail(event.target.value)
@@ -324,6 +324,7 @@ const DataTablePoliza = props => {
     if (row.original.cuentaLiquidador === undefined) {
       row.original.cuentaLiquidador = " ";
     }
+    console.log(row.original);
     return row.original;
   };
 
@@ -353,6 +354,7 @@ const DataTablePoliza = props => {
               <Button
                 variant="contained"
                 onClick={() => { setShowModalUpload(true) }}
+                disabled={props.isButtonDisabled}
               >
                 Importar
               </Button>

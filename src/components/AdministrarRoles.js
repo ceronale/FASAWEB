@@ -69,7 +69,7 @@ const AdministrarRoles = (user) => {
                     <Titulo>Administrar Roles</Titulo>
                 </ContenedorTitulo>
                 <div id="notaLogin">
-                    En esta seccion podras editar, crear y elimnar roles.
+                    En esta sección podras editar, crear y elimnar roles.
                 </div>
                 {
                     (roles === undefined)

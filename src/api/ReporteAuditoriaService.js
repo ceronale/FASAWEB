@@ -24,3 +24,21 @@ export const ReporteAuditoriaService = async (data) => {
 }
 
 
+export const getUsuarios = async () => {
+    const config = {
+        method: 'get',
+        url: 'http://150.100.253.61:8181/cxf/listandoRep/services/listar/rep',
+        headers: {}
+    };
+
+    const response = axios(config)
+        .then(({ data: out }) => {
+            return out;
+        })
+        .catch((error) => {
+            throw new error(error);
+        });
+
+    return response;
+}
+

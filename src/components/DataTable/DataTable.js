@@ -28,7 +28,7 @@ const DataTable = props => {
                 row.original[key] = " ";
             }
         });
-
+        console.log(row.original)
         return row.original;
     };
     return (
@@ -44,14 +44,12 @@ const DataTable = props => {
                             <   Button
                                 variant="contained"
                                 onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
+                                disabled={props.isButtonDisabled}
                             >
                                 Exportar
                             </Button>
                         }
                     </div>
-
-
-
                 )}
             />
 

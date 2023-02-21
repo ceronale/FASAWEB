@@ -12,15 +12,7 @@ import ModalConfirmar from "../Modals/ModalConfirmar";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import ModalAlert from "../Modals/ModalAlert";
-import {
-  Box, Button, IconButton, Tooltip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  FormControl, TextField, Autocomplete
-} from '@mui/material';
+import { Box, Button, IconButton, Tooltip, Dialog, DialogActions, DialogContent, DialogTitle, Stack, FormControl, TextField, Autocomplete } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { getRoles, getComponentesAndRolByUser, setUserAndRol, updateUserAndRol } from "../../api/RolesServices";
 
@@ -41,6 +33,7 @@ const DataTableDeleteAndExport = props => {
   const [msjModal, setMsjModal] = useState();
   const [rolModalOpen, setRolModalOpen] = useState(false);
   const [roles, setRoles] = useState([]);
+
   const handleClose = () => {
     setShowModal(false);
   }
@@ -89,9 +82,7 @@ const DataTableDeleteAndExport = props => {
       setShowModal(true);
     }
     setLoading(false);
-
     setShowModalConfirmar(false);
-
   }
 
   const handleEditRol = useCallback(
@@ -293,7 +284,7 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
           setMsjAlert("Error al actualizar el usuario");
           setShowModalAlert(true);
         }
-        console.log(response)
+
       }).catch(() => {
         setTitleAlert("Error");
         setMsjAlert("Error al actualizar el usuario");
@@ -355,4 +346,5 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
     </>
   );
 };
+
 export default DataTableDeleteAndExport;

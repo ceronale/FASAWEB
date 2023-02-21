@@ -1,7 +1,6 @@
 const axios = require('axios');
 
 export const getRoles = async () => {
-    const user = (JSON.parse(localStorage.getItem("user"))).correo;
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/leerRoles/services/leer/roles',
@@ -20,7 +19,6 @@ export const getRoles = async () => {
 }
 
 export const getRol = async (data) => {
-    const user = (JSON.parse(localStorage.getItem("user"))).correo;
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/reportar/services/reportar/auditoria',
@@ -50,7 +48,7 @@ export const deleteRol = async (data) => {
         url: 'http://150.100.253.61:8181/cxf/delRol/services/del/roles',
         headers: {
             'id_rol': data,
-            'userRep': 'gerald'
+            'userRep': user
         }
     };
     const response = axios(config)
@@ -65,7 +63,7 @@ export const deleteRol = async (data) => {
 }
 
 export const getComponentes = async () => {
-    const user = (JSON.parse(localStorage.getItem("user"))).correo;
+
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/getAllrecursos/services/listar/recurso',
@@ -83,7 +81,7 @@ export const getComponentes = async () => {
 }
 
 export const getComponentesByRol = async (data) => {
-    const user = (JSON.parse(localStorage.getItem("user"))).correo;
+
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/getAllRecursosRol/services/listar/recurso/rol',
@@ -114,7 +112,7 @@ export const addRol = async (data) => {
             'userRep': user,
         }
     };
-    console.log(config);
+
 
     const response = axios(config)
         .then(({ data: out }) => {

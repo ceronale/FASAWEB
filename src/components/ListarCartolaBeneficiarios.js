@@ -13,6 +13,7 @@ import Box from '@mui/material/Box';
 import ModalAlert from './Modals/ModalAlert';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getCartola } from "../api/CartolaBeneficiario";
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 
@@ -47,44 +48,86 @@ const ListarCartolaBeneficiarios = (user) => {
 
   // Function to show the data
   const showData = async () => {
+    setLoading(true);
+    setDataTable({});
     //format rut without dots or hyhen
     const rutNoFormat = rut.replace(/\.|-/g, '');
 
-    if (!rut || !convenio || !desde || !hasta) {
-      // show error message in modal if any of the fields is empty
-      setTitle("Error");
-      setMsj("Debe completar todos los campos.");
-      setShowModal(true);
-    } else if (rutNoFormat.length < 6) {
-      // show error message in modal if rut have less than 7 digits 
-      setTitle("Error");
-      setMsj("El rut debe tener al menos 7 caracteres.");
-      setShowModal(true);
-    } else if (desde > hasta) {
-      // show error message in modal if date range is not valid
-      setTitle("Error");
-      setMsj("La fecha desde es mayor a la fecha hasta.");
-      setShowModal(true);
-    } else {
-      // format desde and hasta date
-      const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
-      const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
-      const data = {
-        rut: rut,
-        convenio: convenio.value,
-        fechaIni: formattedDesde,
-        fechaFin: formattedHasta,
+    if (usuario.recursos.indexOf("444") === -1) {
+      if (!desde || !hasta) {
+        // show error message in modal if any of the fields is empty
+        setTitle("Error");
+        setMsj("Debe completar todos los campos.");
+        setShowModal(true);
+      } else if (desde > hasta) {
+        // show error message in modal if date range is not valid
+        setTitle("Error");
+        setMsj("La fecha desde es mayor a la fecha hasta.");
+        setShowModal(true);
+      } else {
+        const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
+        const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
+        let data = {}
+        data = {
+          rut: usuario.rut,
+          convenio: "",
+          fechaIni: formattedDesde,
+          fechaFin: formattedHasta,
+        };
 
-      };
-
-      setLoading(true);
-      const response = await getCartola(data);
-
-      setDataTable(undefined);
-      setDataTable(response.response);
+        const response = await getCartola(data);
+        setDataTable(undefined);
+        //if response.responsse is empty show error message in modal no se obtuvieron resultados
+        if (response.response.length === 0) {
+          setTitle("Error");
+          setMsj("No se obtuvieron resultados");
+          setShowModal(true);
+        }
+        setDataTable(response.response);
+      }
       setLoading(false);
-    }
-  };
+
+    } else {
+      if (!convenio || !desde || !hasta) {
+        // show error message in modal if any of the fields is empty
+        setTitle("Error");
+        setMsj("Debe completar todos los campos.");
+        setShowModal(true);
+      } else if (rut && rutNoFormat.length < 6) {
+        // show error message in modal if rut have less than 7 digits 
+        setTitle("Error");
+        setMsj("El rut debe tener al menos 7 caracteres.");
+        setShowModal(true);
+
+      } else if (desde > hasta) {
+        // show error message in modal if date range is not valid
+        setTitle("Error");
+        setMsj("La fecha desde es mayor a la fecha hasta.");
+        setShowModal(true);
+      } else {
+        const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
+        const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
+        let data = {}
+        data = {
+          rut: rut,
+          convenio: convenio.value,
+          fechaIni: formattedDesde,
+          fechaFin: formattedHasta,
+        };
+        const response = await getCartola(data);
+        setDataTable(undefined);
+        if (response.response.length === 0) {
+          setTitle("Error");
+          setMsj("No se obtuvieron resultados");
+          setShowModal(true);
+        }
+        setDataTable(response.response);
+      }
+      setLoading(false);
+    };
+  }
+
+
 
 
   const formatRut = (rut) => {
@@ -101,83 +144,99 @@ const ListarCartolaBeneficiarios = (user) => {
 
   return (
     <main>
+      <div style={{ position: 'relative' }}>
+        {loading && (
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+            <CircularProgress />
+          </div>
+        )}
+        <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
+        <div>
+          <ContenedorTitulo>
+            <Titulo>Cartola beneficiario</Titulo>
+          </ContenedorTitulo>
+          <div id="notaLogin">
+            En esta seccion podras visualizar las los beneficiarios.
+          </div>
+          <Form >
+            <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
 
-      <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
-      <div>
-        <ContenedorTitulo>
-          <Titulo>Cartola beneficiario</Titulo>
-        </ContenedorTitulo>
-        <div id="notaLogin">
-          En esta seccion podras visualizar las los beneficiarios.
+
+
+              <Grid container spacing={2}>
+                {
+                  (usuario.recursos.indexOf("444") === -1)
+                    ?
+                    null :
+                    <>
+                      <Grid xs={3}>
+                        <Autocomplete
+                          value={convenio}
+                          onChange={(event, newValue) => {
+                            setConvenio(newValue);
+                          }}
+                          id="controllable-states-demo"
+                          options={convenios}
+                          renderInput={(params) => <TextField {...params} label="Convenio" />}
+                        />
+                      </Grid>
+                      <Grid xs={3}>
+                        <TextField
+                          id="rut"
+                          label="Rut"
+                          variant="outlined"
+                          sx={{ width: '100%' }}
+                          inputProps={{ maxLength: 12, pattern: '[0-9kK]*' }}
+                          value={formattedRut}
+                          onChange={(event) => {
+                            setRut(event.target.value)
+                            setFormattedRut(formatRut(event.target.value))
+                          }}
+                        />
+                      </Grid>
+                    </>
+                }
+                <Grid xs={2}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs} size="small">
+                    <DatePicker
+                      label="Desde"
+                      value={desde}
+                      onChange={(desde) => {
+                        setDesde(desde);
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid xs={2}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs} >
+                    <DatePicker
+                      label="Hasta"
+                      value={hasta}
+                      onChange={(hasta) => {
+                        setHasta(hasta);
+                      }}
+                      renderInput={(params) => <TextField {...params} />}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid xs={2}>
+                  <Button size="large" variant="contained" onClick={showData} style={{ marginTop: 5 }}>
+                    Filtrar
+                  </Button>
+                </Grid>
+              </Grid>
+            </Box>
+          </Form>
+          {
+            (dataTable === undefined)
+              ?
+              null
+              : <DataTable data={dataTable} columns={columns} />
+          }
+
+
         </div>
-        <Form >
-          <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
-            <Grid container spacing={2}>
-              <Grid xs={3}>
-                <Autocomplete
-                  value={convenio}
-                  onChange={(event, newValue) => {
-                    setConvenio(newValue);
-                  }}
-                  id="controllable-states-demo"
-                  options={convenios}
-                  renderInput={(params) => <TextField {...params} label="Convenio" />}
-                />
-              </Grid>
-              <Grid xs={3}>
-                <TextField
-                  id="rut"
-                  label="Rut"
-                  variant="outlined"
-                  sx={{ width: '100%' }}
-                  inputProps={{ maxLength: 12, pattern: '[0-9kK]*' }}
-                  value={formattedRut}
-                  onChange={(event) => {
-                    setRut(event.target.value)
-                    setFormattedRut(formatRut(event.target.value))
-                  }}
-                />
-              </Grid>
-              <Grid xs={2}>
-                <LocalizationProvider dateAdapter={AdapterDayjs} size="small">
-                  <DatePicker
-                    label="Desde"
-                    value={desde}
-                    onChange={(desde) => {
-                      setDesde(desde);
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </LocalizationProvider>
-              </Grid>
-              <Grid xs={2}>
-                <LocalizationProvider dateAdapter={AdapterDayjs} >
-                  <DatePicker
-                    label="Hasta"
-                    value={hasta}
-                    onChange={(hasta) => {
-                      setHasta(hasta);
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </LocalizationProvider>
-              </Grid>
-              <Grid xs={2}>
-                <Button size="large" variant="contained" onClick={showData} style={{ marginTop: 5 }}>
-                  Filtrar
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </Form>
-        {
-          (dataTable === undefined)
-            ?
-            null
-            : <DataTable data={dataTable} columns={columns} />
-        }
-
-
       </div>
     </main>
 

@@ -6,7 +6,7 @@ import UploadFileBeneficiarios from "../UploadFile/UploadFileBeneficiarios";
 
 
 
-const ModalUploadFileBeneficiarios = ({ show, handleClose, msj, title }) => {
+const ModalUploadFileBeneficiarios = ({ show, handleClose, msj, title, convenio }) => {
     return (
         <Modal show={show} onHide={handleClose}
             size="lg"
@@ -17,7 +17,7 @@ const ModalUploadFileBeneficiarios = ({ show, handleClose, msj, title }) => {
             </Modal.Header>
             <Modal.Body>{msj}
 
-                <UploadFileBeneficiarios>
+                <UploadFileBeneficiarios convenio={convenio}>
 
                 </UploadFileBeneficiarios>
 

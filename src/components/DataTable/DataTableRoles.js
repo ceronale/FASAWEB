@@ -22,6 +22,7 @@ import { margin } from "@mui/system";
 import { deleteRol, getComponentesByRol, getComponentes, addRol, updateRol } from "../../api/RolesServices";
 import CircularProgress from "@mui/material/CircularProgress";
 
+
 const DataTableRoles = props => {
     //Se crea la vairable con informacion de la data table
     const [tableData, setTableData] = useState(props.data)
@@ -38,6 +39,7 @@ const DataTableRoles = props => {
     const [msjAlert, setMsjAlert] = useState();
     const [loading, setLoading] = useState(false);
     const [components, setComponents] = useState();
+
 
     // Metodo para eliminar
     const handleDeleteRow = useCallback(
@@ -125,7 +127,7 @@ const DataTableRoles = props => {
 
 
     const handleSumbitModal = () => {
-        console.log(values);
+
     }
 
 
@@ -151,7 +153,6 @@ const DataTableRoles = props => {
     const handleEditRol = async (values) => {
         const response = await updateRol(values);
         setLoading(true);
-        console.log(response)
         const { codigo } = response.response1[0];
         if (codigo === 0) {
             setTitleAlert("Éxito");
@@ -218,7 +219,7 @@ const DataTableRoles = props => {
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Eliminar">
-                                <IconButton color="error" onClick={() => handleDeleteRow(row)}>
+                                <IconButton color="error" onClick={() => handleDeleteRow(row)} disabled={row.original.id_rol === 52 || row.original.id_rol === 53 || row.original.id_rol === 50}>
                                     <Delete />
                                 </IconButton>
                             </Tooltip>

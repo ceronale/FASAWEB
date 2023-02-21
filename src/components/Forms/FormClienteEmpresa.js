@@ -17,8 +17,7 @@ import ModalAlert from '../Modals/ModalAlert';
 import BaseSelect from "react-select";
 import FixRequiredSelect from "../../FixRequiredSelect";
 import { Button } from "@mui/material";
-
-
+import CircularProgress from '@mui/material/CircularProgress';
 
 const initialForm = {
 	rut: '',
@@ -56,7 +55,7 @@ const FormClienteEmpresa = (usuario) => {
 		kamCorreo: '',
 		cargo: '',
 	});
-
+	const [loading, setLoading] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 
 	const handleClose = () => {
@@ -111,6 +110,7 @@ const FormClienteEmpresa = (usuario) => {
 	}
 
 	const onSubmit = async (e) => {
+		setLoading(true);
 		e.preventDefault();
 		var isPassValid = contraseñaValidar();
 		var isUserValid = await validateUser(registerData.user);
@@ -135,6 +135,7 @@ const FormClienteEmpresa = (usuario) => {
 			}
 
 		}
+		setLoading(false);
 	};
 
 	function contraseñaValidar() {
@@ -176,7 +177,6 @@ const FormClienteEmpresa = (usuario) => {
 
 	async function fetchDataSelect() {
 		const resp2 = await LIstaEmpresasService();
-
 		var aux = resp2['empresa'];
 		let data = aux.map(function (element) {
 			return { value: `${element.idEmpresa}`, label: `${element.nombreEmpresa}` };
@@ -203,175 +203,182 @@ const FormClienteEmpresa = (usuario) => {
 
 	return (
 		<main>
-			<form onSubmit={onSubmit}>
-				<div className="row align-items-center">
-					<div>
-						<div className="container text-center">
-							<div className="row">
-								<div className="col-6">
-									<ContenedorTitulo>
-										<Titulo>Informacion Personal</Titulo>
-									</ContenedorTitulo>
-									<GrupoInput>
-										<Label>RUT <LabelReq> *</LabelReq></Label>
-										<Inputp
-											type="text"
-											placeholder="Sin punto ni guión"
-											name="rut"
-											value={rut}
-											max="9"
-											min="8"
-											onChange={onchange}
-											required
-										/>
-									</GrupoInput>
-									<GrupoInput>
-										<Label>Nombre <LabelReq> *</LabelReq></Label>
-										<Inputs
-											type="text"
-											name="nombre"
-											placeholder=""
-											value={nombre}
-											onChange={onchange}
-											required
+			<div style={{ position: 'relative' }}>
+				{loading && (
+					<div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+						<CircularProgress />
+					</div>
+				)}
+				<form onSubmit={onSubmit}>
+					<div className="row align-items-center">
+						<div>
+							<div className="container text-center">
+								<div className="row">
+									<div className="col-6">
+										<ContenedorTitulo>
+											<Titulo>Informacion Personal</Titulo>
+										</ContenedorTitulo>
+										<GrupoInput>
+											<Label>RUT <LabelReq> *</LabelReq></Label>
+											<Inputp
+												type="text"
+												placeholder="Sin punto ni guión"
+												name="rut"
+												value={rut}
+												max="9"
+												min="8"
+												onChange={onchange}
+												required
+											/>
+										</GrupoInput>
+										<GrupoInput>
+											<Label>Nombre <LabelReq> *</LabelReq></Label>
+											<Inputs
+												type="text"
+												name="nombre"
+												placeholder=""
+												value={nombre}
+												onChange={onchange}
+												required
 
-										/>
-									</GrupoInput>
-									<GrupoInput>
-										<Label>1° Apellido <LabelReq> *</LabelReq></Label>
-										<Inputs
-											type="text"
-											name="apellido"
-											placeholder=""
-											value={apellido}
-											onChange={onchange}
-											required
-										/>
-									</GrupoInput>
-									<GrupoInput>
-										<Label>2° Apellido <LabelReq> *</LabelReq></Label>
-										<Inputs
-											type="text"
-											name="apellido2"
-											placeholder=""
-											value={apellido2}
-											onChange={onchange}
-											required
-										/>
-									</GrupoInput>
-								</div>
-								<div className="col-6">
-									<ContenedorTitulo>
-										<Titulo>Información de Cuenta</Titulo>
-									</ContenedorTitulo>
-									<GrupoInput>
-										<Label>Correo Electronico <LabelReq> *</LabelReq></Label>
-										<Inputs
-											type="email"
-											placeholder="example@example.com"
-											name="user"
-											value={user}
-											onChange={onchange}
-											required
-										/>
-									</GrupoInput>
-									<GrupoInput>
-										<Label>Contraseña <LabelReq> *</LabelReq></Label>
-										<Inputp
-											type="password"
-											name="passwd"
-											placeholder=""
-											value={passwd}
-											min="7"
-											max="20"
-											onChange={onchange}
-											required
+											/>
+										</GrupoInput>
+										<GrupoInput>
+											<Label>1° Apellido <LabelReq> *</LabelReq></Label>
+											<Inputs
+												type="text"
+												name="apellido"
+												placeholder=""
+												value={apellido}
+												onChange={onchange}
+												required
+											/>
+										</GrupoInput>
+										<GrupoInput>
+											<Label>2° Apellido <LabelReq> *</LabelReq></Label>
+											<Inputs
+												type="text"
+												name="apellido2"
+												placeholder=""
+												value={apellido2}
+												onChange={onchange}
+												required
+											/>
+										</GrupoInput>
+									</div>
+									<div className="col-6">
+										<ContenedorTitulo>
+											<Titulo>Información de Cuenta</Titulo>
+										</ContenedorTitulo>
+										<GrupoInput>
+											<Label>Correo Electronico <LabelReq> *</LabelReq></Label>
+											<Inputs
+												type="email"
+												placeholder="example@example.com"
+												name="user"
+												value={user}
+												onChange={onchange}
+												required
+											/>
+										</GrupoInput>
+										<GrupoInput>
+											<Label>Contraseña <LabelReq> *</LabelReq></Label>
+											<Inputp
+												type="password"
+												name="passwd"
+												placeholder=""
+												value={passwd}
+												min="7"
+												max="20"
+												onChange={onchange}
+												required
 
-										/>
-									</GrupoInput>
-									<GrupoInput>
-										<Label>Confirmar Contraseña <LabelReq> *</LabelReq></Label>
-										<Inputp
-											type="password"
-											placeholder=""
-											name="passwd2"
-											value={passwd2}
-											onChange={onchange}
-											min="7"
-											max="20"
-											required
-										/>
-										<RestriccionPass>
-											La contraseña debe contener desde 7 a 20 caracteres,
-											se exige una letra minuscula y una mayuscula, un numero y un caracter especial.
-										</RestriccionPass>
-									</GrupoInput>
+											/>
+										</GrupoInput>
+										<GrupoInput>
+											<Label>Confirmar Contraseña <LabelReq> *</LabelReq></Label>
+											<Inputp
+												type="password"
+												placeholder=""
+												name="passwd2"
+												value={passwd2}
+												onChange={onchange}
+												min="7"
+												max="20"
+												required
+											/>
+											<RestriccionPass>
+												La contraseña debe contener desde 7 a 20 caracteres,
+												se exige una letra minuscula y una mayuscula, un numero y un caracter especial.
+											</RestriccionPass>
+										</GrupoInput>
+									</div>
 								</div>
-							</div>
-							<div className="row">
-								<div className="col-6">
-									<ContenedorTitulo>
-										<Titulo>Informacion KAM</Titulo>
-									</ContenedorTitulo>
-									<GrupoInput>
-										<Label>Nombre Kam <LabelReq> *</LabelReq></Label>
-										<Inputs
-											type="text"
-											name="kamConvenios"
-											placeholder=""
-											value={kamConvenios}
-											onChange={onchange}
-											required
-										/>
-									</GrupoInput>
-									<GrupoInput>
-										<Label>Correo Electronico Kam <LabelReq> *</LabelReq></Label>
-										<Inputs
-											type="email"
-											name="kamCorreo"
-											placeholder=""
-											value={kamCorreo}
-											onChange={onchange}
-											required
-										/>
-										<div>
-											<Button variant="contained" color="error" type="submit" sx={{ marginTop: 2 }} >Crear Nuevo Usuario</Button>
-											<div className="CampoRequerido">
-												<span>* Campos requeridos</span>
+								<div className="row">
+									<div className="col-6">
+										<ContenedorTitulo>
+											<Titulo>Informacion KAM</Titulo>
+										</ContenedorTitulo>
+										<GrupoInput>
+											<Label>Nombre Kam <LabelReq> *</LabelReq></Label>
+											<Inputs
+												type="text"
+												name="kamConvenios"
+												placeholder=""
+												value={kamConvenios}
+												onChange={onchange}
+												required
+											/>
+										</GrupoInput>
+										<GrupoInput>
+											<Label>Correo Electronico Kam <LabelReq> *</LabelReq></Label>
+											<Inputs
+												type="email"
+												name="kamCorreo"
+												placeholder=""
+												value={kamCorreo}
+												onChange={onchange}
+												required
+											/>
+											<div>
+												<Button variant="contained" color="error" type="submit" sx={{ marginTop: 2 }} >Crear Nuevo Usuario</Button>
+												<div className="CampoRequerido">
+													<span>* Campos requeridos</span>
+												</div>
 											</div>
-										</div>
-									</GrupoInput>
-								</div>
-								<div className="col-6">
-									<ContenedorTitulo>
-										<Titulo>Información Empresa</Titulo>
-									</ContenedorTitulo>
-									<GrupoInput>
-										<Label>Cargo <LabelReq> *</LabelReq></Label>
-										<Inputs
-											type="text"
-											name="cargo"
-											placeholder=""
-											value={cargo}
-											onChange={onchange}
-											required
-										/>
-									</GrupoInput>
-									<GrupoInput>
-										<Label>Empresa (s) <LabelReq> *</LabelReq></Label>
-										<Select options={options} value={options.filter(obj => selectedOptions.includes(obj.value))}
-											onChange={onChangeSelect} isMulti required />
-									</GrupoInput>
-									{/* <select name="cars" id="cars">
+										</GrupoInput>
+									</div>
+									<div className="col-6">
+										<ContenedorTitulo>
+											<Titulo>Información Empresa</Titulo>
+										</ContenedorTitulo>
+										<GrupoInput>
+											<Label>Cargo <LabelReq> *</LabelReq></Label>
+											<Inputs
+												type="text"
+												name="cargo"
+												placeholder=""
+												value={cargo}
+												onChange={onchange}
+												required
+											/>
+										</GrupoInput>
+										<GrupoInput>
+											<Label>Empresa (s) <LabelReq> *</LabelReq></Label>
+											<Select options={options} value={options.filter(obj => selectedOptions.includes(obj.value))}
+												onChange={onChangeSelect} isMulti required />
+										</GrupoInput>
+										{/* <select name="cars" id="cars">
 									<option value="volvo">Volvo</option>
 								</select> */}
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</form>
-			<ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
+				</form>
+				<ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
+			</div>
 		</main>
 	);
 }

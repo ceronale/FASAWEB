@@ -46,6 +46,28 @@ export const getDocumento = async (data) => {
 }
 
 
+export const deleteDocumento = async (data) => {
+    const user = (JSON.parse(localStorage.getItem("user"))).correo;
+    var config = {
+        method: 'delete',
+        url: 'http://150.100.253.61:8181/cxf/delDocument/services/del/document',
+        headers: {
+            'idDocumento': data,
+            'userRep': user
+        }
+    };
+
+    const response = axios(config)
+        .then(({ data: out }) => {
+            return out;
+        })
+        .catch((error) => {
+            return error;
+        });
+
+    return response;
+}
+
 export const getDocumentos = async (data) => {
 
     var config = {

@@ -18,7 +18,7 @@ const ModalRoles = ({ show, handleClose, msj, title, name, description, propLeft
     const [descripcion, setDescripcion] = useState(description);
 
     const getDatos = (leftx, rightx) => {
-        console.log("wtfNIGGA")
+
         console.log(leftx);
         console.log(rightx);
     }

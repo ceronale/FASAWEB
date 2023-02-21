@@ -23,34 +23,34 @@ class UploadFilePolizas extends Component {
         const file = files;
         const reader = new FileReader();
         reader.onload = (event) => {
-            const wb = XLSX.read(event.target.result);
+            const wb = XLSX.read(event.target.result, { type: 'binary', dateNF: 'mm/dd/yyyy;@', cellText: true });
             const sheets = wb.SheetNames;
+            const XL_row_object = XLSX.utils.sheet_to_row_object_array(wb.Sheets[sheets[0]], { raw: false });
+
             if (sheets.length) {
-                const jsonRows = XLSX.utils.sheet_to_json(wb.Sheets[sheets[0]], { raw: false });
                 const properties = ['codigoPoliza', 'estadoPolizaAhumada', 'grupoAhumada', 'nombrePoliza', 'polizaAceptaBioequivalente', 'rutEmpresa', 'terminoBeneficio', 'cuentaLiquidador'];
-                for (let i = 0; i < jsonRows.length; i++) {
+                const dateVariables = ['terminoBeneficio'];
+                let justJson = XL_row_object;
 
-                    for (let j = 0; j < properties.length; j++) {
-                        jsonRows[i][properties[j]] = jsonRows[i][properties[j]] ?? '';
-                        if (properties[j] !== 'nombrePoliza') {
-                            jsonRows[i][properties[j]] = jsonRows[i][properties[j]].trim();
-                        }
+                justJson.forEach(row => {
+                    if (row.rutEmpresa !== undefined) {
+                        row.rutEmpresa = row.rutEmpresa.replace(/[^0-9kK]/g, '');
+                    }
+                    if (row.nombrePoliza !== undefined) {
+                        row.nombrePoliza = row.nombrePoliza.replace(/,/g, '');
                     }
 
-                    if (jsonRows[i].terminoBeneficio !== undefined) {
-                        if (jsonRows[i].terminoBeneficio.includes("/")) {
-                            var dateString = jsonRows[i].terminoBeneficio.replaceAll('-', '/')
-                            var dateObject = new Date(dateString);
-                            var day = dateObject.getDate();
-                            var month = dateObject.getMonth();
-                            var year = dateObject.getFullYear();
-                            dateObject = `${day}-${month}-${year}`;
-                            jsonRows[i].terminoBeneficio = dateObject;
+
+                    dateVariables.forEach(dateVariable => {
+                        if (row[dateVariable] !== undefined) {
+                            row[dateVariable] = this.formatDate(row[dateVariable]);
                         }
-                    }
-                }
-                const out = this.jsonToCsv(jsonRows, properties);
-                this.setState({ selectedFile: out });;
+                    });
+                });
+
+                const out = this.jsonToCsv(justJson, properties);
+                console.log(out)
+                this.setState({ selectedFile: out });
             }
         }
         reader.readAsArrayBuffer(file);
@@ -63,6 +63,20 @@ class UploadFilePolizas extends Component {
         return csvContent;
     }
 
+    formatDate(date) {
+        if (!date) return null;
+
+        if (!/^\d{2}[\/-]\d{2}[\/-]\d{4}$/.test(date)) {
+            return null;
+        }
+
+        let dateArray = date.split(/[\/-]/);
+        let year = dateArray[2];
+        let month = dateArray[1];
+        let day = dateArray[0];
+
+        return year + month.padStart(2, '0') + day.padStart(2, '0');
+    }
 
     // On file upload (click the upload button)
     onFileUpload = async (e, convenioValue) => {
