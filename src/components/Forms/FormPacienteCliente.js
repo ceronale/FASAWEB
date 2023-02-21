@@ -129,6 +129,7 @@ const FormPacienteCliente = () => {
 
 
 	const onSubmit = async (e) => {
+
 		e.preventDefault();
 		setLoading(true);
 		const respValidar = await Validate(registerData.rut, registerData.ndocumento);
@@ -368,6 +369,22 @@ const FormPacienteCliente = () => {
 											se exige una letra minuscula y una mayuscula, un numero y un caracter especial.
 										</RestriccionPass>
 									)}
+
+									<div>
+										<div className="boxTerminos">
+											<input
+												type="checkbox"
+												name="opcional"
+												id="opcional"
+												onChange={onchange}
+												checked={registerData.opcional}
+											/>
+											<div className="aceptoTerminos">
+												<p> Afiliarse a familia ahumada </p>
+											</div>
+										</div>
+
+									</div>
 								</GrupoInput>
 								{checkToken === false && (
 									<div>
@@ -383,6 +400,7 @@ const FormPacienteCliente = () => {
 											<div className="aceptoTerminos">
 												<p> Acepto los <NavLink className="navTerminos" to="">Terminos y condiciones</NavLink></p>
 											</div>
+
 										</div>
 										<div className="CrearPaciente">
 											<button className="buttomCrearCuenta" type="submit" >Crear Cuenta</button>
