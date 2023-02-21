@@ -75,7 +75,7 @@ class UploadFilePolizas extends Component {
         let month = dateArray[1];
         let day = dateArray[0];
 
-        return year + month.padStart(2, '0') + day.padStart(2, '0');
+        return year + "-" + month.padStart(2, '0') + "-" + day.padStart(2, '0');
     }
 
     // On file upload (click the upload button)
