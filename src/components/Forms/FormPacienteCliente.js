@@ -5,7 +5,7 @@ import { Label, LabelReq, Inputs, Inputp, GrupoInput, RestriccionPass, DivTitulo
 import { NavLink } from "react-router-dom";
 import ModalAlert from '../Modals/ModalAlert';
 import "../../styles/FormPacienteCliente.css";
-import { HomeService } from "../../api/HomeService";
+import { HomeService, familiaAhumadaService } from "../../api/HomeService";
 import CircularProgress from '@mui/material/CircularProgress';
 
 const initialForm = {
@@ -26,6 +26,7 @@ const FormPacienteCliente = () => {
 	const [title, setTitle] = useState();
 	const [msj, setMsj] = useState();
 	const [checkBox, setCheckbox] = useState(false);
+	const [checkBox2, setCheckbox2] = useState(false);
 	const [registerData, setRegisterData] = useState({
 		rut: '',
 		ndocumento: '',
@@ -89,6 +90,7 @@ const FormPacienteCliente = () => {
 			[event.target.name]: aux,
 		}));
 	}
+
 	const handleClickRemember = (event) => {
 		setCheckbox(!checkBox);
 		setRegisterData((prev) => ({
@@ -97,6 +99,13 @@ const FormPacienteCliente = () => {
 		}));
 	};
 
+	const handleClickRemember2 = (event) => {
+		setCheckbox2(!checkBox2);
+		setRegisterData((prev) => ({
+			...prev,
+			[event.target.name]: !checkBox2,
+		}));
+	};
 	const handleClickConfirmarToken = async (e) => {
 		e.preventDefault();
 		const respValidToken = await ValidarToken(token, registerData.user);
@@ -115,6 +124,14 @@ const FormPacienteCliente = () => {
 				setMsj("El usuario ingresado ya existe.")
 			} else {
 				setShowModal(true)
+				//crete an array data
+				const data = {
+					"rut": registerData.rut,
+					"mail": registerData.user,
+					"celular": registerData.celular,
+				}
+				//call familia ahumada api
+				const resp = await familiaAhumadaService(data);
 				setTitle("Creación de usuario")
 				setMsj("Usuario creado de manera exitosa.")
 			}
@@ -376,8 +393,9 @@ const FormPacienteCliente = () => {
 												type="checkbox"
 												name="opcional"
 												id="opcional"
-												onChange={onchange}
-												checked={registerData.opcional}
+												value={checkBox2}
+												onChange={handleClickRemember2}
+												checked={checkBox2}
 											/>
 											<div className="aceptoTerminos">
 												<p> Afiliarse a familia ahumada </p>
@@ -400,7 +418,6 @@ const FormPacienteCliente = () => {
 											<div className="aceptoTerminos">
 												<p> Acepto los <NavLink className="navTerminos" to="">Terminos y condiciones</NavLink></p>
 											</div>
-
 										</div>
 										<div className="CrearPaciente">
 											<button className="buttomCrearCuenta" type="submit" >Crear Cuenta</button>

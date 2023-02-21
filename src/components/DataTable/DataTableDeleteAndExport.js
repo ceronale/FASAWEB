@@ -261,6 +261,7 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
           setTitleAlert("Error");
           setMsjAlert("Error al actualizar el usuario");
           setShowModalAlert(true);
+          setLoading(false);
         }
         console.log(response)
       }).catch(() => {

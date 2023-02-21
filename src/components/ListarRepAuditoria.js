@@ -251,20 +251,31 @@ const ListarRepAuditoria = (user) => {
           <Form >
             <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
               <Grid container spacing={2}>
-                <Grid xs={4}>
-                  <FormControl fullWidth >
 
-                    <Autocomplete
-                      value={usuarioInputSelected}
-                      onChange={(event, newValue) => {
-                        setUsuarioInputSelected(newValue);
-                      }}
-                      id="controllable-states-demo"
-                      options={usuarioInput}
-                      renderInput={(params) => <TextField {...params} label="usuario" />}
-                    />
-                  </FormControl>
-                </Grid>
+
+                {
+                  (usuario.recursos.indexOf("445") === -1)
+                    ?
+                    null :
+                    <>
+                      <Grid xs={4}>
+                        <FormControl fullWidth >
+                          <Autocomplete
+                            value={usuarioInputSelected}
+                            onChange={(event, newValue) => {
+                              setUsuarioInputSelected(newValue);
+                            }}
+                            id="controllable-states-demo"
+                            options={usuarioInput}
+                            renderInput={(params) => <TextField {...params} label="Usuario" />}
+                          />
+                        </FormControl>
+                      </Grid>
+                    </>
+
+                }
+
+
 
                 <Grid xs={4}>
                   <FormControl fullWidth  >

@@ -38,7 +38,7 @@ export const getAutorizaciones = async (data) => {
         url: 'http://150.100.253.61:8181/cxf/list/services/listar/autorizaciones',
         headers: {
             'rut': data.rut,
-            'convenio': "ABCD"
+            'convenio': data.convenio
         }
     };
 
