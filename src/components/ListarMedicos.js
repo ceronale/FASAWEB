@@ -11,6 +11,8 @@ import Button from '@mui/material/Button';
 import ModalAlert from './Modals/ModalAlert';
 import DataTableMedicos from "./DataTable/DataTableMedicos";
 import CircularProgress from '@mui/material/CircularProgress';
+import { Autocomplete, TextField } from "@mui/material";
+
 
 const ListarMedicos = (user) => {
   //State to handle the disable/enable of lista select
@@ -46,11 +48,11 @@ const ListarMedicos = (user) => {
   }
 
 
-  //Function to handle the change of the convenio select
-  const handleChangeConvenio = async (event) => {
+  //Function to handle the change of the convenio selecthandleChangeConvenio(event, newValue);
+  const handleChangeConvenio = async (event, newValue) => {
     setLoading(true);
     //get the value of theselect
-    const value = event.target.value;
+    const value = newValue;
     //Update the selected convenio
     setConvenioSelected(value);
     //Reset the selected lista
@@ -156,23 +158,16 @@ const ListarMedicos = (user) => {
             <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
               <Grid container spacing={2}>
                 <Grid xs={3}>
-                  <FormControl fullWidth  >
-                    <InputLabel id="demo-simple-select-label">Convenio</InputLabel>
-                    <Select
-                      labelId="accion-label"
-                      id="accion-id"
-                      label="Convenio"
-                      value={convenioSelected}
-                      onChange={handleChangeConvenio}
-                    >
-                      {convenios.map((convenio) => (
-                        <MenuItem key={convenio.value} value={convenio.value}>
-                          {convenio.label}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
 
+                  <Autocomplete
+                    value={convenioSelected}
+                    onChange={(event, newValue) => {
+                      handleChangeConvenio(event, newValue);
+                    }}
+                    id="controllable-states-demo"
+                    options={convenios}
+                    renderInput={(params) => <TextField {...params} label="Convenio" />}
+                  />
                 </Grid>
                 <Grid xs={3}>
                   <FormControl fullWidth disabled={isListaDisabled}>
