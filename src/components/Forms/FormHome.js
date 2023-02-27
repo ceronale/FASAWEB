@@ -34,13 +34,9 @@ const FormHome = (user) => {
 
 	// Async function to retrieve the user data from the backend
 	const getUserData = () => {
-
 		let userData = currentUser;
-
-
 		// Destructure the user data from the response
 		const { rut, nombre, apellido, apellido2, correo, celular, kamConvenios, kamCorreo, cargo, convenio } = userData;
-
 		// Set the form state with the retrieved data
 		setFormState({
 			id: rut,
@@ -180,10 +176,10 @@ const FormHome = (user) => {
 											<label className="titulo">Informacion KAM</label>
 										</div>
 										<GrupoInput>
-											<Label>KAM Correo</Label>
+											<Label>Nombre Kam</Label>
 											<InputH
 												className="inputForm"
-												value={formState.kamEmail}
+												value={formState.kamConvenios}
 												type="text"
 												readOnly
 											/>
@@ -197,6 +193,7 @@ const FormHome = (user) => {
 												readOnly
 											/>
 										</GrupoInput>
+
 									</div>
 									<div className="col-6">
 										<div className="contenedorTitulo">

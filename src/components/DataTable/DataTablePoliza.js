@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import MaterialReactTable from 'material-react-table';
-import Button from '@mui/material/Button';
+
 import ModalConfirmar from "../Modals/ModalConfirmar";
 import ModalAlert from "../Modals/ModalAlert";
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
@@ -8,6 +8,7 @@ import "../../styles/PolizasGrupos.css";
 import { PolizaServiceUpdate } from "../../api/PolizaService";
 import ModalUploadFile from "../Modals/ModalUploadFile";
 import * as XLSX from 'xlsx/xlsx.mjs';
+import { Button, MenuItem } from '@mui/material';
 
 
 const DataTablePoliza = props => {
@@ -43,43 +44,51 @@ const DataTablePoliza = props => {
   }
   //Confirma la accion del modal y ejecuta update de la informacion de la tabla 
   const handleConfirmar = async () => {
-
-    if ((values.grupoAhumada === "" || values.grupoAhumada === null) ||
-      (values.nombrePoliza === "" || values.nombrePoliza === null) ||
-      (values.codigoPoliza === "" || values.codigoPoliza === null) ||
-      (values.rutEmpresa === "" || values.rutEmpresa === null) ||
-      (values.terminoBeneficio === "" || values.terminoBeneficio === null) ||
-      (values.polizaAceptaBioequivalente === "" || values.polizaAceptaBioequivalente === null)) {
-      setTitleAlert("Error")
-      setMsjAlert("Todos los campos deben contener datos")
-      setShowModalAlert(true);
-      setShowModalConfirmar(false);
-
-    } else {
-      const resp = await PolizaServiceUpdate(
-        values.grupoAhumada,
-        values.nombrePoliza,
-        values.codigoPoliza,
-        values.rutEmpresa,
-        values.terminoBeneficio,
-        values.polizaAceptaBioequivalente,
-        props.user.correo
-      )
-      setShowModalConfirmar(false);
-
-      if (resp.response1[0].codigoRespuesta === 0) {
-        setTitleAlert("Exito")
-        setMsjAlert(resp.response1[0].detalleRespuest)
-        tableData[row.index] = values;
-        setTableData([...tableData]);
-        setShowModalAlert(true);
-      } else {
+    try {
+      if ((values.grupoAhumada === "" || values.grupoAhumada === null) ||
+        (values.nombrePoliza === "" || values.nombrePoliza === null) ||
+        (values.codigoPoliza === "" || values.codigoPoliza === null) ||
+        (values.rutEmpresa === "" || values.rutEmpresa === null) ||
+        (values.terminoBeneficio === "" || values.terminoBeneficio === null) ||
+        (values.polizaAceptaBioequivalente === "" || values.polizaAceptaBioequivalente === null)) {
         setTitleAlert("Error")
-        setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
+        setMsjAlert("Todos los campos deben contener datos")
         setShowModalAlert(true);
-      };
+        setShowModalConfirmar(false);
 
+      } else {
+        values.terminoBeneficio = values.terminoBeneficio.split("-").reverse().join("-");
+
+        const resp = await PolizaServiceUpdate(
+          values.grupoAhumada,
+          values.nombrePoliza,
+          values.codigoPoliza,
+          values.rutEmpresa,
+          values.terminoBeneficio,
+          values.polizaAceptaBioequivalente,
+          props.user.correo
+        )
+        setShowModalConfirmar(false);
+
+        if (resp.response1[0].codigoRespuesta === 0) {
+          setTitleAlert("Exito")
+          setMsjAlert(resp.response1[0].detalleRespuest)
+          tableData[row.index] = values;
+          setTableData([...tableData]);
+          setShowModalAlert(true);
+        } else {
+          setTitleAlert("Error")
+          setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
+          setShowModalAlert(true);
+        };
+
+      }
+    } catch (error) {
+      setTitleAlert("Error")
+      setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
+      setShowModalAlert(true);
     }
+
 
 
   }
@@ -93,38 +102,8 @@ const DataTablePoliza = props => {
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
       );
 
-  //Validacion de fecha dd-mm-yyyy
-  const validateDate = (date) => {
-    var dateRegex = /^([0-9]{2})-([0-9]{2})-([0-9]{4})$/;
-    if (dateRegex.test(date)) {
-      var parts = date.split("-");
-      var day = parseInt(parts[0], 10);
-      var month = parseInt(parts[1], 10);
-      var year = parseInt(parts[2], 10);
-      if (year < 1000 || year > 3000 || month === 0 || month > 12) {
-        return false;
-      }
-      var monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-      if (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)) {
-        monthLength[1] = 29;
-      }
-      return day > 0 && day <= monthLength[month - 1];
-    } else {
-      return false;
-    }
-  }
-
-  //validar bioequivalente 0 o 1
-  const validateBioequivalente = (bioequivalente) => {
-    if (bioequivalente === "0" || bioequivalente === "1") {
-      return true;
-    } else {
-      return false;
-    }
-  }
 
   //validate that rut has at least 8 digits
-
   const validateRut = (rut) => {
     if (rut.length >= 8) {
       return true;
@@ -142,22 +121,16 @@ const DataTablePoliza = props => {
           const isValid =
             cell.column.id === 'email'
               ? validateEmail(event.target.value)
-              : cell.column.id === 'terminoBeneficio'
-                ? validateDate(event.target.value)
-                : cell.column.id === 'rutEmpresa'
-                  ? validateRut(event.target.value)
-                  : cell.column.id === 'polizaAceptaBioequivalente'
-                    ? validateBioequivalente(event.target.value)
-                    : validateRequired(event.target.value);
+              : cell.column.id === 'rutEmpresa'
+                ? validateRut(event.target.value)
+                : validateRequired(event.target.value);
           if (!isValid) {
-            //set validation error for cell if invalid depending on column if bioequivalente must say 0 or 1
 
             setValidationErrors({
               ...validationErrors,
-              [cell.id]: cell.column.id === 'terminoBeneficio' ? `${cell.column.columnDef.header} debe ser dd-mm-yyyy` :
-                cell.column.id === 'polizaAceptaBioequivalente' ? `${cell.column.columnDef.header} debe ser 0 o 1` :
-                  cell.column.id === 'rutEmpresa' ? `${cell.column.columnDef.header} el rut debe contener al menos 8 caracteres` :
-                    `${cell.column.columnDef.header} es requerido`,
+              [cell.id]:
+                cell.column.id === 'rutEmpresa' ? `${cell.column.columnDef.header} el rut debe contener al menos 8 caracteres` :
+                  `${cell.column.columnDef.header} es requerido`,
             });
           } else {
             //remove validation error for cell if valid
@@ -171,6 +144,18 @@ const DataTablePoliza = props => {
     },
     [validationErrors],
   );
+
+  //set values of example for bio 
+  const bio = [
+    {
+      value: "0",
+      label: "No",
+    },
+    {
+      value: "1",
+      label: "Si",
+    },
+  ];
 
   const columns = [
     {
@@ -217,6 +202,12 @@ const DataTablePoliza = props => {
       size: 10,
       muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
         ...getCommonEditTextFieldProps(cell),
+        select: true,
+        children: bio.map((state) => (
+          <MenuItem key={state.value} value={state.value}>
+            {state.label}
+          </MenuItem>
+        )),
         inputProps: { maxLength: 1, pattern: '[0-1]' },
       }),
 
@@ -234,11 +225,15 @@ const DataTablePoliza = props => {
       accessorKey: 'terminoBeneficio',
       header: 'Fecha Termino Beneficio',
       size: 120,
-      muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+      muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
         ...getCommonEditTextFieldProps(cell),
-        inputProps: { maxLength: 10 },
+        type: 'date',
+        value: row.original.terminoBeneficio.split("-").reverse().join("-"),
+        onChange: (event) => {
+          const { value } = event.target;
+          row.original.terminoBeneficio = value.split("-").reverse().join("-");
+        },
       }),
-
     },
     {
       accessorKey: 'cuentaLiquidador',
@@ -262,13 +257,13 @@ const DataTablePoliza = props => {
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     setValues(values);
     setRow(row);
+
     if (!Object.keys(validationErrors).length) {
       setTitle("¿Desea continuar?")
       setMsj("Seleccione confirmar si desea editar el campo")
       setShowModalConfirmar(true)
       exitEditingMode();
     }
-
   };
 
   //Metodo para handle la cancelacion de la edicion de informacion de la table
@@ -324,7 +319,6 @@ const DataTablePoliza = props => {
     if (row.original.cuentaLiquidador === undefined) {
       row.original.cuentaLiquidador = " ";
     }
-    console.log(row.original);
     return row.original;
   };
 
@@ -343,7 +337,6 @@ const DataTablePoliza = props => {
           localization={MRT_Localization_ES}
           renderBottomToolbarCustomActions={({ table }) => (
             <div style={{ display: 'flex', gap: '0.5rem' }}>
-
               <Button
                 variant="contained"
                 onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
@@ -359,7 +352,6 @@ const DataTablePoliza = props => {
                 Importar
               </Button>
             </div>
-
           )}
         />
       </div>

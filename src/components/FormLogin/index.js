@@ -74,7 +74,6 @@ const FormLogin = () => {
 			// Si el código de resultado es 0 (ok), se procede a obtener los datos del usuario y a almacenarlos en el almacenamiento local
 			if (codigoResultadoLogin === 0) {
 				//Create a function to get user data depending on the role
-
 				user = await HomeServiceEmpresa(registerData.email);
 				[usuario] = user.usuarioEmpresa;
 				let rol = await getComponentesAndRolByUser(usuario.id);

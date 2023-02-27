@@ -14,6 +14,7 @@ import Delete from '@mui/icons-material/Delete';
 import { Edit } from "@material-ui/icons";
 import CircularProgress from '@mui/material/CircularProgress';
 import { set } from "react-hook-form";
+import InputLabel from '@mui/material/InputLabel';
 import {
     Box,
     Button,
@@ -25,6 +26,7 @@ import {
     Stack,
     TextField,
     Tooltip,
+    MenuItem
 } from '@mui/material';
 
 const checkDate = (date) => {
@@ -101,11 +103,9 @@ const DataTableAutorizacionPrevia = props => {
                 helperText: validationErrors[cell.id],
                 onBlur: (event) => {
                     const isValid =
-                        cell.column.id === 'fechaDesde'
-                            ? validateDate(event.target.value)
-                            : cell.column.id === 'exc_Inc'
-                                ? validateExcInc(event.target.value)
-                                : validateRequired(event.target.value);
+                        cell.column.id === 'exc_Inc'
+                            ? validateExcInc(event.target.value)
+                            : validateRequired(event.target.value);
                     if (!isValid) {
                         //set validation error for cell if invalid depending on column if bioequivalente must say 0 or 1
                         setValidationErrors({
@@ -128,7 +128,18 @@ const DataTableAutorizacionPrevia = props => {
         [validationErrors],
     );
 
-    //Use memo to create the columns of the table
+    const bio = [
+        {
+            value: "I",
+            label: "Inclusión",
+        },
+        {
+            value: "E",
+            label: "Exculsión",
+        },
+    ];
+
+
     const columns = [
         {
             accessorKey: 'rutMedico',
@@ -143,9 +154,15 @@ const DataTableAutorizacionPrevia = props => {
         {
             accessorKey: 'fechaDesde',
             header: 'Fecha Desde',
-            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+            muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
                 ...getCommonEditTextFieldProps(cell),
                 inputProps: { maxLength: 10 },
+                type: 'date',
+                value: row.original.fechaDesde.split("-").reverse().join("-"),
+                onChange: (event) => {
+                    const { value } = event.target;
+                    row.original.fechaDesde = value.split("-").reverse().join("-");
+                },
             }),
         },
         {
@@ -154,6 +171,12 @@ const DataTableAutorizacionPrevia = props => {
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
                 ...getCommonEditTextFieldProps(cell),
                 inputProps: { maxLength: 1 },
+                select: true,
+                children: bio.map((state) => (
+                    <MenuItem key={state.value} value={state.value}>
+                        {state.label}
+                    </MenuItem>
+                )),
             }),
         }
     ];
@@ -199,6 +222,8 @@ const DataTableAutorizacionPrevia = props => {
     };
 
     const handleConfirmar = async () => {
+
+        values.fechaDesde = values.fechaDesde.split("-").reverse().join("-");
         values.exc_Inc = values.exc_Inc.toUpperCase();
         if ((values.nombre === "" || values.nombre === null) ||
             (values.rutMedico === "" || values.rutMedico === null) ||
@@ -513,10 +538,20 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
 
 
     };
+    const bio = [
+        {
+            value: "I",
+            label: "Inclusión",
+        },
+        {
+            value: "E",
+            label: "Exculsión",
+        },
+    ];
+
 
     return (
         <>
-
             <Dialog open={open} style={{ zIndex: 2 }}>
                 <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
                 <DialogTitle textAlign="center">Crear medico</DialogTitle>
@@ -528,19 +563,48 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
                                 minWidth: { xs: '300px', sm: '360px', md: '400px' },
                                 gap: '1.5rem',
                             }}
+
+
                         >
-                            {columns.map((column) => (
-                                column.header === "Nombre" ? null :
-                                    <TextField
-                                        key={column.accessorKey}
-                                        label={column.header}
-                                        name={column.accessorKey}
-                                        variant="standard"
-                                        onChange={(e) =>
-                                            setValues({ ...values, [e.target.name]: e.target.value })
-                                        }
-                                    />
-                            ))}
+                            <InputLabel htmlFor="component-disabled">Rut Medico</InputLabel>
+                            <TextField
+                                key={"rutMedico"}
+                                name={"rutMedico"}
+                                variant="standard"
+                                onChange={(e) =>
+                                    setValues({ ...values, [e.target.name]: e.target.value })
+                                }
+                            />
+                            <InputLabel htmlFor="component-disabled">Fecha Desde</InputLabel>
+                            <TextField
+                                key={"fechaDesde"}
+                                name={"fechaDesde"}
+                                type="date"
+                                variant="standard"
+                                onChange={(e) =>
+                                    setValues({ ...values, [e.target.name]: e.target.value.split("-").reverse().join("-") })
+                                }
+                            />
+                            <InputLabel htmlFor="component-disabled">Exclusion/Inclusion</InputLabel>
+                            <TextField
+                                key={"exc_Inc"}
+                                name={"exc_Inc"}
+                                variant="standard"
+                                select={true}
+                                children={
+                                    bio.map((state) => (
+                                        <MenuItem key={state.value} value={state.value}>
+                                            {state.label}
+                                        </MenuItem>
+                                    ))
+                                }
+
+                                onChange={(e) =>
+                                    setValues({ ...values, [e.target.name]: e.target.value })
+                                }
+
+                            />
+
                         </Stack>
                     </form>
                 </DialogContent>

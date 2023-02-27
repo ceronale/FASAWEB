@@ -6,9 +6,9 @@ export const getBeneficiarios = async (data) => {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/beneficiario/services/listar/beneficiario',
         headers: {
-            'codigoCliente': "MCAM",
+            'codigoCliente': data.codigoCliente,
             'activos': data.activos,
-            'rut': "239860516"
+            'rut': data.rut
         }
     };
 
@@ -53,7 +53,6 @@ export const updateBeneficiario = async (data, user) => {
             'userRep': user,
         }
     };
-
 
     const response = axios(config)
         .then(({ data: out }) => {

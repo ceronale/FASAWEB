@@ -70,13 +70,14 @@ class UploadFileBeneficiarios extends Component {
 
                     dateVariables.forEach(dateVariable => {
                         if (row[dateVariable] !== undefined) {
+
                             row[dateVariable] = this.formatDate(row[dateVariable]);
                         }
                     });
                 });
 
                 const out = this.jsonToCsv(justJson, properties);
-                console.log(out)
+
                 this.setState({ selectedFile: out });;
             }
         }

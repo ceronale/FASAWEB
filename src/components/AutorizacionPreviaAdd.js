@@ -15,6 +15,7 @@ import { RadioGroup } from "@mui/material";
 import { Radio, Autocomplete } from "@mui/material";
 import { FormControlLabel, FormLabel } from "@mui/material";
 import { setAutorizaciones } from '../api/AutorizacionesPreviasService';
+import 'dayjs/locale/es';
 
 
 const AutorizacionPreviaAdd = (user) => {
@@ -222,7 +223,6 @@ const AutorizacionPreviaAdd = (user) => {
                                         <FormLabel >Campo SAP/UPC</FormLabel>
 
                                         <Select
-
                                             labelId="Campo"
                                             id="campo"
                                             value={valuesForm.Campo}
@@ -281,7 +281,7 @@ const AutorizacionPreviaAdd = (user) => {
                                 </Grid>
                                 <Grid xs={4}>
                                     <FormLabel >Fecha Inicio</FormLabel>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={"es"}>
                                         <DatePicker
                                             value={valuesForm.desde}
                                             sx={{ width: '100%' }}
@@ -295,7 +295,7 @@ const AutorizacionPreviaAdd = (user) => {
                                 </Grid>
                                 <Grid xs={4}>
                                     <FormLabel >Fecha Termino</FormLabel>
-                                    <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={"es"}>
                                         <DatePicker
                                             value={valuesForm.hasta}
                                             sx={{ width: '100%' }}

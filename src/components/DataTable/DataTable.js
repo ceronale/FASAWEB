@@ -13,12 +13,12 @@ const DataTable = props => {
         })
         const workSheet = XLSX.utils.json_to_sheet(newData)
         const workBook = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(workBook, workSheet, "ReporteAuditoria")
+        XLSX.utils.book_append_sheet(workBook, workSheet, props.nombreArchivo)
         //Buffer
         //Binary string
         XLSX.write(workBook, { bookType: "xlsx", type: "binary" })
         //Download
-        XLSX.writeFile(workBook, "ReporteAuditoria.xlsx")
+        XLSX.writeFile(workBook, props.nombreArchivo + ".xlsx")
     }
 
     const getRows = (row) => {
@@ -28,7 +28,30 @@ const DataTable = props => {
                 row.original[key] = " ";
             }
         });
-        console.log(row.original)
+        console.log(row.original + " " + props.nombreArchivo)
+        //if props.nombreArchivo is "CartolaBeneficiarios" then reorder the columns
+        if (props.nombreArchivo === "CartolaBeneficiario") {
+            const reorderedRow = {
+                estado: row.original.estado,
+                fecha: row.original.fecha,
+                farmacia: row.original.farmacia,
+                id_receta: row.original.id_receta,
+                direccion: row.original.direccion,
+                comuna: row.original.comuna,
+                boleta: row.original.boleta,
+                guia: row.original.guia,
+                SAP: row.original.SAP,
+                decripcion_producto: row.original.decripcion_producto,
+                cantidad: row.original.cantidad,
+                precio: row.original.precio,
+                descto: row.original.descto,
+                bonificado: row.original.bonificado,
+                copago: row.original.copago,
+                total: row.original.total,
+
+            }
+            return reorderedRow;
+        }
         return row.original;
     };
     return (

@@ -121,54 +121,86 @@ const DataTableBeneficiarios = props => {
 
     // Regular expression for date format
     const dateFormat = /^\d{2}-\d{2}-\d{4}$/;
+    const validateRequired = (value) => !!value.length;
+    const validateEmail = (email) =>
+        !!email.length &&
+        email
+            .toLowerCase()
+            .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+            );
+
+
+    //validate that rut has at least 8 digits
+    const validateRut = (rut) => {
+        if (rut.length >= 8) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    const getCommonEditTextFieldProps = useCallback(
+        (cell) => {
+            return {
+                error: !!validationErrors[cell.id],
+                helperText: validationErrors[cell.id],
+                onBlur: (event) => {
+                    const isValid =
+                        cell.column.id === 'email'
+                            ? validateEmail(event.target.value)
+                            : cell.column.id === 'rutEmpresa'
+                                ? validateRut(event.target.value)
+                                : validateRequired(event.target.value);
+                    if (!isValid) {
+                        //set validation error for cell if invalid depending on column if bioequivalente must say 0 or 1
+
+                        setValidationErrors({
+                            ...validationErrors,
+                            [cell.id]:
+                                cell.column.id === 'rutTitular' || cell.column.id === 'rutBeneficiario' ? `${cell.column.columnDef.header} el rut debe contener al menos 8 caracteres` :
+                                    `${cell.column.columnDef.header} es requerido`,
+                        });
+                    } else {
+                        //remove validation error for cell if valid
+                        delete validationErrors[cell.id];
+                        setValidationErrors({
+                            ...validationErrors,
+                        });
+                    }
+                },
+            };
+        },
+        [validationErrors],
+    );
+
+    const bio = [
+        {
+            value: "1",
+            label: "Masculino",
+        },
+        {
+            value: "2",
+            label: "Femenino",
+        },
+    ];
     const columns = [
         {
             accessorKey: 'codigoConvenio',
             header: 'Codigo de Convenio',
             size: 100,
             enableEditing: false,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.codigoConvenio,
-                helperText: validationErrors.codigoConvenio,
-
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, codigoConvenio: 'Codigo de Convenio es requerido' }));
-                        setHasValidationError(true);
-                    } else if (value.length > 15) {
-                        setValidationErrors((prev) => ({ ...prev, grupo: 'Codigo de Convenio debe tener maximo 15 caracteres' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.codigoConvenio;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+            }),
         },
         {
             accessorKey: 'grupo',
             header: 'Grupo',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.grupo,
-                helperText: validationErrors.grupo,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, grupo: 'Grupo es requerido' }));
-                        setHasValidationError(true);
-                    } else if (value.length > 15) {
-                        setValidationErrors((prev) => ({ ...prev, grupo: 'Grupo debe tener maximo 15 caracteres' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.grupo;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
+            enableEditing: false,
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+            }),
 
         },
         {
@@ -176,21 +208,9 @@ const DataTableBeneficiarios = props => {
             header: 'Credenciales',
             size: 100,
             enableEditing: false,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.credenciales,
-                helperText: validationErrors.credenciales,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, credenciales: 'Credenciales es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.credenciales;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+            }),
 
         },
         {
@@ -198,392 +218,199 @@ const DataTableBeneficiarios = props => {
             header: 'Rut Titular',
             size: 100,
             enableEditing: false,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.rutTitular,
-                helperText: validationErrors.rutTitular,
-                value: formatRut(values.rutTitular),
-
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, rutTitular: 'Rut Titular es requerido' }));
-                        setHasValidationError(true);
-                    } else if (value.length > 12) {
-                        setValidationErrors((prev) => ({ ...prev, rutTitular: 'Rut Titular debe tener maximo 12 caracteres' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.rutTitular;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+            }),
 
         },
         {
-            accessorKey: 'rutBeneficiario', header: 'Rut Beneficiario', size: 100, enableEditing: false, muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.rutBeneficiario, helperText: validationErrors.rutBeneficiario, value: formatRut(values.rutBeneficiario),
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, rutBeneficiario: 'Rut Beneficiario es requerido' }));
-                        setHasValidationError(true);
-                    } else if (value.length > 12) {
-                        setValidationErrors((prev) => ({ ...prev, rutBeneficiario: 'Rut Beneficiario debe tener maximo 12 caracteres' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.rutBeneficiario;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                    setValues((prev) => ({ ...prev, rutBeneficiario: value }));
-                },
-            },
+            accessorKey: 'rutBeneficiario', header: 'Rut Beneficiario', size: 100, enableEditing: false,
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+            }),
         },
         {
             accessorKey: 'codigoCarga',
             header: 'Codigo de Carga',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.codigoCarga,
-                helperText: validationErrors.codigoCarga,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, codigoCarga: 'Codigo de Carga es requerido' }));
-                        setHasValidationError(true);
-                    } else if (!/^\d{1,3}$/.test(value)) {
-                        setValidationErrors((prev) => ({ ...prev, codigoCarga: 'El codigo de carga solo puede tener 3 caracteres numericos como maximo' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.codigoCarga;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
 
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: {
+                    maxLength: 3,
+                    onKeyPress: (event) => {
+                        const keyCode = event.which || event.keyCode;
+                        const keyValue = String.fromCharCode(keyCode);
+                        const regex = /[0-9]/;
+                        if (!regex.test(keyValue)) {
+                            event.preventDefault();
+                        }
+                    },
+                },
+            }),
         },
         {
             accessorKey: 'poliza',
             header: 'Poliza',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.poliza,
-                helperText: validationErrors.poliza,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        // No validation error if value is not provided (not required)
-                    } else if (!/^\d{1,15}$/.test(value)) {
-                        setValidationErrors((prev) => ({ ...prev, poliza: 'La poliza solo puede tener 15 caracteres numericos como maximo' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.poliza;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 15 },
+                onKeyPress: (event) => {
+                    const keyCode = event.which || event.keyCode;
+                    const keyValue = String.fromCharCode(keyCode);
+                    const regex = /[0-9]/;
+                    if (!regex.test(keyValue)) {
+                        event.preventDefault();
                     }
                 },
-            },
+            }),
 
         },
         {
             accessorKey: 'codigoRelacion',
             header: 'Codigo de Relacion',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.codigoRelacion,
-                helperText: validationErrors.codigoRelacion,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, codigoRelacion: 'Codigo de Relacion es requerido' }));
-                        setHasValidationError(true);
-                    } else if (!/^\d{1,2}$/.test(value)) {
-                        setValidationErrors((prev) => ({ ...prev, codigoRelacion: 'El codigo de relacion solo puede tener 2 caracteres numericos como maximo' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.codigoRelacion;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 2 },
+                onKeyPress: (event) => {
+                    const keyCode = event.which || event.keyCode;
+                    const keyValue = String.fromCharCode(keyCode);
+                    const regex = /[0-9]/;
+                    if (!regex.test(keyValue)) {
+                        event.preventDefault();
                     }
                 },
-
-            },
-
-
+            }),
         },
         {
             accessorKey: 'nombre',
             header: 'Nombre',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.nombre,
-                helperText: validationErrors.nombre,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, nombre: 'Nombre es requerido' }));
-                        setHasValidationError(true);
-                    } else if (value.length > 15) {
-                        setValidationErrors((prev) => ({ ...prev, nombre: 'El nombre solo puede tener 15 caracteres como maximo' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.nombre;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 15 },
+            }),
         },
         {
             accessorKey: 'apellido1',
             header: 'Apellido 1',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.apellido1,
-                helperText: validationErrors.apellido1,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, apellido1: 'Apellido 1 es requerido' }));
-                        setHasValidationError(true);
-                    } else if (value.length > 20) {
-                        setValidationErrors((prev) => ({ ...prev, apellido1: 'El apellido 1 solo puede tener 20 caracteres como maximo' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.apellido1;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 20 },
+            }),
         },
         {
             accessorKey: 'apellido2',
             header: 'Apellido 2',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.apellido2,
-                helperText: validationErrors.apellido2,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, apellido2: 'Apellido 2 es requerido' }));
-                        setHasValidationError(true);
-                    } else if (value.length > 15) {
-                        setValidationErrors((prev) => ({ ...prev, apellido2: 'El apellido 2 solo puede tener 15 caracteres como maximo' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.apellido2;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 15 },
+            }),
         },
         {
             accessorKey: 'fechaNacimiento',
             header: 'Fecha Nacimiento',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.fechaNacimiento,
-                helperText: validationErrors.fechaNacimiento,
+            muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                type: 'date',
+                value: row.original.fechaNacimiento.split("-").reverse().join("-"),
                 onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, fechaNacimiento: 'Fecha Nacimiento es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        var dateFormat = /^\d{2}-\d{2}-\d{4}$/;
-                        if (!value.match(dateFormat)) {
-                            setValidationErrors((prev) => ({ ...prev, fechaNacimiento: 'Formato de fecha no válido, debe ser DD-MM-YYYY' }));
-                            setHasValidationError(true);
-                        } else {
-                            delete validationErrors.fechaNacimiento;
-                            setValidationErrors({ ...validationErrors });
-                            setHasValidationError(false);
-                        }
-                    }
+                    const { value } = event.target;
+                    row.original.fechaNacimiento = value.split("-").reverse().join("-");
                 },
-            },
+            }),
         },
-
         {
             accessorKey: 'genero',
             header: 'Genero',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.genero,
-                helperText: validationErrors.genero,
+            muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                select: true,
+                children: bio.map((state) => (
+                    <MenuItem key={state.value} value={state.value}>
+                        {state.label}
+                    </MenuItem>
+                )),
+                value: row.original.genero === "Femenino" ? "2" : row.original.genero === "Masculino" ? "1" : null,
                 onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, genero: 'Genero es requerido' }));
-                        setHasValidationError(true);
-                    } else if (value !== "femenino" && value !== "masculino") {
-                        setValidationErrors((prev) => ({ ...prev, genero: 'Genero debe ser "femenino" o "masculino"' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.genero;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
+                    const { value } = event.target;
+                    row.original.genero = value === "2" ? "Femenino" : value === "1" ? "Masculino" : null;
                 },
-            },
+                inputProps: { maxLength: 1, pattern: '[0-1]' },
+            }),
         },
         {
             accessorKey: 'vigencia',
             header: 'Vigencia',
             size: 100,
             enableEditing: false,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.vigencia,
-                helperText: validationErrors.vigencia,
+            muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                type: 'date',
+                value: row.original.vigencia.split("-").reverse().join("-"),
                 onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, vigencia: 'Vigencia es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        var dateFormat = /^\d{2}-\d{2}-\d{4}$/;
-                        if (!value.match(dateFormat)) {
-                            setValidationErrors((prev) => ({ ...prev, vigencia: 'Formato de fecha no válido, debe ser DD-MM-YYYY' }));
-                            setHasValidationError(true);
-                        } else {
-                            delete validationErrors.vigencia;
-                            setValidationErrors({ ...validationErrors });
-                            setHasValidationError(false);
-                        }
-                    }
+                    const { value } = event.target;
+                    row.original.vigencia = value.split("-").reverse().join("-");
                 },
-            },
+            }),
         },
         {
             accessorKey: 'termino',
             header: 'Termino',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.termino,
-                helperText: validationErrors.termino,
+            muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                type: 'date',
+                value: row.original.termino.split("-").reverse().join("-"),
                 onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, termino: 'Termino es requerido' }));
-                        setHasValidationError(true);
-                    } else if (!dateFormat.test(value)) {
-                        setValidationErrors((prev) => ({ ...prev, termino: 'Termino debe tener el formato DD-MM-YYYY' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.termino;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
+                    const { value } = event.target;
+                    row.original.termino = value.split("-").reverse().join("-");
                 },
-            },
+            }),
         },
 
         {
             accessorKey: 'mail',
             header: 'Correo Electronico',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.mail,
-                helperText: validationErrors.mail,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        setValidationErrors((prev) => ({ ...prev, mail: 'Correo Electronico es requerido' }));
-                        setHasValidationError(true);
-                    } else {
-                        // RegEx to check if email is in correct format
-                        const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                        if (!emailRegex.test(value)) {
-                            setValidationErrors((prev) => ({ ...prev, mail: 'Correo Electronico no es valido' }));
-                            setHasValidationError(true);
-                        } else {
-                            delete validationErrors.mail;
-                            setValidationErrors({ ...validationErrors });
-                            setHasValidationError(false);
-                        }
-                    }
-                },
-            },
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 80 },
+            }),
         },
         {
             accessorKey: 'direccion',
             header: 'Direccion',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.direccion,
-                helperText: validationErrors.direccion,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        delete validationErrors.direccion;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    } else if (value.length > 60) {
-                        setValidationErrors((prev) => ({ ...prev, direccion: 'Maximo 60 caracteres permitidos' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.direccion;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
-
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 60 },
+            }),
         },
 
         {
             accessorKey: 'comuna',
             header: 'Comuna',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.comuna,
-                helperText: validationErrors.comuna,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        delete validationErrors.comuna;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    } else if (value.length > 20) {
-                        setValidationErrors((prev) => ({ ...prev, comuna: 'Maximo 20 caracteres permitidos' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.comuna;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 20 },
+            }),
         },
         {
             accessorKey: 'ciudad',
             header: 'Ciudad',
             size: 100,
-            muiTableBodyCellEditTextFieldProps: {
-                error: !!validationErrors.ciudad,
-                helperText: validationErrors.ciudad,
-                onChange: (event) => {
-                    const value = event.target.value;
-                    if (!value) {
-                        delete validationErrors.ciudad;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    } else if (value.length > 20) {
-                        setValidationErrors((prev) => ({ ...prev, ciudad: 'Maximo 20 caracteres permitidos' }));
-                        setHasValidationError(true);
-                    } else {
-                        delete validationErrors.ciudad;
-                        setValidationErrors({ ...validationErrors });
-                        setHasValidationError(false);
-                    }
-                },
-            },
+            muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
+                ...getCommonEditTextFieldProps(cell),
+                inputProps: { maxLength: 20 },
+            }),
         },
 
     ]
@@ -598,6 +425,7 @@ const DataTableBeneficiarios = props => {
 
 
     const handleEditDate = async (values) => {
+        setLoading(true);
         let valuesCopy = { ...values };
 
         // Format date and gender fields to match API requirements
@@ -626,7 +454,7 @@ const DataTableBeneficiarios = props => {
         try {
             // Make API call to update beneficiario
             const response = await updateBeneficiario(values, props.user.correo);
-
+            console.log(response);
             // Handle network error
             if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
                 setLoading(false);
@@ -649,7 +477,7 @@ const DataTableBeneficiarios = props => {
                 setShowModalAlert(true);
             }
         } catch (error) {
-            console.log(error);
+
             setLoading(false);
             setTitleAlert("Error")
             setMsjAlert("Error al actualizar beneficiario");
@@ -658,26 +486,19 @@ const DataTableBeneficiarios = props => {
     };
     // Method to handle editing of table data
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
+        setLoading(true);
         setValues(values);
         setRow(row);
-        if (!hasValidationError) {
-            setLoading(true);
-            setShowModalConfirmar(false);
+        if (!Object.keys(validationErrors).length) {
             //create a  variable to store the values of values to do not change the original values
             let valuesCopy = { ...values };
+            setShowModalConfirmar(false);
 
 
-            // Format date and gender fields to match API requirements
-            values.fechaNacimiento = values.fechaNacimiento.split("-").reverse().join("");
-            values.vigencia = values.vigencia.split("-").reverse().join("");
-            values.termino = values.termino.split("-").reverse().join("");
-
-            if (values.rutBeneficiario && values.rutBeneficiario.replace) {
-                values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9]/g, '');
-            }
-
-            if (values.rutTitular && values.rutTitular.replace) {
-                values.rutTitular = values.rutTitular.replace(/[^0-9]/g, '');
+            if (valuesCopy.genero === "1") {
+                valuesCopy.genero = "Masculino";
+            } else if (valuesCopy.genero === "2") {
+                valuesCopy.genero = "Femenino";
             }
 
             if (values.genero === "Masculino" || values.genero === "masculino") {
@@ -685,21 +506,39 @@ const DataTableBeneficiarios = props => {
             } else if (values.genero === "Femenino" || values.genero === "femenino") {
                 values.genero = 2;
             }
+
             if (values.genero === "M" || values.genero === "m") {
                 values.genero = 1;
             } else if (values.genero === "F" || values.genero === "f") {
                 values.genero = 2;
             }
 
+            valuesCopy.fechaNacimiento = values.fechaNacimiento.split("-").reverse().join("-");
+            valuesCopy.vigencia = values.vigencia.split("-").reverse().join("-");
+            valuesCopy.termino = values.termino.split("-").reverse().join("-");
+
+
+            // Format date and gender fields to match API requirements
+            values.fechaNacimiento = values.fechaNacimiento.replace(/-/g, "");
+            values.vigencia = values.vigencia.replace(/-/g, "");
+            values.termino = values.termino.replace(/-/g, "");
+
+
+            if (values.rutBeneficiario && values.rutBeneficiario.replace) {
+                values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9]/g, '');
+            }
+
+
+
+            if (values.rutTitular && values.rutTitular.replace) {
+                values.rutTitular = values.rutTitular.replace(/[^0-9]/g, '');
+            }
 
             //add a try and catch to handle the error
-
             try {
-
                 // Make API call to update beneficiario
                 const response = await updateBeneficiario(values, props.user.correo);
-
-
+                console.log(response)
                 // Handle network error
                 if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
                     setLoading(false);
@@ -709,6 +548,7 @@ const DataTableBeneficiarios = props => {
                 } else {
                     setLoading(false);
                 }
+
                 // Handle successful update
                 if (response.actualizaResponse[0].codigoError === 0) {
                     setTitleAlert("Éxito")
@@ -721,8 +561,8 @@ const DataTableBeneficiarios = props => {
                     setMsjAlert("Error al actualizar beneficiario");
                     setShowModalAlert(true);
                 }
+
             } catch (error) {
-                console.log(error);
                 setLoading(false);
                 setTitleAlert("Error")
                 setMsjAlert("Error al actualizar beneficiario");
@@ -754,7 +594,7 @@ const DataTableBeneficiarios = props => {
 
 
     const getRows = (row) => {
-        console.log(row.original);
+
         delete row.tableData;
         Object.entries(row.original).forEach(([key, value]) => {
             if (value === undefined) {
@@ -810,93 +650,94 @@ const DataTableBeneficiarios = props => {
 
 
     return (
-        <>        <div style={{ position: 'relative' }}>
-            {loading && (
-                <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
-                    <CircularProgress />
+        <>
+            <div style={{ position: 'relative' }}>
+                {loading && (
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '9999999' }}>
+                        <CircularProgress />
+                    </div>
+                )}
+                <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
+                <div className="boxTable">
+
+                    {tableData === undefined ? null :
+                        <MaterialReactTable
+                            zIndex={5}
+                            columns={columns}
+                            data={tableData}
+                            positionToolbarAlertBanner="bottom"
+                            editingMode="modal"
+                            enableEditing
+                            onEditingRowCancel={handleCancelRowEdits}
+                            onEditingRowSave={handleSaveRowEdits}
+                            localization={MRT_Localization_ES}
+                            renderRowActions={({ row, table }) => (
+                                <Grid container spacing={2}>
+                                    <Grid xs={6}>
+                                        <Tooltip arrow placement="left" title="Editar">
+                                            <IconButton onClick={() => handleEditRow(row, table)}>
+                                                <Edit />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Grid>
+                                    <Grid xs={6}>
+                                        <Tooltip title="Eliminar">
+                                            <IconButton color="error" onClick={() => handleDeleteRow(row, table)}>
+                                                <Delete />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Grid>
+                                </Grid>
+                            )}
+                            renderBottomToolbarCustomActions={({ table }) => (
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+
+                                    <Button
+                                        variant="contained"
+                                        onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
+                                        disabled={props.isButtonDisabled}
+                                    >
+                                        Exportar
+
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        onClick={() => { setShowModalUpload(true) }}
+                                        disabled={props.isButtonDisabled}
+                                    >
+                                        Importar
+                                    </Button>
+                                </div>
+
+                            )}
+                        />
+                    }
                 </div>
-            )}
-            <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
-            <div className="boxTable">
 
-                {tableData === undefined ? null :
-                    <MaterialReactTable
-                        zIndex={5}
-                        columns={columns}
-                        data={tableData}
-                        positionToolbarAlertBanner="bottom"
-                        editingMode="modal"
-                        enableEditing
-                        onEditingRowCancel={handleCancelRowEdits}
-                        onEditingRowSave={handleSaveRowEdits}
-                        localization={MRT_Localization_ES}
-                        renderRowActions={({ row, table }) => (
-                            <Grid container spacing={2}>
-                                <Grid xs={6}>
-                                    <Tooltip arrow placement="left" title="Editar">
-                                        <IconButton onClick={() => handleEditRow(row, table)}>
-                                            <Edit />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Grid>
-                                <Grid xs={6}>
-                                    <Tooltip title="Eliminar">
-                                        <IconButton color="error" onClick={() => handleDeleteRow(row, table)}>
-                                            <Delete />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Grid>
-                            </Grid>
-                        )}
-                        renderBottomToolbarCustomActions={({ table }) => (
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <ModalConfirmar
+                    title={title}
+                    msj={msj}
+                    show={showModalConfirmar}
+                    handleClose={handleCloseConfirmar}
+                    handleYes={handleConfirmar}
+                />
 
-                                <Button
-                                    variant="contained"
-                                    onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
-                                    disabled={props.isButtonDisabled}
-                                >
-                                    Exportar
-
-                                </Button>
-                                <Button
-                                    variant="contained"
-                                    onClick={() => { setShowModalUpload(true) }}
-                                    disabled={props.isButtonDisabled}
-                                >
-                                    Importar
-                                </Button>
-                            </div>
-
-                        )}
-                    />
+                <ModalUploadFileBeneficiarios
+                    title={"Cargar datos masivos"}
+                    msj={"Cargue el archivo xlx con el cual desea actualizar los registros"}
+                    show={showModalUpload}
+                    handleClose={handleCloseUpload}
+                    convenio={props.convenio}
+                />
+                {createModalOpen && <CreateNewAccountModal
+                    columns={props.columns}
+                    open={createModalOpen}
+                    onClose={() => setCreateModalOpen(false)}
+                    onSubmit={handleEditDate}
+                    allValues={values}
+                />
                 }
             </div>
-
-            <ModalConfirmar
-                title={title}
-                msj={msj}
-                show={showModalConfirmar}
-                handleClose={handleCloseConfirmar}
-                handleYes={handleConfirmar}
-            />
-
-            <ModalUploadFileBeneficiarios
-                title={"Cargar datos masivos"}
-                msj={"Cargue el archivo xlx con el cual desea actualizar los registros"}
-                show={showModalUpload}
-                handleClose={handleCloseUpload}
-                convenio={props.convenio}
-            />
-            {createModalOpen && <CreateNewAccountModal
-                columns={props.columns}
-                open={createModalOpen}
-                onClose={() => setCreateModalOpen(false)}
-                onSubmit={handleEditDate}
-                allValues={values}
-            />
-            }
-        </div>
         </>
     );
 
@@ -907,6 +748,7 @@ export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) =>
     const [msjAlert, setMsjAlert] = useState();
     const [values, setValues] = useState(allValues);
     const [showModalAlert, setShowModalAlert] = useState(false);
+    const [loading, setLoading] = useState(false);
     const handleCloseAlert = () => {
         setShowModalAlert(false);
     }
@@ -926,6 +768,7 @@ export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) =>
             setMsjAlert("La fecha no puede estar vacia")
             setShowModalAlert(true);
         } else {
+            setLoading(true);
             onSubmit(values);
             onClose();
         }
@@ -935,10 +778,14 @@ export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) =>
     return (
         <>
             <Dialog open={open} style={{ zIndex: 2 }}>
+
                 <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
                 <DialogTitle textAlign="center">Actualizar fecha termino</DialogTitle>
                 <DialogContent>
+
+
                     <form onSubmit={(e) => e.preventDefault()}>
+
                         <Stack
                             sx={{
                                 width: '100%',
@@ -946,18 +793,27 @@ export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) =>
                                 gap: '1.5rem',
                             }}
                         >
-                            <LocalizationProvider dateAdapter={AdapterDayjs} >
-                                <DatePicker
-                                    value={date}
-                                    sx={{ width: '100%' }}
-                                    onChange={(e) => {
-                                        setDate(e)
-                                    }}
-                                    renderInput={(params) => <TextField fullWidth  {...params} />}
-                                />
-                            </LocalizationProvider>
+                            <div style={{ position: 'relative' }}>
+                                {loading && (
+                                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '9999999' }}>
+                                        <CircularProgress />
+                                    </div>
+                                )}
+                                <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                    <DatePicker
+                                        value={date}
+                                        sx={{ width: '100%' }}
+                                        onChange={(e) => {
+                                            setDate(e)
+                                        }}
+                                        renderInput={(params) => <TextField fullWidth  {...params} />}
+                                    />
+                                </LocalizationProvider>
+                            </div>
                         </Stack>
+
                     </form>
+
                 </DialogContent>
                 <DialogActions sx={{ p: '1.25rem' }}>
                     <Button onClick={onClose}>Cancel</Button>
@@ -965,7 +821,8 @@ export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) =>
                         Guardar
                     </Button>
                 </DialogActions>
-            </Dialog>
+
+            </Dialog >
         </>
     );
 };

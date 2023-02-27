@@ -18,6 +18,7 @@ import Select from '@mui/material/Select';
 import ModalAlert from './Modals/ModalAlert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Autocomplete from '@mui/material/Autocomplete';
+import 'dayjs/locale/es';
 
 const ListarRepAuditoria = (user) => {
   const [loading, setLoading] = useState(false);
@@ -180,6 +181,10 @@ const ListarRepAuditoria = (user) => {
       label: 'Medico',
     },
     {
+      value: 'insertarAutorizacionPrevia',
+      label: 'Autorización Previa',
+    },
+    {
       value: 'cargarDocumento',
       label: 'Cargar Documento',
     },
@@ -314,7 +319,7 @@ const ListarRepAuditoria = (user) => {
                   </FormControl>
                 </Grid>
                 <Grid xs={3}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs} size="small">
+                  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={"es"}>
                     <DatePicker
                       label="Desde"
                       value={desde}
@@ -326,7 +331,7 @@ const ListarRepAuditoria = (user) => {
                   </LocalizationProvider>
                 </Grid>
                 <Grid xs={3}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs} >
+                  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={"es"}>
                     <DatePicker
                       label="Hasta"
                       value={hasta}
@@ -350,7 +355,7 @@ const ListarRepAuditoria = (user) => {
               ?
               null
               :
-              <DataTable data={dataTable} columns={columns} export={true} isButtonDisabled={isButtonDisabled} />
+              <DataTable data={dataTable} columns={columns} export={true} isButtonDisabled={isButtonDisabled} nombreArchivo={"ReporteAuditoria"} />
           }
         </div>
       </div>

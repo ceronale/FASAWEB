@@ -117,8 +117,9 @@ const FormPacienteCliente = () => {
 			setTitle("Verificacion de token")
 			setMsj("Token ingresado correctamente.")
 			const resp = await PacienteService(registerData)
-			var aux = resp['outActualizar'][0]['outSeq'];
-			if (aux === 0) {
+
+			var aux = resp.outActualizar[0].codigoResultado;
+			if (aux !== 0) {
 				setShowModal(true)
 				setTitle("Error al crear usuario")
 				setMsj("El usuario ingresado ya existe.")
@@ -130,8 +131,10 @@ const FormPacienteCliente = () => {
 					"mail": registerData.user,
 					"celular": registerData.celular,
 				}
-				//call familia ahumada api
-				const resp = await familiaAhumadaService(data);
+				if (checkBox2) {
+					const respuesta = await familiaAhumadaService(data);
+				}
+
 				setTitle("Creación de usuario")
 				setMsj("Usuario creado de manera exitosa.")
 			}

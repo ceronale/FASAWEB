@@ -14,6 +14,8 @@ import ModalAlert from './Modals/ModalAlert';
 import Autocomplete from '@mui/material/Autocomplete';
 import { getCartola } from "../api/CartolaBeneficiario";
 import CircularProgress from '@mui/material/CircularProgress';
+import 'dayjs/locale/es';
+
 
 
 
@@ -116,19 +118,22 @@ const ListarCartolaBeneficiarios = (user) => {
         };
         const response = await getCartola(data);
         setDataTable(undefined);
+
         if (response.response.length === 0) {
           setTitle("Error");
           setMsj("No se obtuvieron resultados");
           setShowModal(true);
+        } else if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+          setTitle("Error");
+          setMsj("Error de conexión");
+          setShowModal(true);
         }
+
         setDataTable(response.response);
       }
       setLoading(false);
     };
   }
-
-
-
 
   const formatRut = (rut) => {
     // Eliminar caracteres no numéricos
@@ -138,9 +143,6 @@ const ListarCartolaBeneficiarios = (user) => {
     rut = rut.replace(/^([\d]{1,2})([\d]{3})([\d]{3})([\dkK])$/, '$1.$2.$3-$4');
     return rut;
   }
-
-
-
 
   return (
     <main>
@@ -197,7 +199,7 @@ const ListarCartolaBeneficiarios = (user) => {
                     </>
                 }
                 <Grid xs={2}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs} size="small">
+                  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={"es"}>
                     <DatePicker
                       label="Desde"
                       value={desde}
@@ -209,7 +211,7 @@ const ListarCartolaBeneficiarios = (user) => {
                   </LocalizationProvider>
                 </Grid>
                 <Grid xs={2}>
-                  <LocalizationProvider dateAdapter={AdapterDayjs} >
+                  <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={"es"}>
                     <DatePicker
                       label="Hasta"
                       value={hasta}
@@ -232,10 +234,8 @@ const ListarCartolaBeneficiarios = (user) => {
             (dataTable === undefined)
               ?
               null
-              : <DataTable data={dataTable} columns={columns} />
+              : <DataTable data={dataTable} columns={columns} export={true} nombreArchivo={"CartolaBeneficiario"} />
           }
-
-
         </div>
       </div>
     </main>

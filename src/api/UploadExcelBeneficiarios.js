@@ -7,7 +7,7 @@ export const UploadExcelBeneficiarios = async (data, convenio) => {
     formData.append('csv', data);
     const user = (JSON.parse(localStorage.getItem("user"))).correo;
     formData.append('userRep', user);
-    formData.append('convenio', convenio);
+    formData.append('convenio', "MCAM");
 
     var config = {
         method: 'post',
