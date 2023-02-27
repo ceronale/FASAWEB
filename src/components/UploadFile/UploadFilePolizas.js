@@ -49,7 +49,7 @@ class UploadFilePolizas extends Component {
                 });
 
                 const out = this.jsonToCsv(justJson, properties);
-                console.log(out)
+
                 this.setState({ selectedFile: out });
             }
         }

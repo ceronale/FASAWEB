@@ -56,23 +56,28 @@ const ListarBeneficiarios = (user) => {
 
       //call the service to get the data
       setLoading(true);
+
       const response = await getBeneficiarios(data);
-
       if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
-
         setLoading(false);
-
-        handleModal("Error", "No se pudo obtener la información de los beneficiarios");
+        setDataTable(undefined)
+        setDataTable({})
+        handleModal("Error", "Error de conexión");
+      } else if (response.response[0].codigoError === 1) {
+        setLoading(false);
+        setDataTable(undefined)
+        setDataTable({})
+        handleModal("Información", "No se pudo obtener información de los beneficiarios");
       } else {
         setLoading(false);
         setDataTable(undefined)
         setDataTable(response.response);
-        setIsButtonDisabled(false)
 
+        setIsButtonDisabled(false)
       }
     } catch (error) {
       setLoading(false);
-      handleModal("Error", "No se pudo obtener la información de los beneficiarios");
+      handleModal("Error", "No se pudo obtener información de los beneficiarios");
     }
   };
 

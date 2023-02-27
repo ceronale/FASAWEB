@@ -56,7 +56,8 @@ const AutorizacionPrevia = (user) => {
     const handleShowData = async () => {
         try {
             //Check if the convenio
-            if (convenioSelected === null) {
+
+            if (!convenioSelected) {
                 handleModal("Error", "Debe seleccionar un convenio");
                 return;
             }
@@ -82,7 +83,7 @@ const AutorizacionPrevia = (user) => {
                 handleModal("Error", "No se pudo obtener la información de los beneficiarios");
             } else {
                 //response.autorizacionPrevia[0].codigo === 1 is the error code
-                console.log(response)
+
                 if (response.autorizacionPrevia[0].codigo === 1) {
                     handleModal("Error", response.autorizacionPrevia[0].detalle);
                     setLoading(false);

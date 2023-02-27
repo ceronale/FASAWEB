@@ -39,7 +39,7 @@ const UploadFileMedicos = props => {
                     if (row.nombre !== undefined) {
                         row.nombre = row.nombre.replace(/,/g, '');
                     }
-                    console.log(row);
+
 
                     dateVariables.forEach(dateVariable => {
                         if (row[dateVariable] !== undefined) {
@@ -49,7 +49,7 @@ const UploadFileMedicos = props => {
                 });
 
                 const out = jsonToCsv(justJson, properties);
-                console.log(out)
+
                 setState({ selectedFile: out });;
             }
         }
@@ -58,7 +58,7 @@ const UploadFileMedicos = props => {
 
 
     const formatDate = (date) => {
-        console.log(date);
+
         if (!date) return null;
 
         if (!/^\d{2}[\/-]\d{2}[\/-]\d{4}$/.test(date)) {
