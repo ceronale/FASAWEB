@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, } from 'react-router-dom';
 import MaterialReactTable from 'material-react-table';
-
 import ModalConfirmar from "../Modals/ModalConfirmar";
 import ModalAlert from "../Modals/ModalAlert";
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
@@ -9,14 +9,11 @@ import { updateMedico, deleteMedico, addMedico } from "../../api/MedicosService"
 import ModalUploadFileMedicos from "../Modals/ModalUploadFileMedicos";
 import * as XLSX from 'xlsx/xlsx.mjs';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
-
 import Delete from '@mui/icons-material/Delete';
 import { Edit } from "@material-ui/icons";
 import CircularProgress from '@mui/material/CircularProgress';
-import { set } from "react-hook-form";
 import InputLabel from '@mui/material/InputLabel';
 import {
-    Box,
     Button,
     Dialog,
     DialogActions,
@@ -63,28 +60,7 @@ const DataTableAutorizacionPrevia = props => {
 
     const [validationErrors, setValidationErrors] = useState({});
 
-    //Validacion de fecha dd-mm-yyyy
-    const validateDate = (date) => {
-        var dateRegex = /^([0-9]{2})-([0-9]{2})-([0-9]{4})$/;
-        if (dateRegex.test(date)) {
-            var parts = date.split("-");
-            var day = parseInt(parts[0], 10);
-            var month = parseInt(parts[1], 10);
-            var year = parseInt(parts[2], 10);
-            if (year < 1000 || year > 3000 || month === 0 || month > 12) {
-                return false;
-            }
-            var monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-            if (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0)) {
-                monthLength[1] = 29;
-            }
-            return day > 0 && day <= monthLength[month - 1];
-        } else {
-
-            return false;
-        }
-    }
-
+    const navigate = useNavigate();
     const validateRequired = (value) => !!value.length;
 
     //Function to validate id the value is E or I or i or e
@@ -210,6 +186,18 @@ const DataTableAutorizacionPrevia = props => {
         }
 
         const resp = await addMedico(data, props.user)
+        if (resp === 403) {
+            setTitleAlert("Sesión expirada")
+            setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+            setShowModalAlert(true)
+
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+                localStorage.removeItem("user");
+                navigate(`/`);
+            }, 5000);
+            return;
+        }
 
         setShowModalConfirmar(false);
         if (resp.response[0].codigo === 0) {
@@ -259,7 +247,19 @@ const DataTableAutorizacionPrevia = props => {
             }
 
             const resp = await updateMedico(data, props.user)
+            if (resp === 403) {
+                setShowModalConfirmar(false);
+                setTitleAlert("Sesión expirada")
+                setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                setShowModalAlert(true)
 
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 5000);
+                return;
+            }
             setShowModalConfirmar(false);
 
             if (resp.response[0].codigo === 0) {
@@ -365,6 +365,18 @@ const DataTableAutorizacionPrevia = props => {
         setLoading(true);
         setShowModalConfirmarDelete(false);
         const resp = await deleteMedico(data, props.user)
+        if (resp === 403) {
+            setTitleAlert("Sesión expirada")
+            setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+            setShowModalAlert(true)
+
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+                localStorage.removeItem("user");
+                navigate(`/`);
+            }, 5000);
+            return;
+        }
         if (resp.response[0].codigo === 1) {
             const newData = tableData.filter(row => row.rutMedico !== values.rutMedico);
             setTitleAlert("Exito")

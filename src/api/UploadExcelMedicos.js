@@ -5,8 +5,9 @@ export const UploadMedicos = async (data, codigoLista) => {
     var formData = new FormData();
     formData.append('csv', data);
     formData.append('codigoLista', codigoLista);
-    const user = (JSON.parse(localStorage.getItem("user"))).correo;
-    formData.append('userRep', user);
+    const user = (JSON.parse(localStorage.getItem("user")));
+    formData.append('userRep', user.correo);
+    formData.append('token', user.token);
 
     var config = {
         method: 'post',
@@ -19,7 +20,8 @@ export const UploadMedicos = async (data, codigoLista) => {
         })
         .catch((error) => {
 
-            return error;
+            return error.response.status;
+
         });
 
     return response;

@@ -5,7 +5,6 @@ import Delete from '@mui/icons-material/Delete';
 import CreateIcon from '@mui/icons-material/Create';
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
 import ModalConfirmar from "../Modals/ModalConfirmar";
-import { useNavigate } from "react-router-dom";
 import ModalRoles from "../Modals/ModalRoles";
 
 const DataTableUsuarioRoles = props => {
@@ -81,8 +80,6 @@ const DataTableUsuarioRoles = props => {
                                 <Delete />
                             </IconButton>
                         </Tooltip>
-
-
                     </Box>
                 )}
                 renderTopToolbarCustomActions={({ table }) => (

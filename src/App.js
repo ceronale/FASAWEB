@@ -38,7 +38,6 @@ import ReporteAuditoriaRoutes from "./utils/ReporteAuditoriaRoutes";
 
 
 export default function App() {
-  const user = localStorage.getItem("user");
   return (
     <BrowserRouter>
       <Navbar />

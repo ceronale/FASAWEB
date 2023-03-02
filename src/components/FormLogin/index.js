@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { LoginService } from '../../api/LoginService';
+import { LoginService, getTokenAuth } from '../../api/LoginService';
 import { useNavigate, } from 'react-router-dom';
 import styles from './styles.module.css';
 import ReCAPTCHA from "react-google-recaptcha";
@@ -77,6 +77,8 @@ const FormLogin = () => {
 				user = await HomeServiceEmpresa(registerData.email);
 				[usuario] = user.usuarioEmpresa;
 				let rol = await getComponentesAndRolByUser(usuario.id);
+				let token = await getTokenAuth();
+				usuario.token = token[0].token;
 				usuario.idRol = rol.rolUsuario[0].id_rol;
 				usuario.recursos = rol.rolUsuario[1].id_recurso;
 
@@ -90,6 +92,7 @@ const FormLogin = () => {
 						}
 					}
 				});
+
 				// Combina los datos del usuario y los convenios en un nuevo objeto
 				const userFormated = { ...usuario, ...convenios };
 				// Almacena el objeto en el almacenamiento local
@@ -99,6 +102,7 @@ const FormLogin = () => {
 			}
 			// Si el código de resultado es 1 (No Existe), se muestra un modal con un mensaje de error
 			else if (codigoResultadoLogin === 1) {
+
 				setShowModal(true);
 				setTitle("Error al iniciar sesión");
 				setMsj("El usuario ingresado no existe o no esta vigente");
@@ -108,7 +112,6 @@ const FormLogin = () => {
 				setShowModal(true);
 				setTitle("Error al iniciar sesión");
 				setMsj("Clave invalida");
-
 			}
 			// Si el código de resultado es 3 (Pass Expirada), se muestra un modal con un mensaje de error
 			else if (codigoResultadoLogin === 3) {
@@ -118,6 +121,9 @@ const FormLogin = () => {
 			}
 		} catch (error) {
 			console.error(error);
+			setShowModal(true)
+			setTitle("Error al iniciar sesión")
+			setMsj("Ha ocurrido un error al iniciar sesión. Por favor, intente nuevamente.")
 			setLoading(false);
 		}
 		setLoading(false);

@@ -1,3 +1,5 @@
+
+/* eslint-disable */
 import React, { useState } from "react";
 import { PacienteService, GenerarToken, ValidarToken, Validate } from "../../api/PacienteService";
 import { useNavigate } from 'react-router-dom';
@@ -132,7 +134,7 @@ const FormPacienteCliente = () => {
 					"celular": registerData.celular,
 				}
 				if (checkBox2) {
-					const respuesta = await familiaAhumadaService(data);
+					await familiaAhumadaService(data);
 				}
 
 				setTitle("Creación de usuario")
@@ -167,7 +169,7 @@ const FormPacienteCliente = () => {
 					setShowModal(true)
 					setTitle("Codigo de confirmación")
 					setMsj("Se ha enviado un token de verificación a tu correo.")
-					const respToken = await GenerarToken(registerData.user);
+					await GenerarToken(registerData.user);
 					setcheckToken(true);
 					setLoading(false);
 				} else {

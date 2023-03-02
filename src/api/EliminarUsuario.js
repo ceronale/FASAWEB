@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 export const EliminarUsuario = async (data, usuario) => {
+    const user = (JSON.parse(localStorage.getItem("user")));
     const config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/eliminarUsuario/services/eliminar',
@@ -8,6 +9,7 @@ export const EliminarUsuario = async (data, usuario) => {
             'Content-Type': 'application/json',
             id: data,
             userRep: usuario,
+            token: "user.token"
         },
     };
 
@@ -17,7 +19,7 @@ export const EliminarUsuario = async (data, usuario) => {
             return outEliminar;
         })
         .catch((error) => {
-            return error;
+            return error.response.status;
         });
 
     return response;

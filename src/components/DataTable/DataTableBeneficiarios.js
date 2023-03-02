@@ -17,7 +17,6 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import {
-    Box,
     Dialog,
     DialogActions,
     DialogContent,
@@ -26,34 +25,21 @@ import {
     Stack,
     TextField,
 } from '@mui/material';
-
-const checkDate = (date) => {
-    const dateArray = date.split("-");
-    if (dateArray.length === 3) {
-        if (dateArray[0].length === 2 && dateArray[1].length === 2 && dateArray[2].length === 4) {
-            return true;
-        } else {
-            return false;
-        }
-    } else {
-        return false;
-    }
-}
+import { useNavigate, } from 'react-router-dom';
 
 
 const DataTableBeneficiarios = props => {
     const [createModalOpen, setCreateModalOpen] = useState(false);
     const [rows, setRows] = useState([]);
-
+    const navigate = useNavigate();
     // State variables to handle form validation errors and loading state
     const [validationErrors, setValidationErrors] = useState({});
-    const [hasValidationError, setHasValidationError] = useState(false);
     const [loading, setLoading] = useState(false);
 
 
     // State variables for the modal
-    const [title, setTitle] = useState();
-    const [msj, setMsj] = useState();
+    const [title] = useState();
+    const [msj] = useState();
 
     // State variables for the alert modal
     const [titleAlert, setTitleAlert] = useState();
@@ -108,19 +94,7 @@ const DataTableBeneficiarios = props => {
         //TODO: Add update logic
     }
 
-    // Function to format the RUT (Chilean ID number)
-    const formatRut = (rut) => {
-        rut = "" + rut; // Convert to string
-        // Remove non-numeric characters
-        rut = rut.replace(/[^\dkK]/g, '');
-        if (rut.length < 2) return rut;
-        // Add dots between the 5th and 6th digit
-        rut = rut.replace(/^([\d]{1,2})([\d]{3})([\d]{3})([\dkK])$/, '$1.$2.$3-$4');
-        return rut;
-    };
 
-    // Regular expression for date format
-    const dateFormat = /^\d{2}-\d{2}-\d{4}$/;
     const validateRequired = (value) => !!value.length;
     const validateEmail = (email) =>
         !!email.length &&
@@ -454,7 +428,17 @@ const DataTableBeneficiarios = props => {
         try {
             // Make API call to update beneficiario
             const response = await updateBeneficiario(values, props.user.correo);
-            console.log(response);
+            if (response === 403) {
+                setShowModalAlert(true)
+                setTitleAlert("Sesión expirada")
+                setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 5000);
+                return;
+            }
             // Handle network error
             if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
                 setLoading(false);
@@ -538,7 +522,18 @@ const DataTableBeneficiarios = props => {
             try {
                 // Make API call to update beneficiario
                 const response = await updateBeneficiario(values, props.user.correo);
-                console.log(response)
+                if (response === 403) {
+                    setShowModalAlert(true)
+                    setTitleAlert("Sesión expirada")
+                    setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+
+                    //set time out to logout of 5 seconds
+                    setTimeout(() => {
+                        localStorage.removeItem("user");
+                        navigate(`/`);
+                    }, 5000);
+                    return;
+                }
                 // Handle network error
                 if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
                     setLoading(false);
@@ -657,7 +652,7 @@ const DataTableBeneficiarios = props => {
                         <CircularProgress />
                     </div>
                 )}
-                <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
+                <ModalAlert zIndex={9999999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
                 <div className="boxTable">
 
                     {tableData === undefined ? null :
@@ -746,7 +741,7 @@ const DataTableBeneficiarios = props => {
 export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) => {
     const [titleAlert, setTitleAlert] = useState();
     const [msjAlert, setMsjAlert] = useState();
-    const [values, setValues] = useState(allValues);
+    const [values] = useState(allValues);
     const [showModalAlert, setShowModalAlert] = useState(false);
     const [loading, setLoading] = useState(false);
     const handleCloseAlert = () => {

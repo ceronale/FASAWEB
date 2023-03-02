@@ -11,7 +11,6 @@ export const HomeServiceEmpresa = async (data) => {
 	};
 	const response = axios(config)
 		.then(({ data: usuarioEmpresa }) => {
-
 			return usuarioEmpresa;
 		})
 		.catch((error) => {

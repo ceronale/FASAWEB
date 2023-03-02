@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 export const getCartola = async (data) => {
+    const user = (JSON.parse(localStorage.getItem("user")));
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/cartola/services/ver/cartola',
@@ -11,6 +12,7 @@ export const getCartola = async (data) => {
             'fechaIni': data.fechaIni,
             'fechaFin': data.fechaFin,
             'tipo': data.tipo,
+            'token': user.token,
         }
     };
     const response = axios(config)
@@ -18,7 +20,7 @@ export const getCartola = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error;
+            return error.response.status;
         });
 
     return response;

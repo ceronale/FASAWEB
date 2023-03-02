@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 export const EmpresaService = async (data, user) => {
-
+	const userx = (JSON.parse(localStorage.getItem("user")));
 	const config = {
 		method: 'put',
 		url: 'http://150.100.253.61:8181/cxf/actualizarEmpresa/services/actualizarEmpresa',
@@ -17,6 +17,7 @@ export const EmpresaService = async (data, user) => {
 			kamCorreo: data.kamCorreo,
 			cargo: data.cargo,
 			userRep: user,
+			token: userx.token
 		},
 	};
 	const response = axios(config)
@@ -25,14 +26,14 @@ export const EmpresaService = async (data, user) => {
 			return outActualizar;
 		})
 		.catch((error) => {
-			return error;
+			return error.response.status;
 		});
 
 	return response;
 }
 
 export const ConvenioService = async (user, codigo, correo) => {
-
+	const userx = (JSON.parse(localStorage.getItem("user")));
 	const config = {
 		method: 'put',
 		url: 'http://150.100.253.61:8181/cxf/convenios/services/actualizarConvenio',
@@ -40,15 +41,15 @@ export const ConvenioService = async (user, codigo, correo) => {
 			'user': user,
 			'codigo': codigo,
 			'userRep': correo,
+			'token': userx.token
 		}
 	};
 	const response = axios(config)
 		.then(({ data: outActualizar }) => {
-
 			return outActualizar;
 		})
 		.catch((error) => {
-			return error;
+			return error.response.status;
 		});
 
 	return response;

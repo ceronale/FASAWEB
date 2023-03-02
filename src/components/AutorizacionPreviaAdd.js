@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { ContenedorTitulo, Titulo } from './Formularios';
 import ModalAlert from './Modals/ModalAlert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -16,6 +16,7 @@ import { Radio, Autocomplete } from "@mui/material";
 import { FormControlLabel, FormLabel } from "@mui/material";
 import { setAutorizaciones } from '../api/AutorizacionesPreviasService';
 import 'dayjs/locale/es';
+import { useNavigate, } from 'react-router-dom';
 
 
 const AutorizacionPreviaAdd = (user) => {
@@ -24,11 +25,12 @@ const AutorizacionPreviaAdd = (user) => {
     const [usuario] = useState(JSON.parse(user.user));
     //State to handle the convenios of the user
     const [convenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
-    const [convenio, setConvenio] = useState(null);
-    const [grupoInput, setGrupoInput] = useState([
+
+    const [grupoInput] = useState([
         { label: 'SAP', value: 'S' },
         { label: 'UPC', value: 'U' },
     ]);
+    const navigate = useNavigate();
 
     const [valuesForm, setValuesForm] = useState({
         cardHolder: '',
@@ -106,7 +108,9 @@ const AutorizacionPreviaAdd = (user) => {
         }
 
         if (canContinue) {
+            //eslint-disable-next-line
             copyValuesForm.cardHolder = copyValuesForm.convenio.value + copyValuesForm.cardHolder.replace(/\./g, '').replace(/\-/g, '');
+            //eslint-disable-next-line
             copyValuesForm.rutMedico = copyValuesForm.rutMedico.replace(/\./g, '').replace(/\-/g, '');
 
             //set a variable exactly like valuesForm but with the date in the correct format call data
@@ -117,6 +121,18 @@ const AutorizacionPreviaAdd = (user) => {
             }
 
             const response = await setAutorizaciones(data, usuario.correo);
+            if (response === 403) {
+                setShowModal(true)
+                setTitle("Sesión expirada")
+                setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 5000);
+                return;
+            }
+
             if (response.response[0].codigo === 0) {
                 handleShowModal('Éxito', 'Autorización previa creada correctamente');
                 //set all valuesForm to empty

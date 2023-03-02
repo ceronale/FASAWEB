@@ -33,7 +33,7 @@ const DataTableDeleteAndExport = props => {
   const [msjModal, setMsjModal] = useState();
   const [rolModalOpen, setRolModalOpen] = useState(false);
   const [roles, setRoles] = useState([]);
-
+  const navigate = useNavigate();
   const handleClose = () => {
     setShowModal(false);
   }
@@ -70,6 +70,19 @@ const DataTableDeleteAndExport = props => {
   const handleConfirmar = async () => {
     setLoading(true);
     const resp = await EliminarUsuario(values.original.correo, props.usuario)
+
+    if (resp === 403) {
+      setShowModal(true)
+      setTitleModal("Sesión expirada")
+      setMsjModal("Su sesión ha expirado, por favor vuelva a ingresar")
+      //set time out to logout of 5 seconds
+      setTimeout(() => {
+        localStorage.removeItem("user");
+        navigate(`/`);
+      }, 5000);
+      return;
+    }
+
     if (resp.eliminar[0].codigoRespuesta === 0) {
       setTitleModal("Exito");
       setMsjModal("El usuario se ha eliminado correctamente");
@@ -122,7 +135,18 @@ const DataTableDeleteAndExport = props => {
 
   useEffect(() => {
     getRoles().then((response) => {
-      setLoading(true);
+      if (response === 403) {
+        setShowModal(true)
+        setTitleModal("Sesión expirada")
+        setMsjModal("Su sesión ha expirado, por favor vuelva a ingresar")
+        //set time out to logout of 5 seconds
+        setTimeout(() => {
+          localStorage.removeItem("user");
+          navigate(`/`);
+        }, 5000);
+        return;
+      }
+
       let rolFormat = response.roles.map((rol) => {
         return { value: rol.id_rol, label: rol.nombre };
       });
@@ -230,8 +254,9 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
   const [titleAlert, setTitleAlert] = useState();
   const [msjAlert, setMsjAlert] = useState();
   const [showModalAlert, setShowModalAlert] = useState(false);
-  const [value, setValue] = useState(allValues);
+  const [value] = useState(allValues);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
   const [rol, setRol] = useState(roles.filter(function (item) {
     if (allValues.id_rol) {
       return item.value === allValues.id_rol;
@@ -245,15 +270,30 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
   }
 
   const handleSubmit = () => {
+
     //create a variable call data and asing the value rol and id usuario
     setLoading(true);
     if (!value.id_rol) {
+
       let data = {
         id_rol: rol.value,
         id_usuario: value.id
       }
       //call the api and send the data setUserAndRol
       setUserAndRol(data).then((response) => {
+        if (response === 403) {
+          setTitleAlert("Sesión expirada")
+          setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+          setShowModalAlert(true);
+
+          //set time out to logout of 5 seconds
+          setTimeout(() => {
+            localStorage.removeItem("user");
+            navigate(`/`);
+          }, 5000);
+          return;
+        }
+
         if (response.response1[0].codigo === 1) {
           handleOpenModal();
         } else {
@@ -276,6 +316,19 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
       }
       //call the api and send the data updateUserAndRol
       updateUserAndRol(data).then((response) => {
+        if (response === 403) {
+          setTitleAlert("Sesión expirada")
+          setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+          setShowModalAlert(true)
+          //set time out to logout of 5 seconds
+          setTimeout(() => {
+            localStorage.removeItem("user");
+            navigate(`/`);
+          }, 5000);
+          return;
+        }
+
+
         if (response.response1[0].codigo === 0) {
           handleOpenModal();
 
@@ -285,7 +338,7 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
           setShowModalAlert(true);
         }
 
-      }).catch(() => {
+      }).catch((error) => {
         setTitleAlert("Error");
         setMsjAlert("Error al actualizar el usuario");
         setShowModalAlert(true);

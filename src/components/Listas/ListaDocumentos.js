@@ -19,6 +19,7 @@ import PictureAsPdfIcon from '@material-ui/icons/PictureAsPdf';
 import ModalPdf from '../Modals/ModalPdf';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModalConfirmar from "../Modals/ModalConfirmar";
+import { useNavigate, } from 'react-router-dom';
 
 
 const Lista = props => {
@@ -36,7 +37,7 @@ const Lista = props => {
     const [modalOpen, setModalOpen] = useState(false);
     const [showModalConfirmar, setShowModalConfirmar] = useState(false);
     const [item, setItem] = useState();
-
+    const navigate = useNavigate();
 
     const handleCloseConfirmar = () => {
         setShowModalConfirmar(false);
@@ -68,20 +69,34 @@ const Lista = props => {
         const file = event.target.files[0];
         if (file) {
             const response = await UploadDocumentos(file, props.convenio);
-            setTitle('Información');
-            setMsj("Documento subido correctamente");
-            setShowModal(true);
-            props.fetchData();
-            return;
+
+            if (response === 403) {
+                setShowModal(true)
+                setTitle("Sesión expirada")
+                setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 5000);
+                return;
+            }
+
+            if (response.documentResponse[0].status !== 0) {
+                setTitle('Error');
+                setMsj("No se pudo subir el documento");
+                setShowModal(true);
+                return;
+            } else {
+                setTitle('Información');
+                setMsj("Documento subido correctamente");
+                setShowModal(true);
+                props.fetchData();
+                return;
+            }
+
         }
     };
-
-    const handleModal = (title, msj) => {
-        setTitle(title);
-        setMsj(msj);
-        setShowModal(true);
-    };
-
 
     const handleDownload = async (item) => {
         const archivo = item.nombreDocumento;
@@ -100,8 +115,20 @@ const Lista = props => {
     const handleConfirmar = async () => {
         setShowModalConfirmar(false)
         const response = await deleteDocumento(item);
+
+        if (response === 403) {
+            setShowModal(true)
+            setTitle("Sesión expirada")
+            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+                localStorage.removeItem("user");
+                navigate(`/`);
+            }, 5000);
+            return;
+        }
         //If response.response[0].codigo is 0 
-        if (response.response[0].codigo === 0) {
+        if (response.response1[0].codigo === 0) {
             setTitle('Información');
             setMsj("Documento eliminado correctamente");
             setShowModal(true);
@@ -127,6 +154,19 @@ const Lista = props => {
     const handleOpenPdf = async (item) => {
         const archivo = item.nombreDocumento;
         const data = await getDocumentData(archivo);
+        console.log(data)
+        if (data === 403) {
+            setShowModal(true)
+            setTitle("Sesión expirada")
+            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+                localStorage.removeItem("user");
+                navigate(`/`);
+            }, 5000);
+            return;
+        }
+
         const b64 = data[0].b64;
         setPdfSrc(`data:application/pdf;base64,${b64}`);
         setModalOpen(true);
@@ -138,19 +178,38 @@ const Lista = props => {
             convenio: props.convenio,
         }
         const response = await getDocumento(data);
+        if (response === 403) {
+            setShowModal(true)
+            setTitle("Sesión expirada")
+            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+                localStorage.removeItem("user");
+                navigate(`/`);
+            }, 5000);
+            return;
+        }
         return response.documentResponse;
     }
     function generate(data) {
-        // Filter the data array based on the search term
-        const filteredData = data.filter(item =>
-            item.nombreDocumento.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-
-        // Split the filtered data array into chunks
         const dataChunks = [];
-        for (let i = 0; i < filteredData.length; i += rowsPerPage) {
-            dataChunks.push(filteredData.slice(i, i + rowsPerPage));
+        try {
+
+            if (data) {
+                // Filter the data array based on the search term
+                const filteredData = data.filter(item =>
+                    item.nombreDocumento.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                // Split the filtered data array into chunks
+                for (let i = 0; i < filteredData.length; i += rowsPerPage) {
+                    dataChunks.push(filteredData.slice(i, i + rowsPerPage));
+                }
+            }
+
+        } catch (error) {
+
         }
+
 
 
         if (page >= 0 && page < dataChunks.length) {

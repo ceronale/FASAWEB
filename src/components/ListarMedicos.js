@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState } from "react";
+import { useNavigate, } from 'react-router-dom';
 import { ContenedorTitulo, Titulo } from './Formularios';
 import { getLista, getMedicos } from "../api/MedicosService";
 import Grid from '@mui/material/Unstable_Grid2';
@@ -20,7 +21,7 @@ const ListarMedicos = (user) => {
   //State to handle the user data
   const [usuario] = useState(JSON.parse(user.user));
   //State to handle the convenios of the user
-  const [convenios, setConvenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
+  const [convenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
   //State to handle the selected convenio
   const [convenioSelected, setConvenioSelected] = useState('')
   //State to handle the listas of the selected convenio
@@ -40,7 +41,7 @@ const ListarMedicos = (user) => {
   //State to handle the disable/enable of the button
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-
+  const navigate = useNavigate();
 
   //Function to handle the close of the modal
   const handleClose = () => {
@@ -60,6 +61,19 @@ const ListarMedicos = (user) => {
     //create a try and catrch block to handle the error of the request and show the modal with the error message
     try {
       const response = await getLista(value);
+
+      if (response === 403) {
+        setLoading(false);
+        setShowModal(true)
+        setTitle("Sesión expirada")
+        setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+        //set time out to logout of 5 seconds
+        setTimeout(() => {
+          localStorage.removeItem("user");
+          navigate(`/`);
+        }, 5000);
+        return;
+      }
       if (response) {
         setLoading(false);
       }
@@ -88,6 +102,17 @@ const ListarMedicos = (user) => {
       //create a try and catrch block to handle the error of the request and show the modal with the error message
       try {
         const response = await getMedicos(listaSelected);
+        if (response === 403) {
+          setShowModal(true)
+          setTitle("Sesión expirada")
+          setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+          //set time out to logout of 5 seconds
+          setTimeout(() => {
+            localStorage.removeItem("user");
+            navigate(`/`);
+          }, 5000);
+          return;
+        }
         //Reset the dataTable state
         setDataTable(undefined);
         //Update the dataTable state with the medicos data

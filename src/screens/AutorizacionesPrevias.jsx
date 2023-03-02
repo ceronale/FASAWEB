@@ -1,6 +1,5 @@
 import React from "react";
 import AutorizacionesPrevia from "../components/AutorizacionesPrevias";
-import AutorizacionPreviaAdd from "../components/AutorizacionPreviaAdd";
 import BarraOpciones from "../components/BarraOpciones";
 
 

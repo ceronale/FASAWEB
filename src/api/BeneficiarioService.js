@@ -1,14 +1,15 @@
 const axios = require('axios');
 
 export const getBeneficiarios = async (data) => {
-
+    const user = (JSON.parse(localStorage.getItem("user")));
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/beneficiario/services/listar/beneficiario',
         headers: {
             'codigoCliente': data.codigoCliente,
             'activos': data.activos,
-            'rut': data.rut
+            'rut': data.rut,
+            'token': user.token
         }
     };
 
@@ -17,13 +18,14 @@ export const getBeneficiarios = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error;
+            return error.response.status;
         });
 
     return response;
 }
 
 export const updateBeneficiario = async (data, user) => {
+    const userx = (JSON.parse(localStorage.getItem("user")));
     const config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/beneUp/services/actualizar/beneficiario',
@@ -51,6 +53,7 @@ export const updateBeneficiario = async (data, user) => {
             'comuna': data.comuna,
             'ciudad': data.ciudad,
             'userRep': user,
+            'token': userx.token
         }
     };
 
@@ -59,7 +62,7 @@ export const updateBeneficiario = async (data, user) => {
             return out;
         })
         .catch((error) => {
-            return error;
+            return error.response.status;
         });
 
     return response;

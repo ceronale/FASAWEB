@@ -48,7 +48,6 @@ const FormOlvidasteContraseña = () => {
 	const handleClickConfirmarToken = async (e) => {
 		e.preventDefault();
 		const respValidToken = await ValidarToken(token, registerData.user);
-
 		setShowModal(true)
 		setTitle("Error de token")
 		setMsj("El token ingresado no es correcto.")
@@ -65,7 +64,7 @@ const FormOlvidasteContraseña = () => {
 
 	const onSubmit = async (e) => {
 		e.preventDefault();
-		const respToken = await GenerarToken(registerData.user);
+		await GenerarToken(registerData.user);
 		setcheckToken(true);
 	};
 

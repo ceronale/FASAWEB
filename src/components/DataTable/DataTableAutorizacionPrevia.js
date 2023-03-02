@@ -1,29 +1,14 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import MaterialReactTable from 'material-react-table';
-
 import ModalConfirmar from "../Modals/ModalConfirmar";
 import ModalAlert from "../Modals/ModalAlert";
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
 import "../../styles/PolizasGrupos.css";
 import { updateMedico, deleteMedico, addMedico } from "../../api/MedicosService";
 import ModalUploadFileMedicos from "../Modals/ModalUploadFileMedicos";
-import * as XLSX from 'xlsx/xlsx.mjs';
-import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
-
-import Delete from '@mui/icons-material/Delete';
-import { Edit } from "@material-ui/icons";
 import CircularProgress from '@mui/material/CircularProgress';
-import { set } from "react-hook-form";
 import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    IconButton,
-    Stack,
-    TextField,
-    Tooltip,
+    Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField,
 } from '@mui/material';
 import { useNavigate } from "react-router-dom";
 
@@ -173,50 +158,6 @@ const DataTableMedicos = props => {
     const handleCancelRowEdits = () => {
 
     };
-
-    const downloadExcel = (rows) => {
-        const newData = rows.map(row => {
-            return getRows(row);
-        })
-        const workSheet = XLSX.utils.json_to_sheet(newData)
-        const workBook = XLSX.utils.book_new()
-        XLSX.utils.book_append_sheet(workBook, workSheet, "medicos")
-        //Buffer
-        let buf = XLSX.write(workBook, { bookType: "xlsx", type: "buffer" })
-        //Binary string
-        XLSX.write(workBook, { bookType: "xlsx", type: "binary" })
-        //Download
-        XLSX.writeFile(workBook, "Medicos.xlsx")
-    }
-
-    const handleEditRow = useCallback(
-        (row, table) => {
-            table.setEditingRow(row)
-            setValues(row.original);
-
-            // setShowModalRoles(true)
-        },
-        [tableData],
-    );
-
-    const getRows = (row) => {
-        delete row.tableData;
-        row.original.rutMedico = row.original.rutMedico || " ";
-        row.original.fechaDesde = row.original.fechaDesde || " ";
-        row.original.exc_Inc = row.original.exc_Inc || " ";
-        return row.original;
-    };
-
-
-    const handleDeleteRow = useCallback(
-        (row) => {
-            setValues(row.original);
-            setTitle("¿Desea continuar?")
-            setMsj("Seleccione confirmar si desea eliminar el campo")
-            setShowModalConfirmarDelete(true)
-        },
-        [tableData],
-    );
 
     const handleConfirmarDelete = async () => {
         const data = {

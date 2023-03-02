@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, } from 'react-router-dom';
 import "../styles/PolizasGrupos.css";
 import { ContenedorTitulo, Titulo } from "./Formularios";
 import { ReporteAuditoriaService, getUsuarios } from "../api/ReporteAuditoriaService";
@@ -23,6 +24,7 @@ import 'dayjs/locale/es';
 const ListarRepAuditoria = (user) => {
   const [loading, setLoading] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const navigate = useNavigate();
   const columns = [
     {
       accessorKey: 'accion',
@@ -94,6 +96,19 @@ const ListarRepAuditoria = (user) => {
       setLoading(true);
 
       const response = await ReporteAuditoriaService(data);
+      if (response === 403) {
+        setTitle("Sesión expirada")
+        setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+        setShowModal(true)
+
+        //set time out to logout of 5 seconds
+        setTimeout(() => {
+          localStorage.removeItem("user");
+          navigate(`/`);
+        }, 5000);
+        return;
+      }
+
       //Check if the response is ok response.auditoria[0].codigo === 0 is ok and response.auditoria[0].codigo === 1 is error
       if (response.auditoria[0].codigo === 1) {
         setTitle("Error");
@@ -211,6 +226,18 @@ const ListarRepAuditoria = (user) => {
   useEffect(() => {
     const fetchData = async () => {
       const response = await getUsuarios();
+      if (response === 403) {
+        setTitle("Sesión expirada")
+        setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+        setShowModal(true)
+
+        //set time out to logout of 5 seconds
+        setTimeout(() => {
+          localStorage.removeItem("user");
+          navigate(`/`);
+        }, 5000);
+        return;
+      }
       //set response like this value: response.usuario[0].corre, label: response.usuario[0].correo
       const data = response.usuario.map((item, index) => {
         const correo = item.correo !== undefined ? item.correo.toString() : '';
@@ -232,11 +259,7 @@ const ListarRepAuditoria = (user) => {
     setServicioSelected(event.target.value);
   };
 
-  const handleChangeUsuario = (event) => {
-    setUsuarioInputSelected(event.target.value);
-  };
 
-  const getOptionSelected = (option, value) => option.value === value.value;
   return (
     <main>
       <div style={{ position: 'relative' }}>

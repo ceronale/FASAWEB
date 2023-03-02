@@ -1,4 +1,5 @@
 
+/* eslint-disable */
 import React, { Component } from 'react';
 import Button from '@mui/material/Button';
 import Col from 'react-bootstrap/Col';
@@ -80,10 +81,21 @@ class UploadFilePolizas extends Component {
 
     // On file upload (click the upload button)
     onFileUpload = async (e, convenioValue) => {
+
         e.preventDefault();
         if (this.state.selectedFile !== null) {
             const blob = new Blob([this.state.selectedFile], { type: 'text/csv' });
             var resp = await UploadPolizas(blob, convenioValue);
+            if (resp === 403) {
+                alert("Su sesión ha expirado, por favor vuelva a ingresar");
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    location.reload();
+                }, 3000);
+                return;
+            }
+
             this.setState({ msj: resp.response1[0].detalleRespuest });;
         }
     };

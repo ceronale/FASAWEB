@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate, } from 'react-router-dom';
 import { ContenedorTitulo, Titulo } from './Formularios';
 import ModalAlert from './Modals/ModalAlert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Grid from '@mui/material/Unstable_Grid2';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -20,7 +20,7 @@ const AutorizacionPrevia = (user) => {
     //State to handle the user data
     const [usuario] = useState(JSON.parse(user.user));
     //State to handle the convenios of the user
-    const [convenios, setConvenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
+    const [convenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
     const [rut, setRut] = useState('');
     const [formattedRut, setFormattedRut] = useState('');
     const [dataTable, setDataTable] = useState({});
@@ -29,8 +29,9 @@ const AutorizacionPrevia = (user) => {
     const [msj, setMsj] = useState();
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [listaSelected, setListaSelected] = useState('')
+    const [listaSelected] = useState('')
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+    const navigate = useNavigate();
 
     //Function to handle the close of the modal
     const handleClose = () => {
@@ -46,12 +47,7 @@ const AutorizacionPrevia = (user) => {
         return rut;
     }
 
-    //Handle show modal
-    const handleShowModal = (title, msj) => {
-        setTitle(title);
-        setMsj(msj);
-        setShowModal(true);
-    }
+
     //show data
     const handleShowData = async () => {
         try {
@@ -69,12 +65,25 @@ const AutorizacionPrevia = (user) => {
 
             const data = {
                 convenio: convenioSelected.value,
+                //eslint-disable-next-line
                 rut: rut.replace(/\./g, '').replace(/\-/g, ''),
             }
 
             //call the service to get the data
             setLoading(true);
             const response = await getAutorizaciones(data);
+            if (response === 403) {
+                setShowModal(true)
+                setTitle("Sesión expirada")
+                setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 5000);
+                return;
+            }
+
 
             if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
 

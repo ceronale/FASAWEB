@@ -1,7 +1,8 @@
+/* eslint-disable */
 import React, { useState } from "react";
 import { Label, LabelReq, RestriccionPass, Inputp, ContenedorTitulo, Titulo } from "../Formularios";
 import ModalAlert from "../Modals/ModalAlert";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ActualizarPass } from "../../api/ActualizarPass";
 import { LoginService } from "../../api/LoginService";
 import "../../styles/ModificarPass.css";
@@ -41,9 +42,6 @@ const FormModificarPass = (user) => {
     });
 
     const { passwdActual, passwd, passwd2 } = registerData;
-
-
-
 
     //Validaciones
     const onSubmit = async (e) => {
@@ -93,9 +91,11 @@ const FormModificarPass = (user) => {
 
     // Validacion de contraseña (Caracteres)
     function contraseñaValidar() {
+        //eslint-disable-next-line
         const format = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
         var contains_number = /\d/.test(registerData.passwd);
         var contains_special_character = format.test(registerData.passwd);
+        //eslint-disable-next-line
         var contains_letter = /[a-zA-Z]/.test(registerData.passwd);
         var contains_upperletter = /[A-Z]/.test(registerData.passwd);
         if (!contains_letter) {

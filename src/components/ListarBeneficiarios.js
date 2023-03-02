@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import "../styles/PolizasGrupos.css";
 import { ContenedorTitulo, Titulo } from "./Formularios";
-import { getBeneficiarios, updateBeneficiario } from "../api/BeneficiarioService";
+import { getBeneficiarios } from "../api/BeneficiarioService";
 import DataTableBeneficiarios from "./DataTable/DataTableBeneficiarios";
-import { Box, FormControl, Button, TextField, Autocomplete } from "@mui/material";
+import { Box, Button, TextField, Autocomplete } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import ModalAlert from "./Modals/ModalAlert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Form from 'react-bootstrap/Form';
+import { useNavigate, } from 'react-router-dom';
 
 
 
@@ -15,8 +16,6 @@ import Form from 'react-bootstrap/Form';
 const ListarBeneficiarios = (user) => {
   //Obetner usuario
   const usuario = (JSON.parse(user.user));
-  // state to store the selected filter value
-  const [filtrarValue, setFiltrarValue] = useState(null);
   // state to store the options for the select input
   const [convenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
   // state to store the data for the DataTable component
@@ -34,6 +33,7 @@ const ListarBeneficiarios = (user) => {
   const [rut, setRut] = useState('');
   const [formattedRut, setFormattedRut] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+  const navigate = useNavigate();
 
   const showData = async () => {
     try {
@@ -51,6 +51,7 @@ const ListarBeneficiarios = (user) => {
       const data = {
         codigoCliente: convenio.value,
         activos: 1,
+        //eslint-disable-next-line
         rut: rut.replace(/\./g, '').replace(/\-/g, ''),
       }
 
@@ -58,6 +59,18 @@ const ListarBeneficiarios = (user) => {
       setLoading(true);
 
       const response = await getBeneficiarios(data);
+
+      if (response === 403) {
+        setShowModal(true)
+        setTitle("Sesión expirada")
+        setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+        //set time out to logout of 5 seconds
+        setTimeout(() => {
+          localStorage.removeItem("user");
+          navigate(`/`);
+        }, 5000);
+        return;
+      }
       if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
         setLoading(false);
         setDataTable(undefined)
@@ -107,57 +120,64 @@ const ListarBeneficiarios = (user) => {
 
   return (
     <main>
-      <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
-      <ContenedorTitulo>
-        <Titulo>Beneficiario</Titulo>
-      </ContenedorTitulo>
-      <div id="notaLogin">
-        En esta seccion podras visualizar los beneficiarios.
+      <div style={{ position: 'relative' }}>
+        {loading && (
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+            <CircularProgress />
+          </div>
+        )}
+
+        <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
+        <ContenedorTitulo>
+          <Titulo>Beneficiario</Titulo>
+        </ContenedorTitulo>
+        <div id="notaLogin">
+          En esta seccion podras visualizar los beneficiarios.
+        </div>
+        <Form >
+          <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
+            <Grid container spacing={2}>
+              <Grid xs={3}>
+                <Autocomplete
+                  value={convenio}
+                  onChange={(event, newValue) => {
+                    setConvenio(newValue);
+                  }}
+                  id="controllable-states-demo"
+                  options={convenios}
+                  renderInput={(params) => <TextField {...params} label="Convenio" />}
+                />
+              </Grid>
+              <Grid xs={3}>
+                <TextField
+                  id="rut"
+                  label="Rut"
+                  variant="outlined"
+                  sx={{ width: '100%' }}
+                  inputProps={{ maxLength: 12, pattern: '[0-9kK]*' }}
+                  value={formattedRut}
+                  onChange={(event) => {
+                    setRut(event.target.value)
+                    setFormattedRut(formatRut(event.target.value))
+                  }}
+                />
+              </Grid>
+              <Grid xs={2}>
+                <Button size="large" variant="contained" onClick={showData} style={{ marginTop: 5 }}>
+                  Filtrar
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </Form>
+        {
+          (dataTable === undefined)
+            ?
+            null
+            : <DataTableBeneficiarios data={dataTable} user={usuario} isButtonDisabled={isButtonDisabled} updateData={showData} convenio={convenio} />
+        }
+
       </div>
-      <Form >
-        <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
-          <Grid container spacing={2}>
-            <Grid xs={3}>
-              <Autocomplete
-                value={convenio}
-                onChange={(event, newValue) => {
-                  setConvenio(newValue);
-                }}
-                id="controllable-states-demo"
-                options={convenios}
-                renderInput={(params) => <TextField {...params} label="Convenio" />}
-              />
-            </Grid>
-            <Grid xs={3}>
-              <TextField
-                id="rut"
-                label="Rut"
-                variant="outlined"
-                sx={{ width: '100%' }}
-                inputProps={{ maxLength: 12, pattern: '[0-9kK]*' }}
-                value={formattedRut}
-                onChange={(event) => {
-                  setRut(event.target.value)
-                  setFormattedRut(formatRut(event.target.value))
-                }}
-              />
-            </Grid>
-            <Grid xs={2}>
-              <Button size="large" variant="contained" onClick={showData} style={{ marginTop: 5 }}>
-                Filtrar
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-      </Form>
-      {
-        (dataTable === undefined)
-          ?
-          null
-          : <DataTableBeneficiarios data={dataTable} user={usuario} isButtonDisabled={isButtonDisabled} updateData={showData} convenio={convenio} />
-      }
-
-
     </main >
 
   );

@@ -21,3 +21,24 @@ export const LoginService = async (data) => {
 
 	return response;
 }
+
+export const getTokenAuth = async () => {
+
+	const config = {
+		method: 'get',
+		url: 'http://150.100.253.61:8181/cxf/security/webConvenios/generacion/token',
+		headers: {
+			'usuario': 'wsconvenios',
+			'password': 'wsconvenios2023 '
+		}
+	};
+
+	const response = axios(config)
+		.then(({ data: out }) => {
+			return out;
+		})
+		.catch(function (error) {
+			return error;
+		});
+	return response;
+}

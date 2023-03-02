@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate, } from 'react-router-dom';
 import "../styles/PolizasGrupos.css";
 import { ContenedorTitulo, Titulo } from "./Formularios";
 import { PolizaService } from "../api/PolizaService";
@@ -26,8 +27,9 @@ const PolizasGrupos = ({ user }) => {
     const [showModal, setShowModal] = useState(false);
     //state of the loading
     const [loading, setLoading] = useState(false);
-
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+    const navigate = useNavigate();
+
 
     const showData = async () => {
         try {
@@ -39,6 +41,22 @@ const PolizasGrupos = ({ user }) => {
             //call the service to get the data
             setLoading(true);
             const response = await PolizaService(filtrarValue.value);
+
+            if (response === 403) {
+                setTitle("Sesión expirada")
+                setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+                setShowModal(true)
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 5000);
+                return;
+            }
+
+
+
+
             if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
                 setLoading(false);
                 handleModal("Error", "No se pudo obtener la información de las pólizas y grupos");

@@ -1,13 +1,15 @@
 const axios = require('axios');
 
 export const HomeService = async (data) => {
-
+	const user = (JSON.parse(localStorage.getItem("user")));
 	const config = {
 		method: 'get',
 		url: 'http://150.100.253.61:8181/cxf/usuario/services/leer',
 		headers: {
 			'Content-Type': 'application/json',
 			user: data,
+			token: user.token
+
 		},
 	};
 	const response = axios(config)
@@ -15,7 +17,8 @@ export const HomeService = async (data) => {
 			return outLoginModel;
 		})
 		.catch((error) => {
-			return error;
+			return error.response.status;
+
 		});
 
 	return response;

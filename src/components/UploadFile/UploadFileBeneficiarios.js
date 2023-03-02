@@ -1,4 +1,4 @@
-
+/* eslint-disable */
 import React, { Component } from 'react';
 import Button from '@mui/material/Button';
 import Col from 'react-bootstrap/Col';
@@ -7,8 +7,6 @@ import Row from 'react-bootstrap/Row';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { UploadExcelBeneficiarios } from '../../api/UploadExcelBeneficiarios';
-
-import moment from 'moment';
 
 
 class UploadFileBeneficiarios extends Component {
@@ -44,7 +42,7 @@ class UploadFileBeneficiarios extends Component {
             const wb = XLSX.read(event.target.result, { type: 'binary', dateNF: 'mm/dd/yyyy;@', cellText: true });
             const sheets = wb.SheetNames;
             var XL_row_object = XLSX.utils.sheet_to_row_object_array(wb.Sheets[sheets[0]], { raw: false });
-            var json_object = JSON.stringify(XL_row_object);
+
 
             if (sheets.length) {
                 const properties = ['apellido1', 'apellido2', 'ciudad', 'codigoCarga', 'codigoConvenio', 'codigoRelacion', 'comuna', 'credenciales', 'direccion', 'fechaNacimiento', 'genero', 'grupo', 'id', 'mail', 'nombre', 'poliza', 'rutBeneficiario', 'rutTitular', 'termino', 'vigencia'];
@@ -98,6 +96,15 @@ class UploadFileBeneficiarios extends Component {
         if (this.state.selectedFile !== null) {
             const blob = new Blob([this.state.selectedFile], { type: 'text/csv' });
             var resp = await UploadExcelBeneficiarios(blob, convenioValue);
+            if (resp === 403) {
+                alert("Su sesión ha expirado, por favor vuelva a ingresar");
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    location.reload();
+                }, 3000);
+                return;
+            }
             this.setState({ msj: resp.actualizaResponse[0].detalle });;
         }
     };

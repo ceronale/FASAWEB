@@ -1,12 +1,14 @@
 const axios = require('axios');
 
 export const ListarUsuarios = async () => {
-	const user = (JSON.parse(localStorage.getItem('user'))).correo;
+	const user = (JSON.parse(localStorage.getItem('user')));
+
 	var config = {
 		method: 'get',
 		url: 'http://150.100.253.61:8181/cxf/listando/services/listar',
 		headers: {
-			user: user
+			'user': user.correo,
+			'token': user.token
 		}
 	};
 
@@ -15,7 +17,8 @@ export const ListarUsuarios = async () => {
 			return outListar;
 		})
 		.catch((error) => {
-			throw new error(error);
+
+			return error.response.status;
 		});
 
 	return response;

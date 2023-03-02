@@ -1,6 +1,8 @@
 const axios = require('axios');
 
 export const ReporteAuditoriaService = async (data) => {
+    const user = (JSON.parse(localStorage.getItem("user")));
+
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/reportar/services/reportar/auditoria',
@@ -9,7 +11,8 @@ export const ReporteAuditoriaService = async (data) => {
             'servicio': data.servicio,
             'accion': data.accion,
             'fechaDesde': data.fechaDesde,
-            'fechaHasta': data.fechaHasta
+            'fechaHasta': data.fechaHasta,
+            'token': user.token
         }
     };
     const response = axios(config)
@@ -17,7 +20,7 @@ export const ReporteAuditoriaService = async (data) => {
             return out;
         })
         .catch((error) => {
-            throw new error(error);
+            return error.response.status;
         });
 
     return response;
@@ -25,10 +28,14 @@ export const ReporteAuditoriaService = async (data) => {
 
 
 export const getUsuarios = async () => {
+    const user = (JSON.parse(localStorage.getItem("user")));
+
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/listandoRep/services/listar/rep',
-        headers: {}
+        headers: {
+            'token': user.token
+        }
     };
 
     const response = axios(config)
@@ -36,7 +43,7 @@ export const getUsuarios = async () => {
             return out;
         })
         .catch((error) => {
-            throw new error(error);
+            return error.response.status;
         });
 
     return response;

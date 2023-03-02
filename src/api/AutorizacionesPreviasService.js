@@ -24,7 +24,7 @@ export const setAutorizaciones = async (data, user) => {
             return out;
         })
         .catch((error) => {
-            return error;
+            return error.response.status;
         });
 
     return response;
@@ -47,7 +47,7 @@ export const getAutorizaciones = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error;
+            return error.response.status;
         });
 
     return response;

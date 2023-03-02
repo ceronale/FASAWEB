@@ -9,7 +9,6 @@ import Button from '@mui/material/Button';
 
 import {
     Label,
-    Titulo
 } from "../Formularios";
 
 function not(a, b) {

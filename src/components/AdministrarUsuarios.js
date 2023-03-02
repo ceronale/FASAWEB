@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate, } from 'react-router-dom';
 import { ContenedorTitulo, Titulo } from "./Formularios";
 import { EliminarUsuario } from "../api/EliminarUsuario";
 import DataTableDeleteAndExport from "./DataTable/DataTableDeleteAndExport";
@@ -17,6 +18,7 @@ const AdministrarUsuarios = (user) => {
     const [showModalConfirmar, setShowModalConfirmar] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [idElminar, setIdElminar] = useState("");
+    const navigate = useNavigate();
     const handleCloseConfirmar = () => {
         setShowModalConfirmar(false);
     }
@@ -29,6 +31,18 @@ const AdministrarUsuarios = (user) => {
 
         setLoading(true);
         const resp = await EliminarUsuario(idElminar, usuario.correo)
+        if (resp === 403) {
+            setShowModal(true)
+            setTitle("Sesión expirada")
+            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+                localStorage.removeItem("user");
+                navigate(`/`);
+            }, 5000);
+            return;
+        }
+
         var codigoRespuesta = resp['eliminar'][0]['codigoRespuesta'];
         var detalleRespuesta = resp['eliminar'][0]['detalleRespuesta'];
         setShowModalConfirmar(false);
@@ -51,6 +65,18 @@ const AdministrarUsuarios = (user) => {
     const showData = async () => {
         setLoading(true);
         const response = await ListarUsuarios()
+
+        if (response === 403) {
+            setShowModal(true)
+            setTitle("Sesión expirada")
+            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+                localStorage.removeItem("user");
+                navigate(`/`);
+            }, 5000);
+            return;
+        }
         setLoading(true)
         setData(undefined)
         setData(response.usuario)

@@ -5,9 +5,11 @@ export const UploadExcelBeneficiarios = async (data, convenio) => {
 
     var formData = new FormData();
     formData.append('csv', data);
-    const user = (JSON.parse(localStorage.getItem("user"))).correo;
-    formData.append('userRep', user);
-    formData.append('convenio', "MCAM");
+    const user = (JSON.parse(localStorage.getItem("user")));
+    formData.append('userRep', user.correo);
+    formData.append('convenio', convenio);
+    formData.append('token', user.token);
+
 
     var config = {
         method: 'post',
@@ -19,7 +21,7 @@ export const UploadExcelBeneficiarios = async (data, convenio) => {
             return out;
         })
         .catch((error) => {
-            throw new error(error);
+            return error.response.status;
         });
 
     return response;

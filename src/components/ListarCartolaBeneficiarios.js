@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate, } from 'react-router-dom';
 import "../styles/PolizasGrupos.css";
 import { ContenedorTitulo, Titulo } from "./Formularios";
 import DataTable from "./DataTable/DataTable";
@@ -23,11 +24,11 @@ import 'dayjs/locale/es';
 const ListarCartolaBeneficiarios = (user) => {
   //Obetner usuario
   const usuario = (JSON.parse(user.user));
-
+  const navigate = useNavigate();
   const [desde, setDesde] = useState(null);
   const [hasta, setHasta] = useState(null);
 
-  const [convenios, setConvenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
+  const [convenios] = useState(usuario.convenio.split(",").map((convenio, index) => ({ label: convenio, value: convenio })));
   const [convenio, setConvenio] = useState(null);
   const [rut, setRut] = useState('');
   const [formattedRut, setFormattedRut] = useState('');
@@ -54,7 +55,6 @@ const ListarCartolaBeneficiarios = (user) => {
     setDataTable({});
     //format rut without dots or hyhen
     const rutNoFormat = rut.replace(/\.|-/g, '');
-
     if (usuario.recursos.indexOf("444") === -1) {
       if (!desde || !hasta) {
         // show error message in modal if any of the fields is empty
@@ -78,6 +78,19 @@ const ListarCartolaBeneficiarios = (user) => {
         };
 
         const response = await getCartola(data);
+
+        if (response === 403) {
+          setShowModal(true)
+          setTitle("Sesión expirada")
+          setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+          //set time out to logout of 5 seconds
+          setTimeout(() => {
+            localStorage.removeItem("user");
+            navigate(`/`);
+          }, 5000);
+          return;
+        }
+
         setDataTable(undefined);
         //if response.responsse is empty show error message in modal no se obtuvieron resultados
         if (response.response.length === 0) {
@@ -117,7 +130,27 @@ const ListarCartolaBeneficiarios = (user) => {
           fechaFin: formattedHasta,
         };
         const response = await getCartola(data);
+        if (response === 403) {
+          setShowModal(true)
+          setTitle("Sesión expirada")
+          setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+          //set time out to logout of 5 seconds
+          setTimeout(() => {
+            localStorage.removeItem("user");
+            navigate(`/`);
+          }, 5000);
+          return;
+        }
+
         setDataTable(undefined);
+        console.log(response);
+        const element = document.createElement("a");
+        element.setAttribute("href", `data:application/octet-stream;base64,${response}`);
+        element.setAttribute("download", "test.xlsx");
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
 
         if (response.response.length === 0) {
           setTitle("Error");

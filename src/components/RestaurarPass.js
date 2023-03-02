@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState } from "react";
 import { Label, LabelReq, RestriccionPass, Inputp, ContenedorTitulo, Titulo } from "./Formularios";
 import ModalAlert from "./Modals/ModalAlert";

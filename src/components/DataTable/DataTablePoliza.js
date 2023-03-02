@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate, } from 'react-router-dom';
 import MaterialReactTable from 'material-react-table';
-
 import ModalConfirmar from "../Modals/ModalConfirmar";
 import ModalAlert from "../Modals/ModalAlert";
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
@@ -24,7 +24,7 @@ const DataTablePoliza = props => {
   const [showModalConfirmar, setShowModalConfirmar] = useState(false);
   //Validaciones de campos editar
   const [validationErrors, setValidationErrors] = useState({});
-  const [hasValidationError, setHasValidationError] = useState(false);
+  const navigate = useNavigate();
 
   //Edit table variables
   const [values, setValues] = useState();
@@ -58,7 +58,7 @@ const DataTablePoliza = props => {
 
       } else {
         values.terminoBeneficio = values.terminoBeneficio.split("-").reverse().join("-");
-
+        setShowModalConfirmar(false);
         const resp = await PolizaServiceUpdate(
           values.grupoAhumada,
           values.nombrePoliza,
@@ -68,7 +68,23 @@ const DataTablePoliza = props => {
           values.polizaAceptaBioequivalente,
           props.user.correo
         )
-        setShowModalConfirmar(false);
+        if (resp === 403) {
+          setTitleAlert("Sesión expirada")
+          setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+          setShowModalAlert(true)
+
+          //set time out to logout of 5 seconds
+          setTimeout(() => {
+            localStorage.removeItem("user");
+            navigate(`/`);
+          }, 5000);
+          return;
+        }
+
+
+
+
+
 
         if (resp.response1[0].codigoRespuesta === 0) {
           setTitleAlert("Exito")

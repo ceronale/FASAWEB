@@ -18,6 +18,7 @@ import BaseSelect from "react-select";
 import FixRequiredSelect from "../../FixRequiredSelect";
 import { Button } from "@mui/material";
 import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate, } from 'react-router-dom';
 
 const initialForm = {
 	rut: '',
@@ -40,7 +41,7 @@ const FormClienteEmpresa = (usuario) => {
 	useEffect(() => {
 		fetchDataSelect();
 	}, []);
-
+	const navigate = useNavigate();
 	const [msj, setMsj] = useState();
 	const [title, setTitle] = useState();
 	const [registerData, setRegisterData] = useState({
@@ -97,8 +98,20 @@ const FormClienteEmpresa = (usuario) => {
 	//function to call the api home service and check if the user exist 
 	const validateUser = async (userData) => {
 		const resp = await HomeService(userData);
-		//Check is the resp.usuario[0].codigo is the resp
 
+		if (resp === 403) {
+			setShowModal(true)
+			setTitle("Sesión expirada")
+			setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+			//set time out to logout of 5 seconds
+			setTimeout(() => {
+				localStorage.removeItem("user");
+				navigate(`/`);
+			}, 5000);
+			return;
+		}
+
+		//Check is the resp.usuario[0].codigo is the resp
 		if (resp.usuario[0].codigo === 1) {
 			return true;
 		} else {
@@ -114,9 +127,21 @@ const FormClienteEmpresa = (usuario) => {
 		e.preventDefault();
 		var isPassValid = contraseñaValidar();
 		var isUserValid = await validateUser(registerData.user);
+
 		if (isPassValid) {
 			if (isUserValid) {
 				const resp = await EmpresaService(registerData, correoUsuario)
+				if (resp === 403) {
+					setTitle("Sesión expirada")
+					setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+					setShowModal(true)
+					//set time out to logout of 5 seconds
+					setTimeout(() => {
+						localStorage.removeItem("user");
+						navigate(`/`);
+					}, 5000);
+					return;
+				}
 
 				var aux = resp['outActualizar'][0]['outSeq'];
 				if (aux === 0) {
@@ -128,7 +153,7 @@ const FormClienteEmpresa = (usuario) => {
 					setShowModal(true)
 					setTitle("Exito")
 					setMsj("Usuario creado de manera exitosa.")
-					const respConvenio = await ConvenioService(registerData.user, selectedOptions.toString(), correoUsuario);
+					await ConvenioService(registerData.user, selectedOptions.toString(), correoUsuario);
 					handleClear();
 				}
 
@@ -139,6 +164,7 @@ const FormClienteEmpresa = (usuario) => {
 	};
 
 	function contraseñaValidar() {
+		//eslint-disable-next-line
 		const format = /[ !@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 		var contains_number = /\d/.test(registerData.passwd);
 		var contains_special_character = format.test(registerData.passwd);
@@ -177,6 +203,18 @@ const FormClienteEmpresa = (usuario) => {
 
 	async function fetchDataSelect() {
 		const resp2 = await LIstaEmpresasService();
+		if (resp2 === 403) {
+			setShowModal(true)
+			setTitle("Sesión expirada")
+			setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+			//set time out to logout of 5 seconds
+			setTimeout(() => {
+				localStorage.removeItem("user");
+				navigate(`/`);
+			}, 5000);
+			return;
+		}
+
 		var aux = resp2['empresa'];
 		let data = aux.map(function (element) {
 			return { value: `${element.idEmpresa}`, label: `${element.nombreEmpresa}` };

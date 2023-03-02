@@ -1,3 +1,5 @@
+
+/* eslint-disable */
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import Col from 'react-bootstrap/Col';
@@ -84,6 +86,15 @@ const UploadFileMedicos = props => {
         if (state.selectedFile !== null) {
             const blob = new Blob([state.selectedFile], { type: 'text/csv' });
             var resp = await UploadMedicos(blob, props.codigoLista);
+            if (resp === 403) {
+                alert("Su sesión ha expirado, por favor vuelva a ingresar");
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    location.reload();
+                }, 3000);
+                return;
+            }
             setState({ msj: resp.response1[0].detalleRespuest });;
         }
     };
