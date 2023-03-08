@@ -189,7 +189,7 @@ const AutorizacionPreviaAdd = (user) => {
                             <Grid xs={12}>
                                 <Grid xs={4}>
                                     <ContenedorTitulo>
-                                        <Titulo>Informacion Personal</Titulo>
+                                        <Titulo>Agregar autorización</Titulo>
                                     </ContenedorTitulo>
                                 </Grid>
                             </Grid>
