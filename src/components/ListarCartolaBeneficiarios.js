@@ -146,14 +146,14 @@ const ListarCartolaBeneficiarios = (user) => {
 
         setDataTable(undefined);
 
-        // const element = document.createElement("a");
-        // element.setAttribute("href", `data:application/octet-stream;base64,${response}`);
-        // element.setAttribute("download", "test.xlsx");
-        // element.style.display = "none";
-        // document.body.appendChild(element);
-        // element.click();
-        // document.body.removeChild(element);
-        console.log(response[0].codigo)
+        const element = document.createElement("a");
+        element.setAttribute("href", `data:application/octet-stream;base64,${response}`);
+        element.setAttribute("download", "test.xlsx");
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+
         if (response.length === 0) {
           setTitle("Error");
           setMsj("No se obtuvieron resultados");
@@ -176,6 +176,7 @@ const ListarCartolaBeneficiarios = (user) => {
       }
 
     };
+    setLoading(false);
   }
 
   const formatRut = (rut) => {
