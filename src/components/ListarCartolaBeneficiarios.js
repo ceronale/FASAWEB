@@ -153,20 +153,28 @@ const ListarCartolaBeneficiarios = (user) => {
         // document.body.appendChild(element);
         // element.click();
         // document.body.removeChild(element);
-
-        if (response.response.length === 0) {
+        console.log(response[0].codigo)
+        if (response.length === 0) {
           setTitle("Error");
           setMsj("No se obtuvieron resultados");
           setShowModal(true);
+        } else if (response[0].codigo === "1") {
+          setTitle("Error");
+          setMsj("No se obtuvieron resultados");
+          setLoading(false);
+          setShowModal(true);
+          setDataTable({});
+          return
         } else if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
           setTitle("Error");
           setMsj("Error de conexión");
           setShowModal(true);
         }
 
-        setDataTable(response.response);
+
+        setDataTable(response);
       }
-      setLoading(false);
+
     };
   }
 
