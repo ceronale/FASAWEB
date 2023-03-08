@@ -78,7 +78,7 @@ const Lista = props => {
                 setTimeout(() => {
                     localStorage.removeItem("user");
                     navigate(`/`);
-                }, 5000);
+                }, 3000);
                 return;
             }
 
@@ -124,7 +124,7 @@ const Lista = props => {
             setTimeout(() => {
                 localStorage.removeItem("user");
                 navigate(`/`);
-            }, 5000);
+            }, 3000);
             return;
         }
         //If response.response[0].codigo is 0 
@@ -163,7 +163,7 @@ const Lista = props => {
             setTimeout(() => {
                 localStorage.removeItem("user");
                 navigate(`/`);
-            }, 5000);
+            }, 3000);
             return;
         }
 
@@ -186,7 +186,7 @@ const Lista = props => {
             setTimeout(() => {
                 localStorage.removeItem("user");
                 navigate(`/`);
-            }, 5000);
+            }, 3000);
             return;
         }
         return response.documentResponse;

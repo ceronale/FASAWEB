@@ -39,7 +39,7 @@ const AdministrarUsuarios = (user) => {
             setTimeout(() => {
                 localStorage.removeItem("user");
                 navigate(`/`);
-            }, 5000);
+            }, 3000);
             return;
         }
 
@@ -74,7 +74,7 @@ const AdministrarUsuarios = (user) => {
             setTimeout(() => {
                 localStorage.removeItem("user");
                 navigate(`/`);
-            }, 5000);
+            }, 3000);
             return;
         }
         setLoading(true)
@@ -139,7 +139,7 @@ const AdministrarUsuarios = (user) => {
                 <div className="row">
                     <div className="col">
                         <ContenedorTitulo>
-                            <Titulo>Administracion de Usuarios</Titulo>
+                            <Titulo>Administración de Usuarios</Titulo>
                         </ContenedorTitulo>
                         <div id="notaLogin">
                             En esta sección podras agregar un nuevo usuario al sistema.

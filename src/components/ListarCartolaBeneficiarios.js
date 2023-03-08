@@ -79,6 +79,7 @@ const ListarCartolaBeneficiarios = (user) => {
 
         const response = await getCartola(data);
 
+
         if (response === 403) {
           setShowModal(true)
           setTitle("Sesión expirada")
@@ -87,7 +88,7 @@ const ListarCartolaBeneficiarios = (user) => {
           setTimeout(() => {
             localStorage.removeItem("user");
             navigate(`/`);
-          }, 5000);
+          }, 3000);
           return;
         }
 
@@ -130,6 +131,7 @@ const ListarCartolaBeneficiarios = (user) => {
           fechaFin: formattedHasta,
         };
         const response = await getCartola(data);
+
         if (response === 403) {
           setShowModal(true)
           setTitle("Sesión expirada")
@@ -138,19 +140,19 @@ const ListarCartolaBeneficiarios = (user) => {
           setTimeout(() => {
             localStorage.removeItem("user");
             navigate(`/`);
-          }, 5000);
+          }, 3000);
           return;
         }
 
         setDataTable(undefined);
-        console.log(response);
-        const element = document.createElement("a");
-        element.setAttribute("href", `data:application/octet-stream;base64,${response}`);
-        element.setAttribute("download", "test.xlsx");
-        element.style.display = "none";
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
+
+        // const element = document.createElement("a");
+        // element.setAttribute("href", `data:application/octet-stream;base64,${response}`);
+        // element.setAttribute("download", "test.xlsx");
+        // element.style.display = "none";
+        // document.body.appendChild(element);
+        // element.click();
+        // document.body.removeChild(element);
 
         if (response.response.length === 0) {
           setTitle("Error");

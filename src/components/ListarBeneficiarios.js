@@ -68,7 +68,7 @@ const ListarBeneficiarios = (user) => {
         setTimeout(() => {
           localStorage.removeItem("user");
           navigate(`/`);
-        }, 5000);
+        }, 3000);
         return;
       }
       if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {

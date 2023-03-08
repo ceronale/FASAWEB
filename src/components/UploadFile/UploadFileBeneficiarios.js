@@ -7,6 +7,7 @@ import Row from 'react-bootstrap/Row';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { UploadExcelBeneficiarios } from '../../api/UploadExcelBeneficiarios';
+import { replace } from 'formik';
 
 
 class UploadFileBeneficiarios extends Component {
@@ -17,19 +18,34 @@ class UploadFileBeneficiarios extends Component {
         msj: " "
     };
 
+
     formatDate(date) {
         if (!date) return null;
 
-        if (!/^\d{2}[\/-]\d{2}[\/-]\d{4}$/.test(date)) {
-            return null;
+        if (date.length === 7) {
+            date = "0" + date;
         }
 
-        let dateArray = date.split(/[\/-]/);
-        let year = dateArray[2];
-        let month = dateArray[1];
-        let day = dateArray[0];
+        // Get the day, month, and year from the input string
+        const day = date.slice(0, 2);
+        const month = date.slice(2, 4);
+        const year = date.slice(4);
 
-        return year + month.padStart(2, '0') + day.padStart(2, '0');
+        // Create a new date object with the given year, month, and day
+        const dateObject = new Date(`${year}-${month}-${day}`);
+
+        // Get the timezone offset in minutes and convert to milliseconds
+        const timezoneOffset = dateObject.getTimezoneOffset() * 60000;
+
+        // Adjust the date by adding the timezone offset
+        const adjustedDate = new Date(dateObject.getTime() + timezoneOffset);
+
+        // Format the date as a string
+        let formattedDate = adjustedDate.toISOString().substr(0, 10);
+        //replace - in formattedData wiht /
+        formattedDate = formattedDate.replace(/-/g, '');
+
+        return formattedDate;
     }
 
     // On file select (from the pop up)
@@ -59,10 +75,13 @@ class UploadFileBeneficiarios extends Component {
                     }
 
                     if (row.genero !== undefined) {
-                        if (row.genero === 'masculino') {
-                            row.genero = 1;
-                        } else if (row.genero === 'femenino') {
-                            row.genero = 2;
+                        if (row.genero) {
+                            row.genero = row.genero.toLowerCase(); // convert to lowercase
+                            if (row.genero === 'masculino') {
+                                row.genero = 1;
+                            } else if (row.genero === 'femenino') {
+                                row.genero = 2;
+                            }
                         }
                     }
 

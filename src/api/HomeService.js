@@ -8,8 +8,6 @@ export const HomeService = async (data) => {
 		headers: {
 			'Content-Type': 'application/json',
 			user: data,
-			token: user.token
-
 		},
 	};
 	const response = axios(config)

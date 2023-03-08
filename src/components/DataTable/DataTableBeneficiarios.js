@@ -436,7 +436,7 @@ const DataTableBeneficiarios = props => {
                 setTimeout(() => {
                     localStorage.removeItem("user");
                     navigate(`/`);
-                }, 5000);
+                }, 3000);
                 return;
             }
             // Handle network error
@@ -531,7 +531,7 @@ const DataTableBeneficiarios = props => {
                     setTimeout(() => {
                         localStorage.removeItem("user");
                         navigate(`/`);
-                    }, 5000);
+                    }, 3000);
                     return;
                 }
                 // Handle network error
@@ -589,13 +589,19 @@ const DataTableBeneficiarios = props => {
 
 
     const getRows = (row) => {
-
         delete row.tableData;
         Object.entries(row.original).forEach(([key, value]) => {
             if (value === undefined) {
                 row.original[key] = " ";
             }
         });
+
+        // format row.original.fechaNacimiento and row.original.vigencia and row.original.termino 
+        row.original.fechaNacimiento = row.original.fechaNacimiento.replace(/-/g, "");
+        row.original.vigencia = row.original.vigencia.replace(/-/g, "");
+        row.original.termino = row.original.termino.replace(/-/g, "");
+
+
 
         const reorderedRow = {
             codigoConvenio: row.original.codigoConvenio,

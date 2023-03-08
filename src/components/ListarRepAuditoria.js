@@ -105,7 +105,7 @@ const ListarRepAuditoria = (user) => {
         setTimeout(() => {
           localStorage.removeItem("user");
           navigate(`/`);
-        }, 5000);
+        }, 3000);
         return;
       }
 
@@ -235,7 +235,7 @@ const ListarRepAuditoria = (user) => {
         setTimeout(() => {
           localStorage.removeItem("user");
           navigate(`/`);
-        }, 5000);
+        }, 3000);
         return;
       }
       //set response like this value: response.usuario[0].corre, label: response.usuario[0].correo

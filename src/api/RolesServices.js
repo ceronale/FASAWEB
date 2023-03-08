@@ -46,13 +46,14 @@ export const getRol = async (data) => {
 }
 
 export const deleteRol = async (data) => {
-    const user = (JSON.parse(localStorage.getItem("user"))).correo;
+    const user = (JSON.parse(localStorage.getItem("user")));
     const config = {
         method: 'delete',
         url: 'http://150.100.253.61:8181/cxf/delRol/services/del/roles',
         headers: {
             'id_rol': data,
-            'userRep': user
+            'userRep': user.correo,
+            "token": user.token
         }
     };
     const response = axios(config)
@@ -67,11 +68,13 @@ export const deleteRol = async (data) => {
 }
 
 export const getComponentes = async () => {
-
+    const user = (JSON.parse(localStorage.getItem("user")));
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/getAllrecursos/services/listar/recurso',
-        headers: {}
+        headers: {
+            "token": user.token
+        }
     };
     const response = axios(config)
         .then(({ data: out }) => {
@@ -85,12 +88,13 @@ export const getComponentes = async () => {
 }
 
 export const getComponentesByRol = async (data) => {
-
+    const user = (JSON.parse(localStorage.getItem("user")));
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/getAllRecursosRol/services/listar/recurso/rol',
         headers: {
-            'id_rol': data
+            'id_rol': data,
+            "token": user.token
         }
     };
     const response = axios(config)
@@ -105,7 +109,7 @@ export const getComponentesByRol = async (data) => {
 }
 
 export const addRol = async (data) => {
-    const user = (JSON.parse(localStorage.getItem("user"))).correo;
+    const user = (JSON.parse(localStorage.getItem("user")));
     const config = {
         method: 'put',
         url: 'http://150.100.253.61:8181/cxf/ins/services/ins/roles',
@@ -113,7 +117,8 @@ export const addRol = async (data) => {
             'nombre': data.nombre,
             'vigencia': 'S',
             'recursos': data.recursos,
-            'userRep': user,
+            'userRep': user.correo,
+            "token": user.token
         }
     };
 

@@ -9,7 +9,7 @@ export const EliminarUsuario = async (data, usuario) => {
             'Content-Type': 'application/json',
             id: data,
             userRep: usuario,
-            token: "user.token"
+            token: user.token
         },
     };
 

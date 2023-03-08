@@ -7,6 +7,7 @@ import { ActualizarPass } from "../../api/ActualizarPass";
 import { LoginService } from "../../api/LoginService";
 import "../../styles/ModificarPass.css";
 import { Button } from "@mui/material";
+import CircularProgress from '@mui/material/CircularProgress';
 
 const initialForm = {
     passwdActual: '',
@@ -23,6 +24,7 @@ const FormModificarPass = (user) => {
     const [showModal, setShowModal] = useState(false);
     const [usuario] = useState(JSON.parse(user.user));
     const [IsValid, setIsValid] = useState(false);
+    const [loading, setLoading] = useState(false);
 
 
     const handleClose = () => {
@@ -46,6 +48,7 @@ const FormModificarPass = (user) => {
     //Validaciones
     const onSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
         var isPassValid = contraseñaValidar();
         if (isPassValid) {
             //var aux = respActualizar['respuesta'][0]['codigoRespuesta'];
@@ -74,10 +77,12 @@ const FormModificarPass = (user) => {
                     setMsj("La nueva contraseña ya fue utilizada anteriormente.")
                 }
             } else {
+
                 setShowModal(true)
                 setTitle("Error de contraseña")
                 setMsj("La contraseña actual es incorrecta.")
             }
+            setLoading(false);
         }
     };
 
@@ -134,79 +139,86 @@ const FormModificarPass = (user) => {
 
     return (
         <main>
-            <form onSubmit={onSubmit}>
-                <div className="boxCentral">
-                    <ContenedorTitulo>
-                        <Titulo>Modificar Contraseña</Titulo>
-                    </ContenedorTitulo>
-                    <div className="leyenda">
-                        <label>
-                            Para poder modificar su contraseña ingrese la clave anterior
-                            y una nueva clave.
-                        </label>
+            <div style={{ position: 'relative' }}>
+                {loading && (
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+                        <CircularProgress />
                     </div>
-                    <div className="boxEmail">
-                        <Label htmlFor="">Contraseña Actual <LabelReq htmlFor=""> *</LabelReq></Label>
-                        <Inputp
-                            type="password"
-                            placeholder=""
-                            name="passwdActual"
-                            value={passwdActual}
-                            onChange={onchange}
-                            min="7"
-                            max="20"
-                            required
-                        />
-                        <RestriccionPass>
-                            Ingresar su contraseña que posee actualmente.
-                        </RestriccionPass>
-                    </div>
-                    <div className="boxEmail">
-                        <Label htmlFor="">Nueva Contraseña <LabelReq htmlFor=""> *</LabelReq></Label>
-                        <Inputp
-                            type="password"
-                            placeholder=""
-                            name="passwd"
-                            value={passwd}
-                            onChange={onchange}
-                            min="7"
-                            max="20"
-                            required
-                        />
-                        <RestriccionPass>
-                            La contraseña debe contener desde 7 a 20 caracteres,
-                            se exige una letra minuscula y una mayuscula, un numero y un caracter especial.
-                        </RestriccionPass>
-                    </div>
-                    <div className="boxEmail">
-                        <Label htmlFor="">Confirmar Contraseña <LabelReq htmlFor=""> *</LabelReq></Label>
-                        <Inputp
-                            type="password"
-                            placeholder=""
-                            name="passwd2"
-                            value={passwd2}
-                            onChange={onchange}
-                            min="7"
-                            max="20"
-                            required
-                        />
-                    </div>
-                    <div className="blockFinal">
-                        <div className="campoRequerido">
-                            <span className="obligatorio">* Campos requeridos</span>
+                )}
+                <form onSubmit={onSubmit}>
+                    <div className="boxCentral">
+                        <ContenedorTitulo>
+                            <Titulo>Modificar Contraseña</Titulo>
+                        </ContenedorTitulo>
+                        <div className="leyenda">
+                            <label>
+                                Para poder modificar su contraseña ingrese la clave anterior
+                                y una nueva clave.
+                            </label>
                         </div>
-                        <div >
-                            <Button type="submit" variant="contained" color="error" onClick={handleClose} >Actualizar</Button>
+                        <div className="boxEmail">
+                            <Label htmlFor="">Contraseña Actual <LabelReq htmlFor=""> *</LabelReq></Label>
+                            <Inputp
+                                type="password"
+                                placeholder=""
+                                name="passwdActual"
+                                value={passwdActual}
+                                onChange={onchange}
+                                min="7"
+                                max="20"
+                                required
+                            />
+                            <RestriccionPass>
+                                Ingresar su contraseña que posee actualmente.
+                            </RestriccionPass>
+                        </div>
+                        <div className="boxEmail">
+                            <Label htmlFor="">Nueva Contraseña <LabelReq htmlFor=""> *</LabelReq></Label>
+                            <Inputp
+                                type="password"
+                                placeholder=""
+                                name="passwd"
+                                value={passwd}
+                                onChange={onchange}
+                                min="7"
+                                max="20"
+                                required
+                            />
+                            <RestriccionPass>
+                                La contraseña debe contener desde 7 a 20 caracteres,
+                                se exige una letra minuscula y una mayuscula, un numero y un caracter especial.
+                            </RestriccionPass>
+                        </div>
+                        <div className="boxEmail">
+                            <Label htmlFor="">Confirmar Contraseña <LabelReq htmlFor=""> *</LabelReq></Label>
+                            <Inputp
+                                type="password"
+                                placeholder=""
+                                name="passwd2"
+                                value={passwd2}
+                                onChange={onchange}
+                                min="7"
+                                max="20"
+                                required
+                            />
+                        </div>
+                        <div className="blockFinal">
+                            <div className="campoRequerido">
+                                <span className="obligatorio">* Campos requeridos</span>
+                            </div>
+                            <div >
+                                <Button type="submit" variant="contained" color="error" onClick={handleClose} >Actualizar</Button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </form>
-            <ModalAlert
-                title={title}
-                show={showModal}
-                handleClose={handleClose}
-                msj={msj}
-            />
+                </form>
+                <ModalAlert
+                    title={title}
+                    show={showModal}
+                    handleClose={handleClose}
+                    msj={msj}
+                />
+            </div>
         </main >
     );
 }

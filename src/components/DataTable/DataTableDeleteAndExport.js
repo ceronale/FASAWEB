@@ -79,7 +79,7 @@ const DataTableDeleteAndExport = props => {
       setTimeout(() => {
         localStorage.removeItem("user");
         navigate(`/`);
-      }, 5000);
+      }, 3000);
       return;
     }
 
@@ -143,7 +143,7 @@ const DataTableDeleteAndExport = props => {
         setTimeout(() => {
           localStorage.removeItem("user");
           navigate(`/`);
-        }, 5000);
+        }, 3000);
         return;
       }
 
@@ -290,7 +290,7 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
           setTimeout(() => {
             localStorage.removeItem("user");
             navigate(`/`);
-          }, 5000);
+          }, 3000);
           return;
         }
 
@@ -324,7 +324,7 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
           setTimeout(() => {
             localStorage.removeItem("user");
             navigate(`/`);
-          }, 5000);
+          }, 3000);
           return;
         }
 

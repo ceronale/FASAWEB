@@ -44,7 +44,7 @@ const DataTableMedicos = props => {
 
     const [loading, setLoading] = useState(false);
     const [createModalOpen, setCreateModalOpen] = useState(false);
-    const history = useNavigate();
+    const navigate = useNavigate();
     const handleCloseConfirmar = () => {
         setShowModalConfirmar(false);
     }
@@ -118,9 +118,20 @@ const DataTableMedicos = props => {
             }
 
             const resp = await updateMedico(data, props.user)
+            if (resp === 403) {
+                setTitleAlert("Sesión expirada")
+                setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                setShowModalAlert(true)
+
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 3000);
+                return;
+            }
 
             setShowModalConfirmar(false);
-
             if (resp.response[0].codigo === 0) {
                 setTitleAlert("Exito")
                 setMsjAlert(resp.response[0].detalle)
@@ -206,7 +217,7 @@ const DataTableMedicos = props => {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={() => { history("/AutorizacionesPreviaAdd"); }}
+                                onClick={() => { navigate("/AutorizacionesPreviaAdd"); }}
                             >
                                 + Agregar Autorización
                             </Button>
@@ -232,7 +243,7 @@ const DataTableMedicos = props => {
 
                 <ModalUploadFileMedicos
                     title={"Cargar datos masivos"}
-                    msj={"Cargue el archivo .csv con el cual desea actualizar los registros"}
+                    msj={"Cargue el archivoxlsx con el cual desea actualizar los registros"}
                     show={showModalUpload}
                     handleClose={handleCloseUpload}
                     codigoLista={props.codigoLista}

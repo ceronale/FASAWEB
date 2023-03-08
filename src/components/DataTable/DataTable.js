@@ -28,7 +28,6 @@ const DataTable = props => {
                 row.original[key] = " ";
             }
         });
-        console.log(row.original + " " + props.nombreArchivo)
         //if props.nombreArchivo is "CartolaBeneficiarios" then reorder the columns
         if (props.nombreArchivo === "CartolaBeneficiario") {
             const reorderedRow = {

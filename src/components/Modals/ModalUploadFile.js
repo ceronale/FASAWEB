@@ -16,7 +16,7 @@ const ModalUploadFile = ({ show, handleClose, msj, title, convenio }) => {
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
             <Modal.Body>{msj}
-                convenio
+
                 <UploadFilePolizas convenio={convenio}>
 
                 </UploadFilePolizas>

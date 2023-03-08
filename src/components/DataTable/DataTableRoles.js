@@ -19,7 +19,7 @@ import {
 import FormAdministrarRoles from '../Forms/FormAdministrarRoles';
 import { deleteRol, getComponentesByRol, getComponentes, addRol, updateRol } from "../../api/RolesServices";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import { useNavigate, } from 'react-router-dom';
 
 const DataTableRoles = props => {
     //Se crea la vairable con informacion de la data table
@@ -37,6 +37,7 @@ const DataTableRoles = props => {
     const [msjAlert, setMsjAlert] = useState();
     const [loading, setLoading] = useState(false);
     const [components, setComponents] = useState();
+    const navigate = useNavigate();
 
 
     // Metodo para eliminar
@@ -59,9 +60,33 @@ const DataTableRoles = props => {
             let componentes;
             let componentesByRol;
             getComponentes().then((response) => {
+                if (response === 403) {
+                    setTitleAlert("Sesión expirada")
+                    setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                    setShowModalAlert(true)
+
+                    //set time out to logout of 5 seconds
+                    setTimeout(() => {
+                        localStorage.removeItem("user");
+                        navigate(`/`);
+                    }, 3000);
+                    return;
+                }
                 setComponents(response.recursos);
                 componentes = response.recursos;
                 getComponentesByRol(row.original.id_rol).then((response) => {
+                    if (response === 403) {
+                        setTitleAlert("Sesión expirada")
+                        setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                        setShowModalAlert(true)
+
+                        //set time out to logout of 5 seconds
+                        setTimeout(() => {
+                            localStorage.removeItem("user");
+                            navigate(`/`);
+                        }, 3000);
+                        return;
+                    }
                     componentesByRol = response.recursoRol;
                     componentes.forEach((componente) => {
                         if (!componentesByRol.find(c => c.id_recurso === componente.id_recursos)) {
@@ -91,6 +116,18 @@ const DataTableRoles = props => {
         setRight([]);
         let componentes;
         getComponentes().then((response) => {
+            if (response === 403) {
+                setTitleAlert("Sesión expirada")
+                setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                setShowModalAlert(true)
+
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 3000);
+                return;
+            }
             setComponents(response.recursos);
             componentes = response.recursos;
             componentes.forEach((componente) => {
@@ -103,6 +140,20 @@ const DataTableRoles = props => {
     //Modal Confirmar
     const handleConfirmar = async () => {
         const response = await deleteRol(values.original.id_rol);
+
+        if (response === 403) {
+            setTitleAlert("Sesión expirada")
+            setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+            setShowModalAlert(true)
+
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+                localStorage.removeItem("user");
+                navigate(`/`);
+            }, 3000);
+            return;
+        }
+
         //modal alert if the response is ok response.response1[0].codigo === 0 is ok and response.response1[0].codigo === 1 is error
         if (response.response1[0].codigo === 0) {
             setTitleAlert("Eliminado");
@@ -131,6 +182,19 @@ const DataTableRoles = props => {
 
     const handleAddRol = async (values) => {
         const response = await addRol(values);
+
+        if (response === 403) {
+            setTitleAlert("Sesión expirada")
+            setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+            setShowModalAlert(true)
+
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+                localStorage.removeItem("user");
+                navigate(`/`);
+            }, 3000);
+            return;
+        }
         const { codigo } = response.response[0];
         setLoading(true);
         if (codigo === 1) {
@@ -150,6 +214,20 @@ const DataTableRoles = props => {
 
     const handleEditRol = async (values) => {
         const response = await updateRol(values);
+
+        if (response === 403) {
+            setTitleAlert("Sesión expirada")
+            setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+            setShowModalAlert(true)
+
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+                localStorage.removeItem("user");
+                navigate(`/`);
+            }, 3000);
+            return;
+        }
+
         setLoading(true);
         const { codigo } = response.response1[0];
         if (codigo === 0) {

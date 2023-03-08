@@ -77,7 +77,7 @@ const DataTablePoliza = props => {
           setTimeout(() => {
             localStorage.removeItem("user");
             navigate(`/`);
-          }, 5000);
+          }, 3000);
           return;
         }
 
@@ -331,6 +331,8 @@ const DataTablePoliza = props => {
     if (row.original.terminoBeneficio === undefined) {
       row.original.terminoBeneficio = " ";
 
+    } else {
+      row.original.terminoBeneficio = row.original.terminoBeneficio.replace(/-/g, "");
     }
     if (row.original.cuentaLiquidador === undefined) {
       row.original.cuentaLiquidador = " ";
@@ -382,7 +384,7 @@ const DataTablePoliza = props => {
 
       <ModalUploadFile
         title={"Cargar datos masivos"}
-        msj={"Cargue el archivo .csv con el cual desea actualizar los registros"}
+        msj={"Cargue el archivo xlsx con el cual desea actualizar los registros"}
         show={showModalUpload}
         handleClose={handleCloseUpload}
         convenio={props.convenio}

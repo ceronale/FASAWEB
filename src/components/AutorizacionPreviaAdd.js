@@ -129,7 +129,7 @@ const AutorizacionPreviaAdd = (user) => {
                 setTimeout(() => {
                     localStorage.removeItem("user");
                     navigate(`/`);
-                }, 5000);
+                }, 3000);
                 return;
             }
 

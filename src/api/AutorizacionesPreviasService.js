@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 export const setAutorizaciones = async (data, user) => {
+    const userx = (JSON.parse(localStorage.getItem("user")));
     const config = {
         method: 'post',
         url: 'http://150.100.253.61:8181/cxf/aut/services/insertar/autorizaciones',
@@ -17,6 +18,7 @@ export const setAutorizaciones = async (data, user) => {
             'medicoIncExc': data.inExMedico,
             'envases': data.maxEnvases,
             'userRep': user,
+            'token': userx.token,
         }
     };
     const response = axios(config)
@@ -32,13 +34,14 @@ export const setAutorizaciones = async (data, user) => {
 
 
 export const getAutorizaciones = async (data) => {
-
+    const user = (JSON.parse(localStorage.getItem("user")));
     const config = {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/list/services/listar/autorizaciones',
         headers: {
             'rut': data.rut,
-            'convenio': data.convenio
+            'convenio': data.convenio,
+            'token': user.token,
         }
     };
 

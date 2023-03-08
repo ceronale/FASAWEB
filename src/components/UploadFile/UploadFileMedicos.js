@@ -59,19 +59,31 @@ const UploadFileMedicos = props => {
     };
 
 
-    const formatDate = (date) => {
-
+    function formatDate(date) {
         if (!date) return null;
 
-        if (!/^\d{2}[\/-]\d{2}[\/-]\d{4}$/.test(date)) {
-            return null;
+        if (date.length === 7) {
+            date = "0" + date;
         }
-        let dateArray = date.split(/[\/-]/);
-        let year = dateArray[2];
-        let month = dateArray[1];
-        let day = dateArray[0];
 
-        return year + "-" + month.padStart(2, '0') + "-" + day.padStart(2, '0');
+        // Get the day, month, and year from the input string
+        const day = date.slice(0, 2);
+        const month = date.slice(2, 4);
+        const year = date.slice(4);
+
+        // Create a new date object with the given year, month, and day
+        const dateObject = new Date(`${year}-${month}-${day}`);
+
+        // Get the timezone offset in minutes and convert to milliseconds
+        const timezoneOffset = dateObject.getTimezoneOffset() * 60000;
+
+        // Adjust the date by adding the timezone offset
+        const adjustedDate = new Date(dateObject.getTime() + timezoneOffset);
+
+        // Format the date as a string
+        const formattedDate = adjustedDate.toISOString().substr(0, 10);
+
+        return formattedDate;
     }
 
     function jsonToCsv(json, keys) {

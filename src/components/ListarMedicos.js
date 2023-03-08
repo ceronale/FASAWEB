@@ -71,7 +71,7 @@ const ListarMedicos = (user) => {
         setTimeout(() => {
           localStorage.removeItem("user");
           navigate(`/`);
-        }, 5000);
+        }, 3000);
         return;
       }
       if (response) {
@@ -110,7 +110,7 @@ const ListarMedicos = (user) => {
           setTimeout(() => {
             localStorage.removeItem("user");
             navigate(`/`);
-          }, 5000);
+          }, 3000);
           return;
         }
         //Reset the dataTable state
@@ -175,7 +175,7 @@ const ListarMedicos = (user) => {
           )}
           <div className="boxTabla">
             <ContenedorTitulo>
-              <Titulo>Visualizacion de Medicos</Titulo>
+              <Titulo>Visualización de Medicos</Titulo>
             </ContenedorTitulo>
             <div id="notaLogin">
               En esta sección se muestran todos los medicos asociados a un convenio.

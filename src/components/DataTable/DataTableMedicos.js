@@ -195,7 +195,7 @@ const DataTableAutorizacionPrevia = props => {
             setTimeout(() => {
                 localStorage.removeItem("user");
                 navigate(`/`);
-            }, 5000);
+            }, 3000);
             return;
         }
 
@@ -257,7 +257,7 @@ const DataTableAutorizacionPrevia = props => {
                 setTimeout(() => {
                     localStorage.removeItem("user");
                     navigate(`/`);
-                }, 5000);
+                }, 3000);
                 return;
             }
             setShowModalConfirmar(false);
@@ -335,6 +335,8 @@ const DataTableAutorizacionPrevia = props => {
             }
         });
 
+        row.original.fechaDesde = row.original.fechaDesde.replace(/-/g, "");
+
         const reorderedRow = {
             rutMedico: row.original.rutMedico,
             nombre: row.original.nombre,
@@ -374,7 +376,7 @@ const DataTableAutorizacionPrevia = props => {
             setTimeout(() => {
                 localStorage.removeItem("user");
                 navigate(`/`);
-            }, 5000);
+            }, 3000);
             return;
         }
         if (resp.response[0].codigo === 1) {
@@ -483,7 +485,7 @@ const DataTableAutorizacionPrevia = props => {
 
                 <ModalUploadFileMedicos
                     title={"Cargar datos masivos"}
-                    msj={"Cargue el archivo .csv con el cual desea actualizar los registros"}
+                    msj={"Cargue el archivoxlsx con el cual desea actualizar los registros"}
                     show={showModalUpload}
                     handleClose={handleCloseUpload}
                     codigoLista={props.codigoLista}
