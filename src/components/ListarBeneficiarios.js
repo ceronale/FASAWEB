@@ -71,6 +71,23 @@ const ListarBeneficiarios = (user) => {
         }, 3000);
         return;
       }
+
+      if (response.response[0].b64) {
+        const element = document.createElement("a");
+        element.setAttribute("href", `data:application/octet-stream;base64,${response.response[0].b64}`);
+        element.setAttribute("download", "Beneficiarios.xls");
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+        setTitle("Información");
+        setMsj("Por la cantidad de registros, se descargará un archivo excel");
+        setLoading(false);
+        setShowModal(true);
+        setDataTable({});
+        setIsButtonDisabled(false)
+        return
+      }
       if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
         setLoading(false);
         setDataTable(undefined)

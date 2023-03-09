@@ -144,35 +144,44 @@ const ListarCartolaBeneficiarios = (user) => {
           return;
         }
 
-        setDataTable(undefined);
-
-        const element = document.createElement("a");
-        element.setAttribute("href", `data:application/octet-stream;base64,${response}`);
-        element.setAttribute("download", "test.xlsx");
-        element.style.display = "none";
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
-
-        if (response.length === 0) {
-          setTitle("Error");
-          setMsj("No se obtuvieron resultados");
-          setShowModal(true);
-        } else if (response[0].codigo === "1") {
-          setTitle("Error");
-          setMsj("No se obtuvieron resultados");
+        if (response.response[0].b64) {
+          const element = document.createElement("a");
+          element.setAttribute("href", `data:application/octet-stream;base64,${response.response[0].b64}`);
+          element.setAttribute("download", "Cartola.xls");
+          element.style.display = "none";
+          document.body.appendChild(element);
+          element.click();
+          document.body.removeChild(element);
+          setTitle("Información");
+          setMsj("Por la cantidad de registros, se descargará un archivo excel");
           setLoading(false);
           setShowModal(true);
           setDataTable({});
           return
+        }
+        if (response.length === 0) {
+          setTitle("Error");
+          setMsj("No se obtuvieron resultados");
+          setShowModal(true);
+        } else if (response.response[0].codigo) {
+          if (response.response[0].codigo === "1") {
+            setTitle("Error");
+            setMsj("No se obtuvieron resultados");
+            setLoading(false);
+            setShowModal(true);
+            setDataTable({});
+            return
+          }
         } else if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
           setTitle("Error");
           setMsj("Error de conexión");
           setShowModal(true);
         }
+        setDataTable(undefined);
+        setDataTable(response.response);
 
 
-        setDataTable(response);
+
       }
 
     };

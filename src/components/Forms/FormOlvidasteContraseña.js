@@ -83,7 +83,7 @@ const FormOlvidasteContraseña = () => {
 					<div className="leyenda">
 						<label>
 							Introduzca su dirección de correo electrónico
-							a continuación para recibir un enlace
+							a continuación para recibir un token
 							de restablecimiento de contraseña.
 						</label>
 					</div>

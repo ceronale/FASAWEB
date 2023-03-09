@@ -81,11 +81,6 @@ const DataTablePoliza = props => {
           return;
         }
 
-
-
-
-
-
         if (resp.response1[0].codigoRespuesta === 0) {
           setTitleAlert("Exito")
           setMsjAlert(resp.response1[0].detalleRespuest)

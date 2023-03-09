@@ -17,6 +17,7 @@ export const getCartola = async (data) => {
     };
     const response = axios(config)
         .then(({ data: out }) => {
+
             return out;
         })
         .catch((error) => {
