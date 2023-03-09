@@ -142,7 +142,7 @@ const AdministrarUsuarios = (user) => {
                             <Titulo>Administración de Usuarios</Titulo>
                         </ContenedorTitulo>
                         <div id="notaLogin">
-                            En esta sección podras agregar un nuevo usuario al sistema.
+                            En esta sección podrás agregar, eliminar y asignar roles a usuarios del sistema.
                         </div>
                         {
                             (data === undefined)

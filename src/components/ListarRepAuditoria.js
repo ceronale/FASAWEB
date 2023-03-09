@@ -274,7 +274,7 @@ const ListarRepAuditoria = (user) => {
             <Titulo>Visualización de reporte y auditoria</Titulo>
           </ContenedorTitulo>
           <div id="notaLogin">
-            En esta seccion podras visualizar las acciones realizadas.
+            En esta sección podrás ver las acciones realizadas por un usuario y exportar la información.
           </div>
           <Form >
             <Box sx={{ flexGrow: 1, marginBottom: 2 }}>

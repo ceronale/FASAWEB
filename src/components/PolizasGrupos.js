@@ -98,7 +98,7 @@ const PolizasGrupos = ({ user }) => {
                         <Titulo>Visualización de Pólizas y Grupos</Titulo>
                     </ContenedorTitulo>
                     <div id="notaLogin">
-                        En esta sección podrás editar, descargar y cargar masivamente.
+                        En esta sección podrás listar, editar, importar y exportar pólizas y grupos.
                     </div>
                     <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
                         <Grid container spacing={2}>

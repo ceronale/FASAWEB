@@ -178,7 +178,7 @@ const ListarMedicos = (user) => {
               <Titulo>Visualización de Medicos</Titulo>
             </ContenedorTitulo>
             <div id="notaLogin">
-              En esta sección se muestran todos los medicos asociados a un convenio.
+              En esta sección podrás listar, editar, importar y exportar medicos.
             </div>
             <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
               <Grid container spacing={2}>

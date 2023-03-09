@@ -78,7 +78,7 @@ const ListaDocumentos = (user) => {
                     <Titulo>Visualización de documentos</Titulo>
                 </ContenedorTitulo>
                 <div className='textl'>
-                    En esta sección, se presentarán los archivos relacionados. Puede seleccionar el convenio del cual desea ver los documentos en la parte inferior.
+                    En esta sección se encuentran listados los documentos por convenio, los cuales pueden ser eliminados, visualizados y descargados.
                 </div>
                 <div>
                     <Typography variant="subtitle1">Convenios</Typography>

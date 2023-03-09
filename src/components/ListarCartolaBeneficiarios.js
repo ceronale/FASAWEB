@@ -79,7 +79,7 @@ const ListarCartolaBeneficiarios = (user) => {
 
         const response = await getCartola(data);
 
-
+        console.log(response)
         if (response === 403) {
           setShowModal(true)
           setTitle("Sesión expirada")
@@ -90,6 +90,22 @@ const ListarCartolaBeneficiarios = (user) => {
             navigate(`/`);
           }, 3000);
           return;
+        }
+
+        if (response.response[0].b64) {
+          const element = document.createElement("a");
+          element.setAttribute("href", `data:application/octet-stream;base64,${response.response[0].b64}`);
+          element.setAttribute("download", "Cartola.xls");
+          element.style.display = "none";
+          document.body.appendChild(element);
+          element.click();
+          document.body.removeChild(element);
+          setTitle("Información");
+          setMsj("Por la cantidad de registros, se descargará un archivo excel");
+          setLoading(false);
+          setShowModal(true);
+          setDataTable({});
+          return
         }
 
         setDataTable(undefined);
@@ -211,7 +227,7 @@ const ListarCartolaBeneficiarios = (user) => {
             <Titulo>Cartola beneficiario</Titulo>
           </ContenedorTitulo>
           <div id="notaLogin">
-            En esta seccion podras visualizar las los beneficiarios.
+            En esta sección podrás listar y exportar las cartolas de los beneficiarios.
           </div>
           <Form >
             <Box sx={{ flexGrow: 1, marginBottom: 2 }}>

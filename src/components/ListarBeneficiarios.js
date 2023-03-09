@@ -146,10 +146,10 @@ const ListarBeneficiarios = (user) => {
 
         <ModalAlert title={title} show={showModal} handleClose={handleClose} msj={msj} />
         <ContenedorTitulo>
-          <Titulo>Beneficiario</Titulo>
+          <Titulo>Beneficiarios</Titulo>
         </ContenedorTitulo>
         <div id="notaLogin">
-          En esta seccion podras visualizar los beneficiarios.
+          En esta sección podrás listar, editar y actualizar la fecha de termino de los beneficiarios.
         </div>
         <Form >
           <Box sx={{ flexGrow: 1, marginBottom: 2 }}>

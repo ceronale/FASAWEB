@@ -10,7 +10,7 @@ import ModalUploadFileBeneficiarios from "../Modals/ModalUploadFileBeneficiarios
 import * as XLSX from 'xlsx/xlsx.mjs';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import { IconButton, Tooltip } from '@mui/material';
-import Delete from '@mui/icons-material/Delete';
+import AccessAlarm from '@mui/icons-material/AccessAlarm';
 import { Edit } from "@material-ui/icons";
 import CircularProgress from '@mui/material/CircularProgress';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -682,9 +682,9 @@ const DataTableBeneficiarios = props => {
                                         </Tooltip>
                                     </Grid>
                                     <Grid xs={6}>
-                                        <Tooltip title="Eliminar">
+                                        <Tooltip title="Editar fecha termino">
                                             <IconButton color="error" onClick={() => handleDeleteRow(row, table)}>
-                                                <Delete />
+                                                <AccessAlarm />
                                             </IconButton>
                                         </Tooltip>
                                     </Grid>
