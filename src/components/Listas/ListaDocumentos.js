@@ -154,7 +154,6 @@ const Lista = props => {
     const handleOpenPdf = async (item) => {
         const archivo = item.nombreDocumento;
         const data = await getDocumentData(archivo);
-        console.log(data)
         if (data === 403) {
             setShowModal(true)
             setTitle("Sesión expirada")
@@ -166,7 +165,6 @@ const Lista = props => {
             }, 3000);
             return;
         }
-
         const b64 = data[0].b64;
         setPdfSrc(`data:application/pdf;base64,${b64}`);
         setModalOpen(true);
