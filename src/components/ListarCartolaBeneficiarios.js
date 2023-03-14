@@ -78,8 +78,6 @@ const ListarCartolaBeneficiarios = (user) => {
         };
 
         const response = await getCartola(data);
-
-        console.log(response)
         if (response === 403) {
           setShowModal(true)
           setTitle("Sesión expirada")
@@ -108,13 +106,29 @@ const ListarCartolaBeneficiarios = (user) => {
           return
         }
 
-        setDataTable(undefined);
+
         //if response.responsse is empty show error message in modal no se obtuvieron resultados
-        if (response.response.length === 0) {
+
+        if (response.length === 0) {
           setTitle("Error");
           setMsj("No se obtuvieron resultados");
           setShowModal(true);
+        } else if (response.response[0].codigo) {
+          if (response.response[0].codigo === 1) {
+            setTitle("Error");
+            setMsj("No se obtuvieron resultados");
+            setLoading(false);
+            setShowModal(true);
+
+            setDataTable({});
+            return
+          }
+        } else if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+          setTitle("Error");
+          setMsj("Error de conexión");
+          setShowModal(true);
         }
+        setDataTable(undefined);
         setDataTable(response.response);
       }
       setLoading(false);
@@ -175,16 +189,18 @@ const ListarCartolaBeneficiarios = (user) => {
           setDataTable({});
           return
         }
+
         if (response.length === 0) {
           setTitle("Error");
           setMsj("No se obtuvieron resultados");
           setShowModal(true);
         } else if (response.response[0].codigo) {
-          if (response.response[0].codigo === "1") {
+          if (response.response[0].codigo === 1) {
             setTitle("Error");
             setMsj("No se obtuvieron resultados");
             setLoading(false);
             setShowModal(true);
+
             setDataTable({});
             return
           }
