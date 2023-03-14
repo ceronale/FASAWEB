@@ -8,7 +8,6 @@ const port = 3000;
 const server = http.createServer((req, res) => {
     if (req.url === '/') {
         const file = path.join(process.cwd(), 'build', 'index.html');
-        console.log(file);
         fs.readFile(file, (err, data) => {
             if (err) {
                 res.writeHead(500, { 'Content-Type': 'text/plain' });
