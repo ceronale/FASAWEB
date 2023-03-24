@@ -20,7 +20,8 @@ export const UploadPolizas = async (data, convenio) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;

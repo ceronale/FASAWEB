@@ -28,31 +28,44 @@ const AdministrarUsuarios = (user) => {
     }
 
     const handleConfirmar = async () => {
+        try {
+            setLoading(true);
+            const resp = await EliminarUsuario(idElminar, usuario.correo)
+            if (resp?.response?.status === 403) {
+                setShowModal(true)
+                setTitle("Sesión expirada")
+                setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 3000);
+                return;
+            }
 
-        setLoading(true);
-        const resp = await EliminarUsuario(idElminar, usuario.correo)
-        if (resp === 403) {
+            if (resp.name === 'AxiosError' && resp.code === 'ERR_NETWORK') {
+                setTitle("Error");
+                setMsj("Error de conexión");
+                setShowModal(true);
+                setLoading(false);
+                return;
+            }
+
+            var codigoRespuesta = resp['eliminar'][0]['codigoRespuesta'];
+            var detalleRespuesta = resp['eliminar'][0]['detalleRespuesta'];
+            setShowModalConfirmar(false);
+            setTitle("Eliminar usuario existente")
             setShowModal(true)
-            setTitle("Sesión expirada")
-            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-            //set time out to logout of 5 seconds
-            setTimeout(() => {
-                localStorage.removeItem("user");
-                navigate(`/`);
-            }, 3000);
-            return;
+            setMsj(detalleRespuesta)
+            if (codigoRespuesta === 0) {
+                setIdElminar("");
+            }
+            setLoading(false);
+        } catch (error) {
+            setShowModal(true)
+            setTitle("Error")
+            setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
         }
-
-        var codigoRespuesta = resp['eliminar'][0]['codigoRespuesta'];
-        var detalleRespuesta = resp['eliminar'][0]['detalleRespuesta'];
-        setShowModalConfirmar(false);
-        setTitle("Eliminar usuario existente")
-        setShowModal(true)
-        setMsj(detalleRespuesta)
-        if (codigoRespuesta === 0) {
-            setIdElminar("");
-        }
-        setLoading(false);
     }
 
 
@@ -63,24 +76,53 @@ const AdministrarUsuarios = (user) => {
 
     // 2.-Funcion para mostrar los datos
     const showData = async () => {
-        setLoading(true);
-        const response = await ListarUsuarios()
+        try {
+            setLoading(true);
+            const response = await ListarUsuarios()
+            console.log(response)
+            if (response?.response?.status === 403) {
+                setShowModal(true)
+                setTitle("Sesión expirada")
+                setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 3000);
+                return;
+            }
 
-        if (response === 403) {
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                console.log("what2")
+                setTitle("Error");
+                setMsj("Error de conexión");
+                setShowModal(true);
+                setLoading(false);
+                return;
+            }
+
+            if (response.usuario.length === 0) {
+                console.log("whataasdsdff")
+                setTitle("Error");
+                setMsj("No hay usuarios registrados");
+                setShowModal(true);
+                setLoading(false);
+                return;
+            } else {
+                setData(undefined)
+                setData(response.usuario)
+                setLoading(false);
+            }
+
+        } catch (error) {
             setShowModal(true)
-            setTitle("Sesión expirada")
-            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-            //set time out to logout of 5 seconds
-            setTimeout(() => {
-                localStorage.removeItem("user");
-                navigate(`/`);
-            }, 3000);
-            return;
+            setLoading(false);
+            setTitle("Error")
+            console.log(error)
+            setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
         }
-        setLoading(true)
-        setData(undefined)
-        setData(response.usuario)
-        setLoading(false);
+
+
     }
 
     useEffect(() => {

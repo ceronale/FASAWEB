@@ -51,173 +51,201 @@ const ListarCartolaBeneficiarios = (user) => {
 
   // Function to show the data
   const showData = async () => {
-    setLoading(true);
-    setDataTable({});
-    //format rut without dots or hyhen
-    const rutNoFormat = rut.replace(/\.|-/g, '');
-    if (usuario.recursos.indexOf("444") === -1) {
-      if (!desde || !hasta) {
-        // show error message in modal if any of the fields is empty
-        setTitle("Error");
-        setMsj("Debe completar todos los campos.");
-        setShowModal(true);
-      } else if (desde > hasta) {
-        // show error message in modal if date range is not valid
-        setTitle("Error");
-        setMsj("La fecha desde es mayor a la fecha hasta.");
-        setShowModal(true);
-      } else {
-        const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
-        const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
-        let data = {}
-        data = {
-          rut: usuario.rut,
-          convenio: "",
-          fechaIni: formattedDesde,
-          fechaFin: formattedHasta,
-        };
 
-        const response = await getCartola(data);
-        if (response === 403) {
-          setShowModal(true)
-          setTitle("Sesión expirada")
-          setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-          //set time out to logout of 5 seconds
-          setTimeout(() => {
-            localStorage.removeItem("user");
-            navigate(`/`);
-          }, 3000);
-          return;
-        }
+    try {
 
-        if (response.response[0].b64) {
-          const element = document.createElement("a");
-          element.setAttribute("href", `data:application/octet-stream;base64,${response.response[0].b64}`);
-          element.setAttribute("download", "Cartola.xls");
-          element.style.display = "none";
-          document.body.appendChild(element);
-          element.click();
-          document.body.removeChild(element);
-          setTitle("Información");
-          setMsj("Por la cantidad de registros, se descargará un archivo excel");
-          setLoading(false);
-          setShowModal(true);
-          setDataTable({});
-          return
-        }
-
-
-        //if response.responsse is empty show error message in modal no se obtuvieron resultados
-
-        if (response.length === 0) {
+      setLoading(true);
+      setDataTable({});
+      //format rut without dots or hyhen
+      const rutNoFormat = rut.replace(/\.|-/g, '');
+      if (usuario.recursos.indexOf("444") === -1) {
+        if (!desde || !hasta) {
+          // show error message in modal if any of the fields is empty
           setTitle("Error");
-          setMsj("No se obtuvieron resultados");
+          setMsj("Debe completar todos los campos.");
           setShowModal(true);
-        } else if (response.response[0].codigo) {
-          if (response.response[0].codigo === 1) {
+        } else if (desde > hasta) {
+          // show error message in modal if date range is not valid
+          setTitle("Error");
+          setMsj("La fecha desde es mayor a la fecha hasta.");
+          setShowModal(true);
+        } else {
+          const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
+          const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
+          let data = {}
+
+
+          data = {
+            rut: usuario.rut,
+            convenio: "",
+            fechaIni: formattedDesde,
+            fechaFin: formattedHasta,
+            tipo: usuario.idRol,
+          };
+          console.log(data)
+
+          const response = await getCartola(data);
+
+          if (response?.response?.status === 403) {
+            setShowModal(true)
+            setTitle("Sesión expirada")
+            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+              localStorage.removeItem("user");
+              navigate(`/`);
+            }, 3000);
+            return;
+          }
+
+          if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
             setTitle("Error");
-            setMsj("No se obtuvieron resultados");
+            setMsj("Error de conexión");
+            setShowModal(true);
+            setLoading(false);
+            return;
+          }
+
+          if (response.response[0]?.b64) {
+            const element = document.createElement("a");
+            element.setAttribute("href", `data:application/octet-stream;base64,${response.response[0].b64}`);
+            element.setAttribute("download", "Cartola.xls");
+            element.style.display = "none";
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            setTitle("Información");
+            setMsj("Por la cantidad de registros, se descargará un archivo excel");
             setLoading(false);
             setShowModal(true);
-
             setDataTable({});
             return
           }
-        } else if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
-          setTitle("Error");
-          setMsj("Error de conexión");
-          setShowModal(true);
+
+
+          //if response.responsse is empty show error message in modal no se obtuvieron resultados
+          if (response.length === 0) {
+            setTitle("Error");
+            setMsj("No se obtuvieron resultados");
+            setShowModal(true);
+          } else if (response.response[0].codigo) {
+            if (response.response[0].codigo === 1) {
+              setTitle("Error");
+              setMsj("No se obtuvieron resultados");
+              setLoading(false);
+              setShowModal(true);
+
+              setDataTable({});
+              return
+            }
+          } else if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+            setTitle("Error");
+            setMsj("Error de conexión");
+            setShowModal(true);
+          }
+          setDataTable(undefined);
+          setDataTable(response.response);
         }
-        setDataTable(undefined);
-        setDataTable(response.response);
-      }
+        setLoading(false);
+
+      } else {
+        if (!convenio || !desde || !hasta || !rutNoFormat) {
+          // show error message in modal if any of the fields is empty
+          setTitle("Error");
+          setMsj("Debe completar todos los campos.");
+          setShowModal(true);
+        } else if (rutNoFormat.length < 8) {
+          // show error message in modal if rut have less than 7 digits 
+          setTitle("Error");
+          setMsj("El rut debe tener al menos 8 caracteres.");
+          setShowModal(true);
+        } else if (desde > hasta) {
+          // show error message in modal if date range is not valid
+          setTitle("Error");
+          setMsj("La fecha desde es mayor a la fecha hasta.");
+          setShowModal(true);
+        } else {
+          const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
+          const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
+          let data = {}
+          data = {
+            rut: rutNoFormat,
+            convenio: convenio.value,
+            fechaIni: formattedDesde,
+            fechaFin: formattedHasta,
+            tipo: usuario.idRol,
+          };
+          const response = await getCartola(data);
+          if (response?.response?.status === 403) {
+            setShowModal(true)
+            setTitle("Sesión expirada")
+            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+            //set time out to logout of 5 seconds
+            setTimeout(() => {
+              localStorage.removeItem("user");
+              navigate(`/`);
+            }, 3000);
+            return;
+          }
+
+          if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+            setTitle("Error");
+            setMsj("Error de conexión");
+            setShowModal(true);
+            setLoading(false);
+            return;
+          }
+
+          if (response.response[0]?.b64) {
+            const element = document.createElement("a");
+            element.setAttribute("href", `data:application/octet-stream;base64,${response.response[0].b64}`);
+            element.setAttribute("download", "Cartola.xls");
+            element.style.display = "none";
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            setTitle("Información");
+            setMsj("Por la cantidad de registros, se descargará un archivo excel");
+            setLoading(false);
+            setShowModal(true);
+            setDataTable({});
+            return
+          }
+
+
+
+
+          if (response.length === 0) {
+            setTitle("Error");
+            setMsj("No se obtuvieron resultados");
+            setShowModal(true);
+          } else if (response.response[0].codigo) {
+            if (response.response[0].codigo === 1) {
+              setTitle("Error");
+              setMsj("No se obtuvieron resultados");
+              setLoading(false);
+              setShowModal(true);
+
+              setDataTable({});
+              return
+            }
+          }
+
+          setDataTable(undefined);
+          setDataTable(response.response);
+
+
+
+        }
+
+      };
       setLoading(false);
 
-    } else {
-      if (!convenio || !desde || !hasta) {
-        // show error message in modal if any of the fields is empty
-        setTitle("Error");
-        setMsj("Debe completar todos los campos.");
-        setShowModal(true);
-      } else if (rut && rutNoFormat.length < 6) {
-        // show error message in modal if rut have less than 7 digits 
-        setTitle("Error");
-        setMsj("El rut debe tener al menos 7 caracteres.");
-        setShowModal(true);
-
-      } else if (desde > hasta) {
-        // show error message in modal if date range is not valid
-        setTitle("Error");
-        setMsj("La fecha desde es mayor a la fecha hasta.");
-        setShowModal(true);
-      } else {
-        const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
-        const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
-        let data = {}
-        data = {
-          rut: rut,
-          convenio: convenio.value,
-          fechaIni: formattedDesde,
-          fechaFin: formattedHasta,
-        };
-        const response = await getCartola(data);
-
-        if (response === 403) {
-          setShowModal(true)
-          setTitle("Sesión expirada")
-          setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-          //set time out to logout of 5 seconds
-          setTimeout(() => {
-            localStorage.removeItem("user");
-            navigate(`/`);
-          }, 3000);
-          return;
-        }
-
-        if (response.response[0].b64) {
-          const element = document.createElement("a");
-          element.setAttribute("href", `data:application/octet-stream;base64,${response.response[0].b64}`);
-          element.setAttribute("download", "Cartola.xls");
-          element.style.display = "none";
-          document.body.appendChild(element);
-          element.click();
-          document.body.removeChild(element);
-          setTitle("Información");
-          setMsj("Por la cantidad de registros, se descargará un archivo excel");
-          setLoading(false);
-          setShowModal(true);
-          setDataTable({});
-          return
-        }
-
-        if (response.length === 0) {
-          setTitle("Error");
-          setMsj("No se obtuvieron resultados");
-          setShowModal(true);
-        } else if (response.response[0].codigo) {
-          if (response.response[0].codigo === 1) {
-            setTitle("Error");
-            setMsj("No se obtuvieron resultados");
-            setLoading(false);
-            setShowModal(true);
-
-            setDataTable({});
-            return
-          }
-        } else if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
-          setTitle("Error");
-          setMsj("Error de conexión");
-          setShowModal(true);
-        }
-        setDataTable(undefined);
-        setDataTable(response.response);
-
-
-
-      }
-
-    };
-    setLoading(false);
+    } catch (error) {
+      setShowModal(true)
+      setTitle("Error")
+      setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+    }
   }
 
   const formatRut = (rut) => {

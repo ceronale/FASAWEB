@@ -46,18 +46,27 @@ const FormOlvidasteContraseña = () => {
 	};
 
 	const handleClickConfirmarToken = async (e) => {
-		setLoading(true);
-		e.preventDefault();
-		const respValidToken = await ValidarToken(token, registerData.user);
-		setShowModal(true)
-		setTitle("Error de token")
-		setMsj("El token ingresado no es correcto.")
-		if (respValidToken['validaToken'][0]['codigoResultado'] === 0) {
-			setTokenIsValid(true);
-			setTitle("Verificacion de token")
-			setMsj("Token ingresado correctamente.")
+		try {
+
+			setLoading(true);
+			e.preventDefault();
+			const respValidToken = await ValidarToken(token, registerData.user);
+			setShowModal(true)
+			setTitle("Error de token")
+			setMsj("El token ingresado no es correcto.")
+			if (respValidToken['validaToken'][0]['codigoResultado'] === 0) {
+				setTokenIsValid(true);
+				setTitle("Verificacion de token")
+				setMsj("Token ingresado correctamente.")
+			}
+			setLoading(false);
+		} catch (error) {
+			setLoading(false);
+			setTitle("Error")
+			setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+			setShowModal(true)
 		}
-		setLoading(false);
+
 	};
 
 	const onChangeToken = (event) => {
@@ -65,11 +74,19 @@ const FormOlvidasteContraseña = () => {
 	}
 
 	const onSubmit = async (e) => {
-		setLoading(true);
-		e.preventDefault();
-		await GenerarToken(registerData.user);
-		setcheckToken(true);
-		setLoading(false);
+		try {
+			setLoading(true);
+			e.preventDefault();
+			await GenerarToken(registerData.user);
+			setcheckToken(true);
+			setLoading(false);
+		} catch (error) {
+			setLoading(false);
+			setTitle("Error")
+			setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+			setShowModal(true)
+		}
+
 	};
 
 	const handleClear = () => {

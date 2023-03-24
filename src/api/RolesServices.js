@@ -14,7 +14,8 @@ export const getRoles = async () => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -39,7 +40,8 @@ export const getRol = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -61,7 +63,8 @@ export const deleteRol = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -81,7 +84,8 @@ export const getComponentes = async () => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -102,7 +106,8 @@ export const getComponentesByRol = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -128,7 +133,8 @@ export const addRol = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -156,7 +162,8 @@ export const updateRol = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -177,7 +184,8 @@ export const getComponentesAndRolByUser = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -203,7 +211,8 @@ export const setUserAndRol = async (data) => {
 
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -229,7 +238,8 @@ export const updateUserAndRol = async (data) => {
         })
         .catch((error) => {
 
-            return error.response.status;
+            return error;
+
         });
 
     return response;

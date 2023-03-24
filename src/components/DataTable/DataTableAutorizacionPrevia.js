@@ -57,53 +57,7 @@ const DataTableMedicos = props => {
         setShowModalAlert(false);
     }
     const handleCreateNewRow = async (values) => {
-        //Change format of the date to send to the api to YYYY-MM-DD from DD-MM-YYYY
-        const date = values.fechaDesde.split("-");
-        const dateFormated = date[2] + "-" + date[1] + "-" + date[0];
-
-        //Se ponen todos los valores en un objeto llamado data para enviarlos al api
-        const data = {
-            "rut": values.rutMedico,
-            "nombre": values.nombre,
-            "fecha": dateFormated,
-            "exc_inc": values.exc_Inc,
-            "codigoLista": props.codigoLista,
-        }
-
-        const resp = await addMedico(data, props.user)
-
-        setShowModalConfirmar(false);
-        if (resp.response[0].codigo === 0) {
-            props.showData();
-        } else {
-            setTitleAlert("Error")
-            setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
-            setShowModalAlert(true);
-        };
-    };
-
-    const handleConfirmar = async () => {
-        values.exc_Inc = values.exc_Inc.toUpperCase();
-        if ((values.nombre === "" || values.nombre === null) ||
-            (values.rutMedico === "" || values.rutMedico === null) ||
-            (values.fechaDesde === "" || values.fechaDesde === null) ||
-            (values.exc_Inc === "" || values.exc_Inc === null)
-        ) {
-            setTitleAlert("Error")
-            setMsjAlert("Todos los campos deben contener datos")
-            setShowModalAlert(true);
-            setShowModalConfirmar(false);
-        } else if (!checkDate(values.fechaDesde)) {
-            setTitleAlert("Error")
-            setMsjAlert("La fecha debe tener el formato DD-MM-YYYY")
-            setShowModalAlert(true);
-            setShowModalConfirmar(false);
-        } else if (values.exc_Inc !== "E" && values.exc_Inc !== "I") {
-            setTitleAlert("Error")
-            setMsjAlert("El campo de exclusion/inclusion debe ser E o I")
-            setShowModalAlert(true);
-            setShowModalConfirmar(false);
-        } else {
+        try {
             //Change format of the date to send to the api to YYYY-MM-DD from DD-MM-YYYY
             const date = values.fechaDesde.split("-");
             const dateFormated = date[2] + "-" + date[1] + "-" + date[0];
@@ -113,37 +67,107 @@ const DataTableMedicos = props => {
                 "rut": values.rutMedico,
                 "nombre": values.nombre,
                 "fecha": dateFormated,
-                "exc_Inc": values.exc_Inc,
+                "exc_inc": values.exc_Inc,
                 "codigoLista": props.codigoLista,
             }
 
-            const resp = await updateMedico(data, props.user)
-            if (resp === 403) {
-                setTitleAlert("Sesión expirada")
-                setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
-                setShowModalAlert(true)
-
-                //set time out to logout of 5 seconds
-                setTimeout(() => {
-                    localStorage.removeItem("user");
-                    navigate(`/`);
-                }, 3000);
-                return;
-            }
+            const resp = await addMedico(data, props.user)
 
             setShowModalConfirmar(false);
             if (resp.response[0].codigo === 0) {
-                setTitleAlert("Exito")
-                setMsjAlert(resp.response[0].detalle)
-                tableData[row.index] = values;
-                setTableData([...tableData]);
-                setShowModalAlert(true);
+                props.showData();
             } else {
                 setTitleAlert("Error")
                 setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
                 setShowModalAlert(true);
             };
+        } catch (error) {
+            setTitleAlert("Error")
+            setMsjAlert("Ha ocurrido un error, por favor vuelva a intentarlo")
+            setShowModalAlert(true);
+            setLoading(false);
+        }
+    };
 
+    const handleConfirmar = async () => {
+        try {
+            values.exc_Inc = values.exc_Inc.toUpperCase();
+            if ((values.nombre === "" || values.nombre === null) ||
+                (values.rutMedico === "" || values.rutMedico === null) ||
+                (values.fechaDesde === "" || values.fechaDesde === null) ||
+                (values.exc_Inc === "" || values.exc_Inc === null)
+            ) {
+                setTitleAlert("Error")
+                setMsjAlert("Todos los campos deben contener datos")
+                setShowModalAlert(true);
+                setShowModalConfirmar(false);
+            } else if (!checkDate(values.fechaDesde)) {
+                setTitleAlert("Error")
+                setMsjAlert("La fecha debe tener el formato DD-MM-YYYY")
+                setShowModalAlert(true);
+                setShowModalConfirmar(false);
+            } else if (values.exc_Inc !== "E" && values.exc_Inc !== "I") {
+                setTitleAlert("Error")
+                setMsjAlert("El campo de exclusion/inclusion debe ser E o I")
+                setShowModalAlert(true);
+                setShowModalConfirmar(false);
+            } else {
+                //Change format of the date to send to the api to YYYY-MM-DD from DD-MM-YYYY
+                const date = values.fechaDesde.split("-");
+                const dateFormated = date[2] + "-" + date[1] + "-" + date[0];
+
+                //Se ponen todos los valores en un objeto llamado data para enviarlos al api
+                const data = {
+                    "rut": values.rutMedico,
+                    "nombre": values.nombre,
+                    "fecha": dateFormated,
+                    "exc_Inc": values.exc_Inc,
+                    "codigoLista": props.codigoLista,
+                }
+
+                const resp = await updateMedico(data, props.user)
+                if (resp?.response?.status === 403
+                ) {
+                    setTitleAlert("Sesión expirada")
+                    setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                    setShowModalAlert(true)
+
+                    //set time out to logout of 5 seconds
+                    setTimeout(() => {
+                        localStorage.removeItem("user");
+                        navigate(`/`);
+                    }, 3000);
+                    return;
+                }
+
+                if (resp.name === 'AxiosError' && resp.code === 'ERR_NETWORK') {
+                    setTitle("Error");
+                    setMsj("Error de conexión");
+                    setShowModalAlert(true);
+                    setLoading(false);
+                    return;
+                }
+
+                setShowModalConfirmar(false);
+                if (resp.response[0].codigo === 0) {
+                    setTitleAlert("Exito")
+                    setMsjAlert(resp.response[0].detalle)
+                    tableData[row.index] = values;
+                    setTableData([...tableData]);
+                    setShowModalAlert(true);
+                } else {
+                    setTitleAlert("Error")
+                    setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
+                    setShowModalAlert(true);
+                };
+
+            }
+
+        } catch (error) {
+            setLoading(false);
+            setShowModalAlert(true)
+            setTitleAlert("Error")
+            setMsjAlert("Ha ocurrido un error, por favor vuelva a intentarlo");
         }
     }
 
@@ -171,25 +195,35 @@ const DataTableMedicos = props => {
     };
 
     const handleConfirmarDelete = async () => {
-        const data = {
-            'codigoLista': props.codigoLista,
-            'rut': values.rutMedico,
-        }
-        setLoading(true);
-        setShowModalConfirmarDelete(false);
-        const resp = await deleteMedico(data, props.user)
-        if (resp.response[0].codigo === 1) {
-            const newData = tableData.filter(row => row.rutMedico !== values.rutMedico);
-            setTitleAlert("Exito")
-            setMsjAlert(resp.response[0].detalle)
-            setShowModalAlert(true);
-            setTableData(newData);
-        } else {
+        try {
+
+
+            const data = {
+                'codigoLista': props.codigoLista,
+                'rut': values.rutMedico,
+            }
+            setLoading(true);
+            setShowModalConfirmarDelete(false);
+            const resp = await deleteMedico(data, props.user)
+            if (resp.response[0].codigo === 1) {
+                const newData = tableData.filter(row => row.rutMedico !== values.rutMedico);
+                setTitleAlert("Exito")
+                setMsjAlert(resp.response[0].detalle)
+                setShowModalAlert(true);
+                setTableData(newData);
+            } else {
+                setTitleAlert("Error")
+                setMsjAlert("Ha ocurrido un error en la eliminacion de los datos")
+                setShowModalAlert(true);
+            }
+            setLoading(false);
+
+        } catch (error) {
+            setLoading(false);
+            setShowModalAlert(true)
             setTitleAlert("Error")
-            setMsjAlert("Ha ocurrido un error en la eliminacion de los datos")
-            setShowModalAlert(true);
+            setMsjAlert("Ha ocurrido un error, por favor vuelva a intentarlo");
         }
-        setLoading(false);
     }
 
     const handleCloseConfirmarDelete = () => {

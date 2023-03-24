@@ -72,7 +72,8 @@ const AutorizacionPrevia = (user) => {
             //call the service to get the data
             setLoading(true);
             const response = await getAutorizaciones(data);
-            if (response === 403) {
+            if (response?.response?.status === 403
+            ) {
                 setShowModal(true)
                 setTitle("Sesión expirada")
                 setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
@@ -84,6 +85,13 @@ const AutorizacionPrevia = (user) => {
                 return;
             }
 
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setTitle("Error");
+                setMsj("Error de conexión");
+                setShowModal(true);
+                setLoading(false);
+                return;
+            }
 
             if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
 
@@ -106,7 +114,7 @@ const AutorizacionPrevia = (user) => {
             }
         } catch (error) {
             setLoading(false);
-            handleModal("Error", "No se pudo obtener la información de los beneficiarios");
+            handleModal("Error", "Ha ocurrido un error, por favor vuelva a intentarlo");
         }
     }
     //create function to handle the modal

@@ -47,43 +47,53 @@ const FormModificarPass = (user) => {
 
     //Validaciones
     const onSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        var isPassValid = contraseñaValidar();
-        if (isPassValid) {
-            //var aux = respActualizar['respuesta'][0]['codigoRespuesta'];
-            //var mensaje = respActualizar['respuesta'][0]['detalleResultado'];
+        try {
+            e.preventDefault();
+            setLoading(true);
+            var isPassValid = contraseñaValidar();
+            if (isPassValid) {
+                //var aux = respActualizar['respuesta'][0]['codigoRespuesta'];
+                //var mensaje = respActualizar['respuesta'][0]['detalleResultado'];
 
-            const registerUsuario = {
-                email: usuario.correo,
-                password: registerData.passwdActual,
-            };
+                const registerUsuario = {
+                    email: usuario.correo,
+                    password: registerData.passwdActual,
+                };
 
-            //Login Service
-            const resp = await LoginService(registerUsuario);
-            const r = JSON.parse(resp);
+                //Login Service
+                const resp = await LoginService(registerUsuario);
+                const r = JSON.parse(resp);
 
-            if (r.login[0].codigoResultadoLogin === 0) {
-                const respActualizar = await ActualizarPass(usuario.correo, registerData.passwd);
+                if (r.login[0].codigoResultadoLogin === 0) {
+                    const respActualizar = await ActualizarPass(usuario.correo, registerData.passwd);
 
-                if (respActualizar['respuesta'].length === 1) {
-                    setIsValid(true);
+                    if (respActualizar['respuesta'].length === 1) {
+                        setIsValid(true);
+                        setShowModal(true)
+                        setTitle("Restaurar Contraseña ")
+                        setMsj("Contraseña modificada correctamente.")
+                    } else if (respActualizar['respuesta'].length === 0) {
+                        setShowModal(true)
+                        setTitle("Error en la restauración")
+                        setMsj("La nueva contraseña ya fue utilizada anteriormente.")
+                    }
+                } else {
+
                     setShowModal(true)
-                    setTitle("Restaurar Contraseña ")
-                    setMsj("Contraseña modificada correctamente.")
-                } else if (respActualizar['respuesta'].length === 0) {
-                    setShowModal(true)
-                    setTitle("Error en la restauración")
-                    setMsj("La nueva contraseña ya fue utilizada anteriormente.")
+                    setTitle("Error de contraseña")
+                    setMsj("La contraseña actual es incorrecta.")
                 }
-            } else {
-
-                setShowModal(true)
-                setTitle("Error de contraseña")
-                setMsj("La contraseña actual es incorrecta.")
+                setLoading(false);
             }
+
+        } catch (error) {
             setLoading(false);
+            setTitle("Error")
+            setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+            setShowModal(true)
         }
+
+
     };
 
     //On Change

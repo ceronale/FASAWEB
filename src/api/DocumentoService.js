@@ -19,7 +19,8 @@ export const UploadDocumentos = async (data, convenio) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -43,7 +44,8 @@ export const getDocumento = async (data) => {
 
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -67,7 +69,8 @@ export const deleteDocumento = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -89,7 +92,8 @@ export const getDocumentos = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;

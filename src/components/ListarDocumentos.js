@@ -17,29 +17,37 @@ const ListaDocumentos = (user) => {
     const [title, setTitle] = useState();
     const [msj, setMsj] = useState();
     function CreateTabs(convenios) {
+
         const [tab, setTab] = useState(0);
         const [data, setData] = useState([]);
 
 
         async function fetchData() {
-            const data = await getDocumentos(convenios[tab].value);
-            if (data === 403) {
-                setShowModal(true)
-                setTitle("Sesión expirada")
-                setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-                //set time out to logout of 5 seconds
-                setTimeout(() => {
-                    localStorage.removeItem("user");
-                    navigate(`/`);
-                }, 3000);
-                return;
-            }
+            try {
 
-            const arrayData = Object.values(data.response1);
-            if (arrayData.length > 0) {
-                setData(arrayData);
-            } else {
-                setData([]);
+                const data = await getDocumentos(convenios[tab].value);
+                if (data === 403) {
+                    setShowModal(true)
+                    setTitle("Sesión expirada")
+                    setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+                    //set time out to logout of 5 seconds
+                    setTimeout(() => {
+                        localStorage.removeItem("user");
+                        navigate(`/`);
+                    }, 3000);
+                    return;
+                }
+
+                const arrayData = Object.values(data.response1);
+                if (arrayData.length > 0) {
+                    setData(arrayData);
+                } else {
+                    setData([]);
+                }
+            } catch (error) {
+                setShowModal(true)
+                setTitle("Error")
+                setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
             }
         }
         useEffect(() => {

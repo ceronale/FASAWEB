@@ -57,6 +57,7 @@ const FormLogin = () => {
 
 	// La función onSubmit se ejecuta cuando se envía el formulario de inicio de sesión
 	const onSubmit = async (e) => {
+
 		// Previene la recarga de la página al enviar el formulario
 		e.preventDefault();
 		let user;
@@ -69,7 +70,6 @@ const FormLogin = () => {
 			// Extrae la información relevante de la respuesta
 			const { login } = JSON.parse(resp);
 			const [{ codigoResultadoLogin }] = login;
-
 
 			// Si el código de resultado es 0 (ok), se procede a obtener los datos del usuario y a almacenarlos en el almacenamiento local
 			if (codigoResultadoLogin === 0) {
@@ -120,7 +120,6 @@ const FormLogin = () => {
 				setMsj("La contraseña ingresada se encuentra expirada.")
 			}
 		} catch (error) {
-			console.error(error);
 			setShowModal(true)
 			setTitle("Error al iniciar sesión")
 			setMsj("Ha ocurrido un error al iniciar sesión. Por favor, intente nuevamente.")

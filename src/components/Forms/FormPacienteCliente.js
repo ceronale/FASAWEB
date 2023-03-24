@@ -109,39 +109,47 @@ const FormPacienteCliente = () => {
 		}));
 	};
 	const handleClickConfirmarToken = async (e) => {
-		e.preventDefault();
-		const respValidToken = await ValidarToken(token, registerData.user);
-		setShowModal(true)
-		setTitle("Error de token")
-		setMsj("El token ingresado no es correcto.")
-		if (respValidToken['validaToken'][0]['codigoResultado'] === 0) {
-			setTokenIsValid(true);
-			setTitle("Verificacion de token")
-			setMsj("Token ingresado correctamente.")
-			const resp = await PacienteService(registerData)
+		try {
+			e.preventDefault();
+			const respValidToken = await ValidarToken(token, registerData.user);
+			setShowModal(true)
+			setTitle("Error de token")
+			setMsj("El token ingresado no es correcto.")
+			if (respValidToken['validaToken'][0]['codigoResultado'] === 0) {
+				setTokenIsValid(true);
+				setTitle("Verificacion de token")
+				setMsj("Token ingresado correctamente.")
+				const resp = await PacienteService(registerData)
 
-			var aux = resp.outActualizar[0].codigoResultado;
-			if (aux !== 0) {
-				setShowModal(true)
-				setTitle("Error al crear usuario")
-				setMsj("El usuario ingresado ya existe.")
-			} else {
-				setShowModal(true)
-				//crete an array data
-				const data = {
-					"rut": registerData.rut,
-					"mail": registerData.user,
-					"celular": registerData.celular,
-				}
-				if (checkBox2) {
-					await familiaAhumadaService(data);
+				var aux = resp.outActualizar[0].codigoResultado;
+				if (aux !== 0) {
+					setShowModal(true)
+					setTitle("Error al crear usuario")
+					setMsj("El usuario ingresado ya existe.")
+				} else {
+					setShowModal(true)
+					//crete an array data
+					const data = {
+						"rut": registerData.rut,
+						"mail": registerData.user,
+						"celular": registerData.celular,
+					}
+					if (checkBox2) {
+						await familiaAhumadaService(data);
+					}
+
+					setTitle("Creación de usuario")
+					setMsj("Usuario creado de manera exitosa.")
 				}
 
-				setTitle("Creación de usuario")
-				setMsj("Usuario creado de manera exitosa.")
 			}
-
+		} catch (error) {
+			setLoading(false);
+			setTitle("Error")
+			setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+			setShowModal(true)
 		}
+
 	};
 
 	const onChangeToken = (event) => {
@@ -151,36 +159,43 @@ const FormPacienteCliente = () => {
 
 
 	const onSubmit = async (e) => {
+		try {
+			e.preventDefault();
+			setLoading(true);
+			const respValidar = await Validate(registerData.rut, registerData.ndocumento);
+			var isValidarRut = false;
+			var isPassValid = false;
+			var isUserValid = false;
 
-		e.preventDefault();
-		setLoading(true);
-		const respValidar = await Validate(registerData.rut, registerData.ndocumento);
-		var isValidarRut = false;
-		var isPassValid = false;
-		var isUserValid = false;
+			isValidarRut = await validarRut(respValidar);
 
-		isValidarRut = await validarRut(respValidar);
-
-		if (isValidarRut) {
-			isPassValid = await contraseñaValidar();
-			if (isPassValid) {
-				isUserValid = await validateUser(registerData.user);
-				if (isUserValid) {
-					setShowModal(true)
-					setTitle("Codigo de confirmación")
-					setMsj("Se ha enviado un token de verificación a tu correo.")
-					await GenerarToken(registerData.user);
-					setcheckToken(true);
-					setLoading(false);
+			if (isValidarRut) {
+				isPassValid = await contraseñaValidar();
+				if (isPassValid) {
+					isUserValid = await validateUser(registerData.user);
+					if (isUserValid) {
+						setShowModal(true)
+						setTitle("Codigo de confirmación")
+						setMsj("Se ha enviado un token de verificación a tu correo.")
+						await GenerarToken(registerData.user);
+						setcheckToken(true);
+						setLoading(false);
+					} else {
+						setLoading(false);
+					}
 				} else {
 					setLoading(false);
 				}
 			} else {
 				setLoading(false);
 			}
-		} else {
+		} catch (error) {
 			setLoading(false);
+			setTitle("Error")
+			setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+			setShowModal(true)
 		}
+
 	};
 
 
@@ -200,17 +215,26 @@ const FormPacienteCliente = () => {
 
 	//function to call the api home service and check if the user exist 
 	const validateUser = async (userData) => {
-		const resp = await HomeService(userData);
-		//Check is the resp.usuario[0].codigo is the resp
+		try {
+			const resp = await HomeService(userData);
+			//Check is the resp.usuario[0].codigo is the resp
 
-		if (resp.usuario[0].codigo === 1) {
-			return true;
-		} else {
+			if (resp.usuario[0].codigo === 1) {
+				return true;
+			} else {
+				setShowModal(true)
+				setTitle("Error de usuario")
+				setMsj("El usuario ingresado ya existe.")
+				return false;
+			}
+		} catch (error) {
+			setLoading(false);
+			setTitle("Error")
+			setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
 			setShowModal(true)
-			setTitle("Error de usuario")
-			setMsj("El usuario ingresado ya existe.")
-			return false;
 		}
+
+
 	}
 
 

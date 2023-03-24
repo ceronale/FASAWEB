@@ -15,7 +15,8 @@ export const LIstaEmpresasService = async () => {
             return response;
         })
         .catch(function (error) {
-            return error.response.status;
+            return error;
+
         });
     return response;
 }

@@ -62,7 +62,8 @@ const ListarMedicos = (user) => {
     try {
       const response = await getLista(value);
 
-      if (response === 403) {
+      if (response?.response?.status === 403
+      ) {
         setLoading(false);
         setShowModal(true)
         setTitle("Sesión expirada")
@@ -74,9 +75,36 @@ const ListarMedicos = (user) => {
         }, 3000);
         return;
       }
+
+
+      if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+        setTitle("Error");
+        setMsj("Error de conexión");
+        setShowModal(true);
+        setLoading(false);
+        return;
+      }
+
+
+      if (response.codigolista.length === 0) {
+        setTitle("Error");
+        setMsj("No hay medicos para mostrar");
+        setShowModal(true);
+        setLoading(false);
+        return;
+      } else {
+        setIsButtonDisabled(false);
+        //Update the listas state
+        setListas([...response.codigolista]);
+        //Enable the lista select
+        setIsListaDisabled(false);
+        setLoading(false);
+      }
+
       if (response) {
         setLoading(false);
       }
+
       //Update the listas state
       setListas([...response.codigolista]);
       //Enable the lista select
@@ -85,13 +113,14 @@ const ListarMedicos = (user) => {
       //Show modal with error message
       setLoading(false);
       setTitle("Error");
-      setMsj("Error al obtener las listas");
+      setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
       setShowModal(true);
     }
   };
 
   //Function to handle the click of the show data button
   const showData = async () => {
+
     //Validate all inputs are filled before sending the request
     if (!convenioSelected || !listaSelected) {
       //Show modal with error message
@@ -102,7 +131,10 @@ const ListarMedicos = (user) => {
       //create a try and catrch block to handle the error of the request and show the modal with the error message
       try {
         const response = await getMedicos(listaSelected);
-        if (response === 403) {
+        setDataTable(undefined);
+        setDataTable({});
+        if (response?.response?.status === 403
+        ) {
           setShowModal(true)
           setTitle("Sesión expirada")
           setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
@@ -113,17 +145,36 @@ const ListarMedicos = (user) => {
           }, 3000);
           return;
         }
-        //Reset the dataTable state
-        setDataTable(undefined);
-        //Update the dataTable state with the medicos data
-        setIsButtonDisabled(false);
-        setDataTable(response.medicos);
-        setLoading(false);
+
+        if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+          setTitle("Error");
+          setMsj("Error de conexión");
+          setShowModal(true);
+          setLoading(false);
+          return;
+        }
+
+        if (response.medicos.length === 0) {
+          setTitle("Error");
+          setMsj("No hay medicos para mostrar");
+          setShowModal(true);
+          setLoading(false);
+          return;
+        } else {
+          //Reset the dataTable state
+          setDataTable(undefined);
+          //Update the dataTable state with the medicos data
+          setIsButtonDisabled(false);
+          setDataTable(response.medicos);
+          setLoading(false);
+        }
+
+
       } catch (error) {
         setLoading(false);
         //Show modal with error message
         setTitle("Error");
-        setMsj("Error al obtener los medicos");
+        setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
         setShowModal(true);
       }
     }
@@ -153,7 +204,7 @@ const ListarMedicos = (user) => {
         setLoading(false);
         //Show modal with error message
         setTitle("Error");
-        setMsj("Error al obtener los medicos");
+        setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
         setShowModal(true);
       }
     }

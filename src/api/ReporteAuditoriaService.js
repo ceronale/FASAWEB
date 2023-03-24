@@ -20,7 +20,8 @@ export const ReporteAuditoriaService = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -43,7 +44,8 @@ export const getUsuarios = async () => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;

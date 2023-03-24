@@ -18,7 +18,8 @@ export const ListarUsuarios = async () => {
 		})
 		.catch((error) => {
 
-			return error.response.status;
+			return error;
+
 		});
 
 	return response;

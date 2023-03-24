@@ -60,7 +60,8 @@ const DataTableRoles = props => {
             let componentes;
             let componentesByRol;
             getComponentes().then((response) => {
-                if (response === 403) {
+                if (response?.response?.status === 403
+                ) {
                     setTitleAlert("Sesión expirada")
                     setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
                     setShowModalAlert(true)
@@ -72,10 +73,21 @@ const DataTableRoles = props => {
                     }, 3000);
                     return;
                 }
+
+
+                if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                    setTitleAlert("Error");
+                    setMsjAlert("Error de conexión");
+                    setShowModalAlert(true);
+                    setLoading(false);
+                    return;
+                }
+
                 setComponents(response.recursos);
                 componentes = response.recursos;
                 getComponentesByRol(row.original.id_rol).then((response) => {
-                    if (response === 403) {
+                    if (response?.response?.status === 403
+                    ) {
                         setTitleAlert("Sesión expirada")
                         setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
                         setShowModalAlert(true)
@@ -87,6 +99,15 @@ const DataTableRoles = props => {
                         }, 3000);
                         return;
                     }
+
+                    if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                        setTitleAlert("Error");
+                        setMsjAlert("Error de conexión");
+                        setShowModalAlert(true);
+                        setLoading(false);
+                        return;
+                    }
+
                     componentesByRol = response.recursoRol;
                     componentes.forEach((componente) => {
                         if (!componentesByRol.find(c => c.id_recurso === componente.id_recursos)) {
@@ -116,7 +137,8 @@ const DataTableRoles = props => {
         setRight([]);
         let componentes;
         getComponentes().then((response) => {
-            if (response === 403) {
+            if (response?.response?.status === 403
+            ) {
                 setTitleAlert("Sesión expirada")
                 setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
                 setShowModalAlert(true)
@@ -128,6 +150,15 @@ const DataTableRoles = props => {
                 }, 3000);
                 return;
             }
+
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setTitleAlert("Error");
+                setMsjAlert("Error de conexión");
+                setShowModalAlert(true);
+                setLoading(false);
+                return;
+            }
+
             setComponents(response.recursos);
             componentes = response.recursos;
             componentes.forEach((componente) => {
@@ -139,35 +170,52 @@ const DataTableRoles = props => {
     };
     //Modal Confirmar
     const handleConfirmar = async () => {
-        const response = await deleteRol(values.original.id_rol);
+        try {
+            setLoading(true);
+            const response = await deleteRol(values.original.id_rol);
+            if (response?.response?.status === 403
+            ) {
+                setTitleAlert("Sesión expirada")
+                setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                setShowModalAlert(true)
 
-        if (response === 403) {
-            setTitleAlert("Sesión expirada")
-            setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 3000);
+                return;
+            }
+
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setTitleAlert("Error");
+                setMsjAlert("Error de conexión");
+                setShowModalAlert(true);
+                setLoading(false);
+                return;
+            }
+
+            //modal alert if the response is ok response.response1[0].codigo === 0 is ok and response.response1[0].codigo === 1 is error
+            if (response.response1[0].codigo === 0) {
+                setTitleAlert("Eliminado");
+                setMsjAlert("El rol se elimino correctamente");
+                tableData.splice(values.index, 1);
+                setTableData([...tableData]);
+                setShowModalAlert(true);
+            } else {
+                setTitleAlert("Error");
+                setMsjAlert("El rol no se elimino correctamente");
+                setShowModalAlert(true);
+            }
+            setLoading(false);
+            setShowModalConfirmar(false);
+        } catch (error) {
+            setLoading(false);
+            setTitleAlert("Error")
+            setMsjAlert("Ha ocurrido un error, por favor vuelva a intentarlo");
             setShowModalAlert(true)
-
-            //set time out to logout of 5 seconds
-            setTimeout(() => {
-                localStorage.removeItem("user");
-                navigate(`/`);
-            }, 3000);
-            return;
         }
 
-        //modal alert if the response is ok response.response1[0].codigo === 0 is ok and response.response1[0].codigo === 1 is error
-        if (response.response1[0].codigo === 0) {
-            setTitleAlert("Eliminado");
-            setMsjAlert("El rol se elimino correctamente");
-            setShowModalAlert(true);
-        } else {
-            setTitleAlert("Error");
-            setMsjAlert("El rol no se elimino correctamente");
-            setShowModalAlert(true);
-        }
-
-        tableData.splice(values.index, 1);
-        setTableData([...tableData]);
-        setShowModalConfirmar(false);
     }
 
     const handleCloseConfirmar = () => {
@@ -181,68 +229,102 @@ const DataTableRoles = props => {
 
 
     const handleAddRol = async (values) => {
-        const response = await addRol(values);
+        try {
+            const response = await addRol(values);
+            if (response?.response?.status === 403
+            ) {
+                setTitleAlert("Sesión expirada")
+                setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                setShowModalAlert(true)
 
-        if (response === 403) {
-            setTitleAlert("Sesión expirada")
-            setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 3000);
+                return;
+            }
+
+
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setTitleAlert("Error");
+                setMsjAlert("Error de conexión");
+                setShowModalAlert(true);
+                setLoading(false);
+                return;
+            }
+
+            const { codigo } = response.response[0];
+            setLoading(true);
+            if (codigo === 1) {
+                setTitleAlert("Éxito");
+                setMsjAlert("El rol se ha añadido correctamente");
+                setLoading(false);
+                setShowModalAlert2(true);
+            } else {
+                setTitleAlert("Error");
+                setMsjAlert("El rol no se ha añadido correctamente");
+                setLoading(false);
+                setShowModalAlert(true);
+            }
+
+            setShowModalRoles(false);
+        } catch (error) {
+            setLoading(false);
+            setTitleAlert("Error")
+            setMsjAlert("Ha ocurrido un error, por favor vuelva a intentarlo");
             setShowModalAlert(true)
-
-            //set time out to logout of 5 seconds
-            setTimeout(() => {
-                localStorage.removeItem("user");
-                navigate(`/`);
-            }, 3000);
-            return;
-        }
-        const { codigo } = response.response[0];
-        setLoading(true);
-        if (codigo === 1) {
-            setTitleAlert("Éxito");
-            setMsjAlert("El rol se ha añadido correctamente");
-            setLoading(false);
-            setShowModalAlert2(true);
-        } else {
-            setTitleAlert("Error");
-            setMsjAlert("El rol no se ha añadido correctamente");
-            setLoading(false);
-            setShowModalAlert(true);
         }
 
-        setShowModalRoles(false);
     }
 
     const handleEditRol = async (values) => {
-        const response = await updateRol(values);
+        try {
+            const response = await updateRol(values);
 
-        if (response === 403) {
-            setTitleAlert("Sesión expirada")
-            setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
-            setShowModalAlert(true)
+            if (response?.response?.status === 403
+            ) {
+                setTitleAlert("Sesión expirada")
+                setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
+                setShowModalAlert(true)
 
-            //set time out to logout of 5 seconds
-            setTimeout(() => {
-                localStorage.removeItem("user");
-                navigate(`/`);
-            }, 3000);
-            return;
-        }
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 3000);
+                return;
+            }
 
-        setLoading(true);
-        const { codigo } = response.response1[0];
-        if (codigo === 0) {
-            setTitleAlert("Éxito");
-            setMsjAlert("El rol se ha editado correctamente");
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setTitleAlert("Error");
+                setMsjAlert("Error de conexión");
+                setShowModalAlert(true);
+                setLoading(false);
+                return;
+            }
+
+            setLoading(true);
+            const { codigo } = response.response1[0];
+            if (codigo === 0) {
+                setTitleAlert("Éxito");
+                setMsjAlert("El rol se ha editado correctamente");
+                setLoading(false);
+                setShowModalAlert2(true);
+            } else {
+                setTitleAlert("Error");
+                setMsjAlert("El rol no se ha editado correctamente");
+                setLoading(false);
+                setShowModalAlert(true);
+            }
+
+            setShowModalRoles(false);
+        } catch (error) {
             setLoading(false);
-            setShowModalAlert2(true);
-        } else {
-            setTitleAlert("Error");
-            setMsjAlert("El rol no se ha editado correctamente");
-            setLoading(false);
+            setTitleAlert("Error")
+            setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
             setShowModalAlert(true);
         }
-
-        setShowModalRoles(false);
     }
 
     const handleClose = () => {

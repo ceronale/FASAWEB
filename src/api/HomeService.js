@@ -15,7 +15,8 @@ export const HomeService = async (data) => {
 			return outLoginModel;
 		})
 		.catch((error) => {
-			return error.response.status;
+			return error;
+
 
 		});
 

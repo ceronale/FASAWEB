@@ -11,17 +11,15 @@ export const getCartola = async (data) => {
             'rut': data.rut,
             'fechaIni': data.fechaIni,
             'fechaFin': data.fechaFin,
-            'tipo': data.tipo,
             'token': user.token,
         }
     };
     const response = axios(config)
         .then(({ data: out }) => {
-
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
         });
 
     return response;

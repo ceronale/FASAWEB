@@ -428,7 +428,8 @@ const DataTableBeneficiarios = props => {
         try {
             // Make API call to update beneficiario
             const response = await updateBeneficiario(values, props.user.correo);
-            if (response === 403) {
+            if (response?.response?.status === 403
+            ) {
                 setShowModalAlert(true)
                 setTitleAlert("Sesión expirada")
                 setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
@@ -522,7 +523,8 @@ const DataTableBeneficiarios = props => {
             try {
                 // Make API call to update beneficiario
                 const response = await updateBeneficiario(values, props.user.correo);
-                if (response === 403) {
+                if (response?.response?.status === 403
+                ) {
                     setShowModalAlert(true)
                     setTitleAlert("Sesión expirada")
                     setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
@@ -534,6 +536,7 @@ const DataTableBeneficiarios = props => {
                     }, 3000);
                     return;
                 }
+
                 // Handle network error
                 if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
                     setLoading(false);

@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { HomeServiceEmpresa } from "../../api/HomeEmpresaService";
 
 const FormHome = () => {
+
 	const [initialState, setInitialState] = useState({
 		rut: '',
 		nombre: '',
@@ -17,18 +18,26 @@ const FormHome = () => {
 	const location = useLocation();
 	const emailparam = location.pathname.split("/")
 	const home = async (email) => {
-		const response = await HomeServiceEmpresa(email)
-		const { rut, nombre, apellido, apellido2, correo, kamConvenios, kamCorreo, cargo } = response.usuarioEmpresa[0];
-		setInitialState({
-			rut: rut,
-			nombre: nombre,
-			apellido: apellido,
-			apellido2: apellido2,
-			correo: correo,
-			kamConvenios: kamConvenios,
-			kamCorreo: kamCorreo,
-			cargo: cargo,
-		})
+		try {
+			const response = await HomeServiceEmpresa(email)
+			const { rut, nombre, apellido, apellido2, correo, kamConvenios, kamCorreo, cargo } = response.usuarioEmpresa[0];
+			setInitialState({
+				rut: rut,
+				nombre: nombre,
+				apellido: apellido,
+				apellido2: apellido2,
+				correo: correo,
+				kamConvenios: kamConvenios,
+				kamCorreo: kamCorreo,
+				cargo: cargo,
+			})
+		} catch (error) {
+			setLoading(false);
+			setTitle("Error")
+			setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+			setShowModal(true)
+		}
+
 	}
 	useEffect(() => {
 		home(emailparam[2])

@@ -9,7 +9,7 @@ import { PolizaServiceUpdate } from "../../api/PolizaService";
 import ModalUploadFile from "../Modals/ModalUploadFile";
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { Button, MenuItem } from '@mui/material';
-
+import CircularProgress from '@mui/material/CircularProgress';
 
 const DataTablePoliza = props => {
   //Modal Variables
@@ -30,6 +30,8 @@ const DataTablePoliza = props => {
   const [values, setValues] = useState();
   const [row, setRow] = useState();
 
+  const [loading, setLoading] = useState(false);
+
   const handleCloseConfirmar = () => {
     setShowModalConfirmar(false);
   }
@@ -45,6 +47,7 @@ const DataTablePoliza = props => {
   //Confirma la accion del modal y ejecuta update de la informacion de la tabla 
   const handleConfirmar = async () => {
     try {
+      setLoading(true);
       if ((values.grupoAhumada === "" || values.grupoAhumada === null) ||
         (values.nombrePoliza === "" || values.nombrePoliza === null) ||
         (values.codigoPoliza === "" || values.codigoPoliza === null) ||
@@ -68,11 +71,11 @@ const DataTablePoliza = props => {
           values.polizaAceptaBioequivalente,
           props.user.correo
         )
-        if (resp === 403) {
+        if (resp?.response?.status === 403
+        ) {
           setTitleAlert("Sesión expirada")
           setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
           setShowModalAlert(true)
-
           //set time out to logout of 5 seconds
           setTimeout(() => {
             localStorage.removeItem("user");
@@ -80,6 +83,15 @@ const DataTablePoliza = props => {
           }, 3000);
           return;
         }
+
+        if (resp.name === 'AxiosError' && resp.code === 'ERR_NETWORK') {
+          setTitleAlert("Error");
+          setMsjAlert("Error de conexión");
+          setShowModalAlert(true);
+          setLoading(false);
+          return;
+        }
+
 
         if (resp.response1[0].codigoRespuesta === 0) {
           setTitleAlert("Exito")
@@ -92,9 +104,13 @@ const DataTablePoliza = props => {
           setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
           setShowModalAlert(true);
         };
+        setLoading(false);
 
       }
     } catch (error) {
+
+      setLoading(false);
+
       setTitleAlert("Error")
       setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
       setShowModalAlert(true);
@@ -338,53 +354,59 @@ const DataTablePoliza = props => {
 
   return (
     <>
-      <div className="boxTable">
-        <MaterialReactTable
-          columns={columns}
-          data={tableData}
-          positionToolbarAlertBanner="bottom"
-          editingMode="modal"
-          enableEditing
-          onEditingRowCancel={handleCancelRowEdits}
-          onEditingRowSave={handleSaveRowEdits}
-          localization={MRT_Localization_ES}
-          renderBottomToolbarCustomActions={({ table }) => (
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
-              <Button
-                variant="contained"
-                onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
-                disabled={props.isButtonDisabled}
-              >
-                Exportar
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => { setShowModalUpload(true) }}
-                disabled={props.isButtonDisabled}
-              >
-                Importar
-              </Button>
-            </div>
-          )}
+      <div style={{ position: 'relative' }}>
+        {loading && (
+          <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+            <CircularProgress />
+          </div>
+        )}
+        <div className="boxTable">
+          <MaterialReactTable
+            columns={columns}
+            data={tableData}
+            positionToolbarAlertBanner="bottom"
+            editingMode="modal"
+            enableEditing
+            onEditingRowCancel={handleCancelRowEdits}
+            onEditingRowSave={handleSaveRowEdits}
+            localization={MRT_Localization_ES}
+            renderBottomToolbarCustomActions={({ table }) => (
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <Button
+                  variant="contained"
+                  onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
+                  disabled={props.isButtonDisabled}
+                >
+                  Exportar
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => { setShowModalUpload(true) }}
+                  disabled={props.isButtonDisabled}
+                >
+                  Importar
+                </Button>
+              </div>
+            )}
+          />
+        </div>
+        <ModalConfirmar
+          title={title}
+          msj={msj}
+          show={showModalConfirmar}
+          handleClose={handleCloseConfirmar}
+          handleYes={handleConfirmar}
+        />
+        <ModalAlert title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
+
+        <ModalUploadFile
+          title={"Cargar datos masivos"}
+          msj={"Cargue el archivo xlsx con el cual desea actualizar los registros"}
+          show={showModalUpload}
+          handleClose={handleCloseUpload}
+          convenio={props.convenio}
         />
       </div>
-      <ModalConfirmar
-        title={title}
-        msj={msj}
-        show={showModalConfirmar}
-        handleClose={handleCloseConfirmar}
-        handleYes={handleConfirmar}
-      />
-      <ModalAlert title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
-
-      <ModalUploadFile
-        title={"Cargar datos masivos"}
-        msj={"Cargue el archivo xlsx con el cual desea actualizar los registros"}
-        show={showModalUpload}
-        handleClose={handleCloseUpload}
-        convenio={props.convenio}
-      />
-
     </>
   );
 };

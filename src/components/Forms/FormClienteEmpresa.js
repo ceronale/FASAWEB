@@ -97,70 +97,100 @@ const FormClienteEmpresa = (usuario) => {
 
 	//function to call the api home service and check if the user exist 
 	const validateUser = async (userData) => {
-		const resp = await HomeService(userData);
+		try {
+			const resp = await HomeService(userData);
+			if (resp?.response?.status === 403
+			) {
+				setShowModal(true)
+				setTitle("Sesión expirada")
+				setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+				//set time out to logout of 5 seconds
+				setTimeout(() => {
+					localStorage.removeItem("user");
+					navigate(`/`);
+				}, 5000);
+				return;
+			}
 
-		if (resp === 403) {
-			setShowModal(true)
-			setTitle("Sesión expirada")
-			setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-			//set time out to logout of 5 seconds
-			setTimeout(() => {
-				localStorage.removeItem("user");
-				navigate(`/`);
-			}, 5000);
-			return;
-		}
+			if (resp.name === 'AxiosError' && resp.code === 'ERR_NETWORK') {
+				setTitle("Error");
+				setMsj("Error de conexión");
+				setShowModal(true);
+				setLoading(false);
+				return;
+			}
 
-		//Check is the resp.usuario[0].codigo is the resp
-		if (resp.usuario[0].codigo === 1) {
-			return true;
-		} else {
-			setShowModal(true)
+
+			//Check is the resp.usuario[0].codigo is the resp
+			if (resp.usuario[0].codigo === 1) {
+				return true;
+			} else {
+				setShowModal(true)
+				setTitle("Error")
+				setMsj("El usuario ingresado ya existe.")
+				return false;
+			}
+		} catch (error) {
+			setLoading(false);
 			setTitle("Error")
-			setMsj("El usuario ingresado ya existe.")
-			return false;
+			setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+			setShowModal(true)
 		}
+
 	}
 
 	const onSubmit = async (e) => {
-		setLoading(true);
-		e.preventDefault();
-		var isPassValid = contraseñaValidar();
-		var isUserValid = await validateUser(registerData.user);
+		try {
+			setLoading(true);
+			e.preventDefault();
+			var isPassValid = contraseñaValidar();
+			var isUserValid = await validateUser(registerData.user);
 
-		if (isPassValid) {
-			if (isUserValid) {
-				const resp = await EmpresaService(registerData, correoUsuario)
-				if (resp === 403) {
-					setTitle("Sesión expirada")
-					setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-					setShowModal(true)
-					//set time out to logout of 5 seconds
-					setTimeout(() => {
-						localStorage.removeItem("user");
-						navigate(`/`);
-					}, 5000);
-					return;
+			if (isPassValid) {
+				if (isUserValid) {
+					const resp = await EmpresaService(registerData, correoUsuario)
+					if (resp?.response?.status === 403
+					) {
+						setTitle("Sesión expirada")
+						setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+						setShowModal(true)
+						//set time out to logout of 5 seconds
+						setTimeout(() => {
+							localStorage.removeItem("user");
+							navigate(`/`);
+						}, 5000);
+						return;
+					}
+
+					if (resp.name === 'AxiosError' && resp.code === 'ERR_NETWORK') {
+						setTitle("Error");
+						setMsj("Error de conexión");
+						setShowModal(true);
+						setLoading(false);
+						return;
+					}
+
+					var aux = resp['outActualizar'][0]['outSeq'];
+					if (aux === 0) {
+						setShowModal(true)
+						setTitle("Error")
+						setMsj("Error al crear usuario")
+					} else {
+						setShowModal(true)
+						setTitle("Exito")
+						setMsj("Usuario creado de manera exitosa.")
+						const resp = await ConvenioService(registerData.user, selectedOptions.toString(), correoUsuario);
+						handleClear();
+					}
 				}
-
-				var aux = resp['outActualizar'][0]['outSeq'];
-				if (aux === 0) {
-					setShowModal(true)
-					setTitle("Error")
-					setMsj("Error al crear usuario")
-
-				} else {
-					setShowModal(true)
-					setTitle("Exito")
-					setMsj("Usuario creado de manera exitosa.")
-					await ConvenioService(registerData.user, selectedOptions.toString(), correoUsuario);
-					handleClear();
-				}
-
 			}
-
+			setLoading(false);
+		} catch (error) {
+			setLoading(false);
+			setTitle("Error")
+			setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+			setShowModal(true)
 		}
-		setLoading(false);
 	};
 
 	function contraseñaValidar() {
@@ -202,24 +232,33 @@ const FormClienteEmpresa = (usuario) => {
 
 
 	async function fetchDataSelect() {
-		const resp2 = await LIstaEmpresasService();
-		if (resp2 === 403) {
+		try {
+
+			const resp2 = await LIstaEmpresasService();
+			if (resp2 === 403) {
+				setShowModal(true)
+				setTitle("Sesión expirada")
+				setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+				//set time out to logout of 5 seconds
+				setTimeout(() => {
+					localStorage.removeItem("user");
+					navigate(`/`);
+				}, 5000);
+				return;
+			}
+
+			var aux = resp2['empresa'];
+			let data = aux.map(function (element) {
+				return { value: `${element.idEmpresa}`, label: `${element.nombreEmpresa}` };
+			})
+			setOptions(data);
+		} catch (error) {
+			setLoading(false);
+			setTitle("Error")
+			setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
 			setShowModal(true)
-			setTitle("Sesión expirada")
-			setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-			//set time out to logout of 5 seconds
-			setTimeout(() => {
-				localStorage.removeItem("user");
-				navigate(`/`);
-			}, 5000);
-			return;
 		}
 
-		var aux = resp2['empresa'];
-		let data = aux.map(function (element) {
-			return { value: `${element.idEmpresa}`, label: `${element.nombreEmpresa}` };
-		})
-		setOptions(data);
 	};
 
 	const handleClear = () => {

@@ -16,7 +16,8 @@ export const getLista = async (data) => {
             return out;
         })
         .catch(function (error) {
-            return error.response.status;
+            return error;
+
         });
     return response;
 }
@@ -37,7 +38,8 @@ export const getMedicos = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -64,7 +66,8 @@ export const updateMedico = async (data, user) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
     return response;
 }
@@ -86,7 +89,8 @@ export const deleteMedico = async (data, user) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;
@@ -112,7 +116,8 @@ export const addMedico = async (data, user) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;

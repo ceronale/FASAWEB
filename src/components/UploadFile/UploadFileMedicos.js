@@ -94,20 +94,29 @@ const UploadFileMedicos = props => {
 
     // On file upload (click the upload button)
     const onFileUpload = async (e) => {
-        e.preventDefault();
-        if (state.selectedFile !== null) {
-            const blob = new Blob([state.selectedFile], { type: 'text/csv' });
-            var resp = await UploadMedicos(blob, props.codigoLista);
-            if (resp === 403) {
-                alert("Su sesión ha expirado, por favor vuelva a ingresar");
-                //set time out to logout of 5 seconds
-                setTimeout(() => {
-                    localStorage.removeItem("user");
-                    location.reload();
-                }, 3000);
-                return;
+        try {
+            e.preventDefault();
+            if (state.selectedFile !== null) {
+                const blob = new Blob([state.selectedFile], { type: 'text/csv' });
+                var resp = await UploadMedicos(blob, props.codigoLista);
+                if (resp?.response?.status === 403
+                ) {
+                    alert("Su sesión ha expirado, por favor vuelva a ingresar");
+                    //set time out to logout of 5 seconds
+                    setTimeout(() => {
+                        localStorage.removeItem("user");
+                        location.reload();
+                    }, 3000);
+                    return;
+                }
+                if (resp.name === 'AxiosError' && resp.code === 'ERR_NETWORK') {
+                    this.setState({ msj: "Ha ocurrido un error, por favor vuelva a intentarlo" });;
+                    return;
+                }
+                setState({ msj: resp.response1[0].detalleRespuest });;
             }
-            setState({ msj: resp.response1[0].detalleRespuest });;
+        } catch (error) {
+            this.setState({ msj: "Ha ocurrido un error, por favor vuelva a intentarlo" });;
         }
     };
     const handleClick = event => {

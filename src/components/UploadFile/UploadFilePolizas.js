@@ -93,22 +93,30 @@ class UploadFilePolizas extends Component {
 
     // On file upload (click the upload button)
     onFileUpload = async (e, convenioValue) => {
+        try {
+            e.preventDefault();
+            if (this.state.selectedFile !== null) {
+                const blob = new Blob([this.state.selectedFile], { type: 'text/csv' });
+                var resp = await UploadPolizas(blob, convenioValue);
+                if (resp?.response?.status === 403
+                ) {
+                    alert("Su sesión ha expirado, por favor vuelva a ingresar");
+                    //set time out to logout of 5 seconds
+                    setTimeout(() => {
+                        localStorage.removeItem("user");
+                        location.reload();
+                    }, 3000);
+                    return;
+                }
+                if (resp.name === 'AxiosError' && resp.code === 'ERR_NETWORK') {
+                    this.setState({ msj: "Ha ocurrido un error, por favor vuelva a intentarlo" });;
+                    return;
+                }
 
-        e.preventDefault();
-        if (this.state.selectedFile !== null) {
-            const blob = new Blob([this.state.selectedFile], { type: 'text/csv' });
-            var resp = await UploadPolizas(blob, convenioValue);
-            if (resp === 403) {
-                alert("Su sesión ha expirado, por favor vuelva a ingresar");
-                //set time out to logout of 5 seconds
-                setTimeout(() => {
-                    localStorage.removeItem("user");
-                    location.reload();
-                }, 3000);
-                return;
+                this.setState({ msj: resp.response1[0].detalleRespuest });;
             }
-
-            this.setState({ msj: resp.response1[0].detalleRespuest });;
+        } catch (error) {
+            this.setState({ msj: "Ha ocurrido un error, por favor vuelva a intentarlo" });;
         }
     };
     handleClick = event => {
@@ -118,7 +126,6 @@ class UploadFilePolizas extends Component {
 
     render() {
         const { convenio } = this.props;
-
         const convenioValue = convenio.value;
         return (
             <>

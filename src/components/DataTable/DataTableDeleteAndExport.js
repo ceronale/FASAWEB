@@ -68,34 +68,50 @@ const DataTableDeleteAndExport = props => {
 
   //Modal Confirmar
   const handleConfirmar = async () => {
-    setLoading(true);
-    const resp = await EliminarUsuario(values.original.correo, props.usuario)
+    try {
+      setLoading(true);
+      const resp = await EliminarUsuario(values.original.correo, props.usuario)
 
-    if (resp === 403) {
+      if (resp?.response?.status === 403
+      ) {
+        setShowModal(true)
+        setTitleModal("Sesión expirada")
+        setMsjModal("Su sesión ha expirado, por favor vuelva a ingresar")
+        //set time out to logout of 5 seconds
+        setTimeout(() => {
+          localStorage.removeItem("user");
+          navigate(`/`);
+        }, 3000);
+        return;
+      }
+
+      if (resp.name === 'AxiosError' && resp.code === 'ERR_NETWORK') {
+        setTitle("Error");
+        setMsj("Error de conexión");
+        setShowModal(true);
+        setLoading(false);
+        return;
+      }
+
+      if (resp.eliminar[0].codigoRespuesta === 0) {
+        setTitleModal("Exito");
+        setMsjModal("El usuario se ha eliminado correctamente");
+        setShowModal(true);
+        tableData.splice(values.index, 1);
+        setTableData([...tableData]);
+      } else {
+        setTitleModal("Error al eliminar");
+        setMsjModal("Ha ocurrido un error al eliminar el usuario");
+        setShowModal(true);
+      }
+      setLoading(false);
+      setShowModalConfirmar(false);
+    } catch (error) {
+      setLoading(false);
+      setTitle("Error")
+      setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
       setShowModal(true)
-      setTitleModal("Sesión expirada")
-      setMsjModal("Su sesión ha expirado, por favor vuelva a ingresar")
-      //set time out to logout of 5 seconds
-      setTimeout(() => {
-        localStorage.removeItem("user");
-        navigate(`/`);
-      }, 3000);
-      return;
     }
-
-    if (resp.eliminar[0].codigoRespuesta === 0) {
-      setTitleModal("Exito");
-      setMsjModal("El usuario se ha eliminado correctamente");
-      setShowModal(true);
-      tableData.splice(values.index, 1);
-      setTableData([...tableData]);
-    } else {
-      setTitleModal("Error al eliminar");
-      setMsjModal("Ha ocurrido un error al eliminar el usuario");
-      setShowModal(true);
-    }
-    setLoading(false);
-    setShowModalConfirmar(false);
   }
 
   const handleEditRol = useCallback(
@@ -135,7 +151,8 @@ const DataTableDeleteAndExport = props => {
 
   useEffect(() => {
     getRoles().then((response) => {
-      if (response === 403) {
+      if (response?.response?.status === 403
+      ) {
         setShowModal(true)
         setTitleModal("Sesión expirada")
         setMsjModal("Su sesión ha expirado, por favor vuelva a ingresar")
@@ -146,6 +163,17 @@ const DataTableDeleteAndExport = props => {
         }, 3000);
         return;
       }
+
+
+      if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+        setTitle("Error");
+        setMsj("Error de conexión");
+        setShowModal(true);
+        setLoading(false);
+        return;
+      }
+
+
 
       let rolFormat = response.roles.map((rol) => {
         return { value: rol.id_rol, label: rol.nombre };
@@ -281,7 +309,8 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
       }
       //call the api and send the data setUserAndRol
       setUserAndRol(data).then((response) => {
-        if (response === 403) {
+        if (response?.response?.status === 403
+        ) {
           setTitleAlert("Sesión expirada")
           setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
           setShowModalAlert(true);
@@ -291,6 +320,15 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
             localStorage.removeItem("user");
             navigate(`/`);
           }, 3000);
+          return;
+        }
+
+
+        if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+          setTitleAlert("Error");
+          setMsjAlert("Error de conexión");
+          setShowModalAlert(true);
+          setLoading(false);
           return;
         }
 
@@ -316,7 +354,8 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
       }
       //call the api and send the data updateUserAndRol
       updateUserAndRol(data).then((response) => {
-        if (response === 403) {
+        if (response?.response?.status === 403
+        ) {
           setTitleAlert("Sesión expirada")
           setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
           setShowModalAlert(true)
@@ -325,6 +364,15 @@ export const SetRoleModal = ({ open, onClose, allValues, roles, handleOpenModal 
             localStorage.removeItem("user");
             navigate(`/`);
           }, 3000);
+          return;
+        }
+
+
+        if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+          setTitleAlert("Error");
+          setMsjAlert("Error de conexión");
+          setShowModalAlert(true);
+          setLoading(false);
           return;
         }
 

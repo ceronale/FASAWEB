@@ -66,60 +66,77 @@ const ListarRepAuditoria = (user) => {
 
   // 2.-Funcion para mostrar los datos
   const showData = async () => {
-    if (!servicioSelected || !accion || !desde || !hasta) {
-      setTitle("Error");
-      setMsj("Debe completar todos los campos.");
-      setShowModal(true);
-    } else if (desde > hasta) {
-      setTitle("Error");
-      setMsj("La fecha desde es mayor a la fecha hasta.");
-      setShowModal(true);
-    } else {
-      const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
-      const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
-      //intialize data if usuarioselected is diferent to null
-      const data = usuarioInputSelected ? {
-        user: usuarioInputSelected.value,
-        servicio: servicioSelected,
-        accion: accion,
-        fechaDesde: formattedDesde,
-        fechaHasta: formattedHasta,
-      } : {
-        user: usuario.correo,
-        servicio: servicioSelected,
-        accion: accion,
-        fechaDesde: formattedDesde,
-        fechaHasta: formattedHasta,
-      };
-
-      setDataTable(undefined);
-      setLoading(true);
-
-      const response = await ReporteAuditoriaService(data);
-      if (response === 403) {
-        setTitle("Sesión expirada")
-        setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-        setShowModal(true)
-
-        //set time out to logout of 5 seconds
-        setTimeout(() => {
-          localStorage.removeItem("user");
-          navigate(`/`);
-        }, 3000);
-        return;
-      }
-
-      //Check if the response is ok response.auditoria[0].codigo === 0 is ok and response.auditoria[0].codigo === 1 is error
-      if (response.auditoria[0].codigo === 1) {
+    try {
+      if (!servicioSelected || !accion || !desde || !hasta) {
         setTitle("Error");
-        setMsj(response.auditoria[0].detalle);
+        setMsj("Debe completar todos los campos.");
         setShowModal(true);
-        setDataTable({});
+      } else if (desde > hasta) {
+        setTitle("Error");
+        setMsj("La fecha desde es mayor a la fecha hasta.");
+        setShowModal(true);
       } else {
-        setIsButtonDisabled(false);
-        setDataTable(response.auditoria);
+        const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
+        const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
+        //intialize data if usuarioselected is diferent to null
+        const data = usuarioInputSelected ? {
+          user: usuarioInputSelected.value,
+          servicio: servicioSelected,
+          accion: accion,
+          fechaDesde: formattedDesde,
+          fechaHasta: formattedHasta,
+        } : {
+          user: usuario.correo,
+          servicio: servicioSelected,
+          accion: accion,
+          fechaDesde: formattedDesde,
+          fechaHasta: formattedHasta,
+        };
+
+        setDataTable(undefined);
+        setLoading(true);
+
+        const response = await ReporteAuditoriaService(data);
+        if (response?.response?.status === 403
+        ) {
+          setTitle("Sesión expirada")
+          setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+          setShowModal(true)
+
+          //set time out to logout of 5 seconds
+          setTimeout(() => {
+            localStorage.removeItem("user");
+            navigate(`/`);
+          }, 3000);
+          return;
+        }
+
+
+        if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+          setTitle("Error");
+          setMsj("Error de conexión");
+          setShowModal(true);
+          setLoading(false);
+          return;
+        }
+
+        //Check if the response is ok response.auditoria[0].codigo === 0 is ok and response.auditoria[0].codigo === 1 is error
+        if (response.auditoria[0].codigo === 1) {
+          setTitle("Error");
+          setMsj(response.auditoria[0].detalle);
+          setShowModal(true);
+          setDataTable({});
+        } else {
+          setIsButtonDisabled(false);
+          setDataTable(response.auditoria);
+        }
+        setLoading(false);
       }
+    } catch (error) {
       setLoading(false);
+      setShowModal(true)
+      setTitle("Error")
+      setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
     }
   };
 
@@ -224,34 +241,53 @@ const ListarRepAuditoria = (user) => {
 
   //Call an api to get the data of usuarioInput
   useEffect(() => {
-    const fetchData = async () => {
-      const response = await getUsuarios();
-      if (response === 403) {
-        setTitle("Sesión expirada")
-        setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-        setShowModal(true)
-
-        //set time out to logout of 5 seconds
-        setTimeout(() => {
-          localStorage.removeItem("user");
-          navigate(`/`);
-        }, 3000);
-        return;
-      }
-      //set response like this value: response.usuario[0].corre, label: response.usuario[0].correo
-      const data = response.usuario.map((item, index) => {
-        const correo = item.correo !== undefined ? item.correo.toString() : '';
-        return {
-          value: correo,
-          label: correo,
-        };
-      });
+    try {
 
 
-      setusuarioInput(data);
-    };
+      const fetchData = async () => {
+        const response = await getUsuarios();
+        if (response?.response?.status === 403
+        ) {
+          setTitle("Sesión expirada")
+          setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+          setShowModal(true)
 
-    fetchData();
+          //set time out to logout of 5 seconds
+          setTimeout(() => {
+            localStorage.removeItem("user");
+            navigate(`/`);
+          }, 3000);
+          return;
+        }
+
+        if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+          setTitle("Error");
+          setMsj("Error de conexión");
+          setShowModal(true);
+          setLoading(false);
+          return;
+        }
+
+        //set response like this value: response.usuario[0].corre, label: response.usuario[0].correo
+        const data = response.usuario.map((item, index) => {
+          const correo = item.correo !== undefined ? item.correo.toString() : '';
+          return {
+            value: correo,
+            label: correo,
+          };
+        });
+
+
+        setusuarioInput(data);
+      };
+
+      fetchData();
+    } catch (error) {
+      setLoading(false);
+      setShowModal(true)
+      setTitle("Error")
+      setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+    }
   }, []);
 
 

@@ -15,7 +15,8 @@ export const PolizaService = async (data) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
     return response;
 }
@@ -42,7 +43,8 @@ export const PolizaServiceUpdate = async (grupo, nombre, codigo, rut, fecha, bio
         })
         .catch((error) => {
 
-            return error.response.status;
+            return error;
+
 
         });
 

@@ -20,6 +20,7 @@ import ModalPdf from '../Modals/ModalPdf';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModalConfirmar from "../Modals/ModalConfirmar";
 import { useNavigate, } from 'react-router-dom';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 
 const Lista = props => {
@@ -38,6 +39,7 @@ const Lista = props => {
     const [showModalConfirmar, setShowModalConfirmar] = useState(false);
     const [item, setItem] = useState();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const handleCloseConfirmar = () => {
         setShowModalConfirmar(false);
@@ -66,11 +68,88 @@ const Lista = props => {
     }
 
     const handleUpload = async (event) => {
-        const file = event.target.files[0];
-        if (file) {
-            const response = await UploadDocumentos(file, props.convenio);
+        try {
+            setLoading(true);
+            const file = event.target.files[0];
+            if (file) {
+                const response = await UploadDocumentos(file, props.convenio);
+                if (response?.response?.status === 403
+                ) {
+                    setShowModal(true)
+                    setTitle("Sesión expirada")
+                    setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+                    //set time out to logout of 5 seconds
+                    setTimeout(() => {
+                        localStorage.removeItem("user");
+                        navigate(`/`);
+                    }, 3000);
+                    return;
+                }
+                if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                    setTitle("Error");
+                    setMsj("Error de conexión");
+                    setShowModal(true);
+                    setLoading(false);
+                    return;
+                }
 
-            if (response === 403) {
+                if (response.documentResponse[0].status !== 0) {
+                    setTitle('Error');
+                    setMsj("No se pudo subir el documento");
+                    setShowModal(true);
+                    setLoading(false);
+                    return;
+                } else {
+                    setTitle('Información');
+                    setMsj("Documento subido correctamente");
+                    setShowModal(true);
+                    props.fetchData();
+                    setLoading(false);
+                    return;
+                }
+
+            }
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setTitle("Error")
+            setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+            setShowModal(true)
+        }
+    };
+
+    const handleDownload = async (item) => {
+        try {
+            setLoading(true);
+            const archivo = item.nombreDocumento;
+            const data = await getDocumentData(archivo);
+            const b64 = data[0].b64;
+            const element = document.createElement("a");
+            element.setAttribute("href", `data:application/octet-stream;base64,${b64}`);
+            element.setAttribute("download", archivo);
+            element.style.display = "none";
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setTitle("Error")
+            setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
+            setShowModal(true)
+        }
+
+
+    }
+
+    const handleConfirmar = async () => {
+        try {
+            setLoading(true);
+            setShowModalConfirmar(false)
+            const response = await deleteDocumento(item);
+
+            if (response?.response?.status === 403
+            ) {
                 setShowModal(true)
                 setTitle("Sesión expirada")
                 setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
@@ -82,63 +161,34 @@ const Lista = props => {
                 return;
             }
 
-            if (response.documentResponse[0].status !== 0) {
-                setTitle('Error');
-                setMsj("No se pudo subir el documento");
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setTitle("Error");
+                setMsj("Error de conexión");
                 setShowModal(true);
-                return;
-            } else {
-                setTitle('Información');
-                setMsj("Documento subido correctamente");
-                setShowModal(true);
-                props.fetchData();
+                setLoading(false);
                 return;
             }
-
-        }
-    };
-
-    const handleDownload = async (item) => {
-        const archivo = item.nombreDocumento;
-        const data = await getDocumentData(archivo);
-        const b64 = data[0].b64;
-        const element = document.createElement("a");
-        element.setAttribute("href", `data:application/octet-stream;base64,${b64}`);
-        element.setAttribute("download", archivo);
-        element.style.display = "none";
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
-
-    }
-
-    const handleConfirmar = async () => {
-        setShowModalConfirmar(false)
-        const response = await deleteDocumento(item);
-
-        if (response === 403) {
+            //If response.response[0].codigo is 0 
+            if (response.response1[0].codigo === 0) {
+                setTitle('Información');
+                setMsj("Documento eliminado correctamente");
+                setShowModal(true);
+                setLoading(false);
+                props.fetchData();
+                return;
+            } else {
+                setTitle('Error');
+                setMsj("No se pudo eliminar el documento");
+                setLoading(false);
+                setShowModal(true);
+                return;
+            }
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setTitle("Error")
+            setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
             setShowModal(true)
-            setTitle("Sesión expirada")
-            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-            //set time out to logout of 5 seconds
-            setTimeout(() => {
-                localStorage.removeItem("user");
-                navigate(`/`);
-            }, 3000);
-            return;
-        }
-        //If response.response[0].codigo is 0 
-        if (response.response1[0].codigo === 0) {
-            setTitle('Información');
-            setMsj("Documento eliminado correctamente");
-            setShowModal(true);
-            props.fetchData();
-            return;
-        } else {
-            setTitle('Error');
-            setMsj("No se pudo eliminar el documento");
-            setShowModal(true);
-            return;
         }
     }
 
@@ -152,42 +202,68 @@ const Lista = props => {
     }
 
     const handleOpenPdf = async (item) => {
-        const archivo = item.nombreDocumento;
-        const data = await getDocumentData(archivo);
-        if (data === 403) {
+        try {
+            setLoading(true);
+            const archivo = item.nombreDocumento;
+            const data = await getDocumentData(archivo);
+            if (data === 403) {
+                setShowModal(true)
+                setTitle("Sesión expirada")
+                setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 3000);
+                return;
+            }
+            const b64 = data[0].b64;
+            setPdfSrc(`data:application/pdf;base64,${b64}`);
+            setModalOpen(true);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setTitle("Error")
+            setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
             setShowModal(true)
-            setTitle("Sesión expirada")
-            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-            //set time out to logout of 5 seconds
-            setTimeout(() => {
-                localStorage.removeItem("user");
-                navigate(`/`);
-            }, 3000);
-            return;
         }
-        const b64 = data[0].b64;
-        setPdfSrc(`data:application/pdf;base64,${b64}`);
-        setModalOpen(true);
     };
 
     const getDocumentData = async (archivo) => {
-        const data = {
-            archivo,
-            convenio: props.convenio,
-        }
-        const response = await getDocumento(data);
-        if (response === 403) {
+        try {
+            setLoading(true);
+            const data = {
+                archivo,
+                convenio: props.convenio,
+            }
+            const response = await getDocumento(data);
+            if (response?.response?.status === 403
+            ) {
+                setShowModal(true)
+                setTitle("Sesión expirada")
+                setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
+                //set time out to logout of 5 seconds
+                setTimeout(() => {
+                    localStorage.removeItem("user");
+                    navigate(`/`);
+                }, 3000);
+                return;
+            }
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setTitle("Error");
+                setMsj("Error de conexión");
+                setShowModal(true);
+                setLoading(false);
+                return;
+            }
+            setLoading(false);
+            return response.documentResponse;
+        } catch (error) {
+            setLoading(false);
+            setTitle("Error")
+            setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
             setShowModal(true)
-            setTitle("Sesión expirada")
-            setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
-            //set time out to logout of 5 seconds
-            setTimeout(() => {
-                localStorage.removeItem("user");
-                navigate(`/`);
-            }, 3000);
-            return;
         }
-        return response.documentResponse;
     }
     function generate(data) {
         const dataChunks = [];
@@ -249,50 +325,56 @@ const Lista = props => {
     }
     return (
         <>
-
-            <ModalConfirmar
-                title={title}
-                msj={msj}
-                show={showModalConfirmar}
-                handleClose={handleCloseConfirmar}
-                handleYes={handleConfirmar} />
-            <Paper
-                ref={paperRef}
-                style={{ maxHeight: 600, overflow: 'auto' }}>
-                <Box p={3} display="flex" justifyContent="space-between">
-                    <Typography variant="subtitle1">Documentos {props.convenio}</Typography>
-                    <div>
-                        <TextField
-                            label="Buscar"
-                            value={searchTerm}
-                            onChange={handleSearchChange}
-                            size="small" />
-                        <label htmlFor="file-input">
-                            <Button sx={{ marginLeft: 3 }} variant="contained" color="primary" component="span">
-                                +
-                            </Button>
-                        </label>
-                        <input
-                            type="file"
-                            id="file-input"
-                            ref={inputRef}
-                            style={{ display: "none" }}
-                            onChange={handleUpload} />
+            <div style={{ position: 'relative' }}>
+                {loading && (
+                    <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: '1000' }}>
+                        <CircularProgress />
                     </div>
+                )}
+                <ModalConfirmar
+                    title={title}
+                    msj={msj}
+                    show={showModalConfirmar}
+                    handleClose={handleCloseConfirmar}
+                    handleYes={handleConfirmar} />
+                <Paper
+                    ref={paperRef}
+                    style={{ maxHeight: 600, overflow: 'auto' }}>
+                    <Box p={3} display="flex" justifyContent="space-between">
+                        <Typography variant="subtitle1">Documentos {props.convenio}</Typography>
+                        <div>
+                            <TextField
+                                label="Buscar"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                                size="small" />
+                            <label htmlFor="file-input">
+                                <Button sx={{ marginLeft: 3 }} variant="contained" color="primary" component="span">
+                                    +
+                                </Button>
+                            </label>
+                            <input
+                                type="file"
+                                id="file-input"
+                                ref={inputRef}
+                                style={{ display: "none" }}
+                                onChange={handleUpload} />
+                        </div>
 
-                </Box>
-                <List dense={dense}>{generate(props.data)}</List>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={props.data.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage} />
-            </Paper>
-            <ModalPdf show={modalOpen} handleClose={handleCloseModalPdf} Pdf={pdfSrc} />
-            <ModalAlert title={title} show={showModal} handleClose={handleCloseModal} msj={msj} />
+                    </Box>
+                    <List dense={dense}>{generate(props.data)}</List>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component="div"
+                        count={props.data.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage} />
+                </Paper>
+                <ModalPdf show={modalOpen} handleClose={handleCloseModalPdf} Pdf={pdfSrc} />
+                <ModalAlert title={title} show={showModal} handleClose={handleCloseModal} msj={msj} />
+            </div>
         </>
     );
 };

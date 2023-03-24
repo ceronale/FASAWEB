@@ -33,16 +33,20 @@ const PolizasGrupos = ({ user }) => {
 
     const showData = async () => {
         try {
+
+
             //check if the user has selected a value
             if (filtrarValue === null) {
                 handleModal("Error", "Debe seleccionar un convenio");
                 return;
             }
+
             //call the service to get the data
             setLoading(true);
             const response = await PolizaService(filtrarValue.value);
 
-            if (response === 403) {
+            if (response?.response?.status === 403
+            ) {
                 setTitle("Sesión expirada")
                 setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
                 setShowModal(true)
@@ -54,21 +58,32 @@ const PolizasGrupos = ({ user }) => {
                 return;
             }
 
-
-
-
             if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setTitle("Error");
+                setMsj("Error de conexión");
+                setShowModal(true);
                 setLoading(false);
-                handleModal("Error", "No se pudo obtener la información de las pólizas y grupos");
+                return;
+            }
+
+            if (response.response.length === 0) {
+                setTitle("Información");
+                setMsj("No se encontraron resultados");
+                setDataTable(undefined)
+                setDataTable({});
+                setShowModal(true);
+                setLoading(false);
+                return;
             } else {
                 setLoading(false);
                 setDataTable(undefined)
                 setDataTable(response.response);
                 setIsButtonDisabled(false);
             }
+
         } catch (error) {
             setLoading(false);
-            handleModal("Error", "No se pudo obtener la información de las pólizas y grupos");
+            handleModal("Error", "Ha ocurrido un error, por favor vuelva a intentarlo");
         }
     };
 

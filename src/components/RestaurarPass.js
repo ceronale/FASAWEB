@@ -41,25 +41,33 @@ const FormRestaurarPass = (user) => {
 
     //Validaciones
     const onSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        var isPassValid = contraseñaValidar();
-        if (isPassValid) {
+        try {
 
-            const respActualizar = await ActualizarPass(usuario, registerData.passwd);
-            if (respActualizar['respuesta'].length === 1) {
-                setIsValid(true);
-                setShowModal(true)
-                setTitle("Restaurar Contraseña")
-                setMsj("Su contraseña ha sido modificada correctamente.")
-                localStorage.removeItem("userRestaurar");
-            } else {
-                setShowModal(true)
-                setTitle("Error de restauración")
-                setMsj("La nueva contraseña ya fue utilizada anteriormente.")
+            e.preventDefault();
+            setLoading(true);
+            var isPassValid = contraseñaValidar();
+            if (isPassValid) {
+
+                const respActualizar = await ActualizarPass(usuario, registerData.passwd);
+                if (respActualizar['respuesta'].length === 1) {
+                    setIsValid(true);
+                    setShowModal(true)
+                    setTitle("Restaurar Contraseña")
+                    setMsj("Su contraseña ha sido modificada correctamente.")
+                    localStorage.removeItem("userRestaurar");
+                } else {
+                    setShowModal(true)
+                    setTitle("Error de restauración")
+                    setMsj("La nueva contraseña ya fue utilizada anteriormente.")
+                }
             }
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            setShowModal(true)
+            setTitle("Error")
+            setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
         }
-        setLoading(false);
     };
 
     const onchange = (event) => {

@@ -59,8 +59,10 @@ const ListarBeneficiarios = (user) => {
       setLoading(true);
 
       const response = await getBeneficiarios(data);
+      console.log(response.response.length)
 
-      if (response === 403) {
+      if (response?.response?.status === 403
+      ) {
         setShowModal(true)
         setTitle("Sesión expirada")
         setMsj("Su sesión ha expirado, por favor vuelva a ingresar")
@@ -72,7 +74,15 @@ const ListarBeneficiarios = (user) => {
         return;
       }
 
-      if (response.response[0].b64) {
+      if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+        setTitle("Error");
+        setMsj("Error de conexión");
+        setShowModal(true);
+        setLoading(false);
+        return;
+      }
+
+      if (response.response[0]?.b64) {
         const element = document.createElement("a");
         element.setAttribute("href", `data:application/octet-stream;base64,${response.response[0].b64}`);
         element.setAttribute("download", "Beneficiarios.xls");
@@ -88,12 +98,14 @@ const ListarBeneficiarios = (user) => {
         setIsButtonDisabled(false)
         return
       }
+      console.log(response)
+      console.log("a")
       if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
         setLoading(false);
         setDataTable(undefined)
         setDataTable({})
         handleModal("Error", "Error de conexión");
-      } else if (response.response[0].codigoError === 1) {
+      } else if (response.response[0].codigoError === 1 || response.response.length === 0) {
         setLoading(false);
         setDataTable(undefined)
         setDataTable({})
@@ -102,12 +114,12 @@ const ListarBeneficiarios = (user) => {
         setLoading(false);
         setDataTable(undefined)
         setDataTable(response.response);
-
         setIsButtonDisabled(false)
       }
     } catch (error) {
       setLoading(false);
-      handleModal("Error", "No se pudo obtener información de los beneficiarios");
+      console.log(error)
+      handleModal("Error", "Ha ocurrido un error, por favor vuelva a intentarlo");
     }
   };
 

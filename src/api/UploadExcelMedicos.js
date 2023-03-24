@@ -20,7 +20,8 @@ export const UploadMedicos = async (data, codigoLista) => {
         })
         .catch((error) => {
 
-            return error.response.status;
+            return error;
+
 
         });
 

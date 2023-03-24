@@ -111,20 +111,30 @@ class UploadFileBeneficiarios extends Component {
 
     // On file upload (click the upload button)
     onFileUpload = async (e, convenioValue) => {
-        e.preventDefault();
-        if (this.state.selectedFile !== null) {
-            const blob = new Blob([this.state.selectedFile], { type: 'text/csv' });
-            var resp = await UploadExcelBeneficiarios(blob, convenioValue);
-            if (resp === 403) {
-                alert("Su sesión ha expirado, por favor vuelva a ingresar");
-                //set time out to logout of 5 seconds
-                setTimeout(() => {
-                    localStorage.removeItem("user");
-                    location.reload();
-                }, 3000);
-                return;
+        try {
+            e.preventDefault();
+            if (this.state.selectedFile !== null) {
+                const blob = new Blob([this.state.selectedFile], { type: 'text/csv' });
+                var resp = await UploadExcelBeneficiarios(blob, convenioValue);
+                if (resp?.response?.status === 403
+                ) {
+                    alert("Su sesión ha expirado, por favor vuelva a ingresar");
+                    //set time out to logout of 5 seconds
+                    setTimeout(() => {
+                        localStorage.removeItem("user");
+                        location.reload();
+                    }, 3000);
+                    return;
+                }
+                if (resp.name === 'AxiosError' && resp.code === 'ERR_NETWORK') {
+                    this.setState({ msj: "Ha ocurrido un error, por favor vuelva a intentarlo" });;
+                    return;
+                }
+                this.setState({ msj: resp.actualizaResponse[0].detalle });;
             }
-            this.setState({ msj: resp.actualizaResponse[0].detalle });;
+
+        } catch (error) {
+            this.setState({ msj: "Ha ocurrido un error, por favor vuelva a intentarlo" });;
         }
     };
     handleClick = event => {

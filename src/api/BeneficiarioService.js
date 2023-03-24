@@ -15,10 +15,13 @@ export const getBeneficiarios = async (data) => {
 
     const response = axios(config)
         .then(({ data: out }) => {
+
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+
+            return error;
+
         });
 
     return response;
@@ -62,7 +65,8 @@ export const updateBeneficiario = async (data, user) => {
             return out;
         })
         .catch((error) => {
-            return error.response.status;
+            return error;
+
         });
 
     return response;

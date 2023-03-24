@@ -26,7 +26,8 @@ export const EmpresaService = async (data, user) => {
 			return outActualizar;
 		})
 		.catch((error) => {
-			return error.response.status;
+			return error;
+
 		});
 
 	return response;
@@ -49,7 +50,8 @@ export const ConvenioService = async (user, codigo, correo) => {
 			return outActualizar;
 		})
 		.catch((error) => {
-			return error.response.status;
+			return error;
+
 		});
 
 	return response;
