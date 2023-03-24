@@ -74,11 +74,10 @@ const AutorizacionPreviaAdd = (user) => {
             const copyValuesForm = { ...valuesForm };
 
             //check all the values of the form
-
             const fieldsToCheck = [
                 { name: 'maxEnvases', error: 'Debe ingresar el maximo de envases' },
-                { name: 'hasta', error: 'Debe ingresar la fecha hasta' },
-                { name: 'desde', error: 'Debe ingresar la fecha desde' },
+                { name: 'hasta', error: 'Debe ingresar la fecha termino' },
+                { name: 'desde', error: 'Debe ingresar la fecha de inicio' },
                 { name: 'personCode', error: 'Debe ingresar el codigo de carga' },
                 { name: 'valorCampo', error: 'Debe ingresar el valor campo SAP/UPC' },
                 { name: 'Campo', error: 'Debe ingresar el campo SAP/UPC' },
@@ -94,6 +93,13 @@ const AutorizacionPreviaAdd = (user) => {
                 canContinue = false;
             } else if (!copyValuesForm["rutMedico"] && copyValuesForm["inExMedico"]) {
                 handleShowModal('Error', 'Debe ingresar el rut del medico');
+                setLoading(false);
+                canContinue = false;
+            }
+
+            //check if detalleProducto is empty
+            if (detalleProducto === '') {
+                handleShowModal('Error', 'El producto ingresado no existe');
                 setLoading(false);
                 canContinue = false;
             }
@@ -119,7 +125,8 @@ const AutorizacionPreviaAdd = (user) => {
 
             if (canContinue) {
                 //eslint-disable-next-line
-                copyValuesForm.cardHolder = "CSCB" + copyValuesForm.cardHolder.replace(/\./g, '').replace(/\-/g, '');
+                copyValuesForm.cardHolder = copyValuesForm.convenio.value + copyValuesForm.cardHolder.replace(/\./g, '').replace(/\-/g, '');
+
                 //eslint-disable-next-line
                 copyValuesForm.rutMedico = copyValuesForm.rutMedico.replace(/\./g, '').replace(/\-/g, '');
                 copyValuesForm.convenio = copyValuesForm.convenio.value;
@@ -289,16 +296,22 @@ const AutorizacionPreviaAdd = (user) => {
             //if response.response array is larger than 0 splice it get the first elemente in a variable and the other ones in another variable 
             if (response.response.length > 0) {
 
-                const [first, ...rest] = response.response;
-                setNombreTitular(first.apellido1 + ' ' + first.apellido2 + ' ' + first.nombre);
-                //cargas must be array of objects value and label the value must the object rest and the label must be the concatenation of apellido1, apellido2 and nombre
-                setCargas(rest.map((item) => {
+                if (response.response.length === 1) {
+                    setNombreTitular(response.response[0].apellido1 + ' ' + response.response[0].apellido2 + ' ' + response.response[0].nombre);
+                    setValuesForm({ ...valuesForm, personCode: response.response[0].codigoCarga });
+                    setCargas([]);
+                } else {
+                    const [first, ...rest] = response.response;
+                    setNombreTitular(first.apellido1 + ' ' + first.apellido2 + ' ' + first.nombre);
+                    //cargas must be array of objects value and label the value must the object rest and the label must be the concatenation of apellido1, apellido2 and nombre
 
-                    return {
-                        value: item,
-                        label: item.apellido1 + ' ' + item.apellido2 + ' ' + item.nombre
-                    }
-                }));
+                    setCargas(rest.map((item) => {
+                        return {
+                            value: item,
+                            label: item.apellido1 + ' ' + item.apellido2 + ' ' + item.nombre
+                        }
+                    }));
+                }
 
             } else if (response.response.length === 0) {
                 setShowModal(true)

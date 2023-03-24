@@ -89,7 +89,7 @@ export const getBeneficiarioCarga = async (convenio, rut) => {
         method: 'get',
         url: 'http://150.100.253.61:8181/cxf/listAut/services/list/beneAut',
         headers: {
-            'codigoCliente': "CSCB",
+            'codigoCliente': convenio,
             'activos': 1,
             'rut': rut,
             'token': user.token
