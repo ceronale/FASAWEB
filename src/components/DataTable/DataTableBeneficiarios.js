@@ -292,7 +292,7 @@ const DataTableBeneficiarios = props => {
             muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
                 ...getCommonEditTextFieldProps(cell),
                 type: 'date',
-                value: row.original.fechaNacimiento.split("-").reverse().join("-"),
+                value: row.original.fechaNacimiento ? row.original.fechaNacimiento.split("-").reverse().join("-") : "",
                 onChange: (event) => {
                     const { value } = event.target;
                     row.original.fechaNacimiento = value.split("-").reverse().join("-");
@@ -327,7 +327,7 @@ const DataTableBeneficiarios = props => {
             muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
                 ...getCommonEditTextFieldProps(cell),
                 type: 'date',
-                value: row.original.vigencia.split("-").reverse().join("-"),
+                value: row.original.vigencia ? row.original.vigencia.split("-").reverse().join("-") : "",
                 onChange: (event) => {
                     const { value } = event.target;
                     row.original.vigencia = value.split("-").reverse().join("-");
@@ -341,7 +341,7 @@ const DataTableBeneficiarios = props => {
             muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
                 ...getCommonEditTextFieldProps(cell),
                 type: 'date',
-                value: row.original.termino.split("-").reverse().join("-"),
+                value: row.original.termino ? row.original.termino.split("-").reverse().join("-") : "",
                 onChange: (event) => {
                     const { value } = event.target;
                     row.original.termino = value.split("-").reverse().join("-");
@@ -504,10 +504,17 @@ const DataTableBeneficiarios = props => {
 
 
             // Format date and gender fields to match API requirements
-            values.fechaNacimiento = values.fechaNacimiento.replace(/-/g, "");
-            values.vigencia = values.vigencia.replace(/-/g, "");
-            values.termino = values.termino.replace(/-/g, "");
+            if (values.fechaNacimiento) {
+                values.fechaNacimiento = values.fechaNacimiento.replace(/-/g, "");
+            }
 
+            if (values.vigencia) {
+                values.vigencia = values.vigencia.replace(/-/g, "");
+            }
+
+            if (values.termino) {
+                values.termino = values.termino.replace(/-/g, "");
+            }
 
             if (values.rutBeneficiario && values.rutBeneficiario.replace) {
                 values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9]/g, '');
@@ -600,9 +607,17 @@ const DataTableBeneficiarios = props => {
         });
 
         // format row.original.fechaNacimiento and row.original.vigencia and row.original.termino 
-        row.original.fechaNacimiento = row.original.fechaNacimiento.replace(/-/g, "");
-        row.original.vigencia = row.original.vigencia.replace(/-/g, "");
-        row.original.termino = row.original.termino.replace(/-/g, "");
+        if (row.original.fechaNacimiento) {
+            row.original.fechaNacimiento = row.original.fechaNacimiento.replace(/-/g, "");
+        }
+
+        if (row.original.vigencia) {
+            row.original.vigencia = row.original.vigencia.replace(/-/g, "");
+        }
+
+        if (row.original.termino) {
+            row.original.termino = row.original.termino.replace(/-/g, "");
+        }
 
 
 

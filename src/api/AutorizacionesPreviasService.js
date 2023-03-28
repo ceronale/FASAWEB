@@ -107,3 +107,7 @@ export const getBeneficiarioCarga = async (convenio, rut) => {
 
     return response;
 }
+
+
+
+

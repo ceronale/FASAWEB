@@ -81,7 +81,6 @@ const AutorizacionPreviaAdd = (user) => {
                 { name: 'personCode', error: 'Debe ingresar el codigo de carga' },
                 { name: 'valorCampo', error: 'Debe ingresar el valor campo SAP/UPC' },
                 { name: 'Campo', error: 'Debe ingresar el campo SAP/UPC' },
-                { name: 'Protocolo', error: 'Debe ingresar el protocolo' },
                 { name: 'convenio', error: 'Debe ingresar el convenio' },
                 { name: 'cardHolder', error: 'Debe ingresar el rut' }
             ];
@@ -192,6 +191,7 @@ const AutorizacionPreviaAdd = (user) => {
                 setLoading(false);
             }
         } catch (error) {
+
             setShowModal(true)
             setTitle("Error")
             setMsj("Ha ocurrido un error, por favor vuelva a intentarlo");
@@ -358,13 +358,14 @@ const AutorizacionPreviaAdd = (user) => {
                                         variant="outlined"
                                         onChange={(event, newValue) => {
                                             setValuesForm({ ...valuesForm, convenio: newValue });
+                                            generarBenficiarioAndCargas();
                                         }}
                                         id="controllable-states-demo"
                                         options={convenios}
                                         renderInput={(params) => <TextField {...params} />}
                                     />
                                 </Grid>
-                                <Grid xs={4}>
+                                <Grid xs={2}>
                                     <FormLabel >Rut</FormLabel>
                                     <TextField
                                         id="cardHolder"
@@ -374,12 +375,11 @@ const AutorizacionPreviaAdd = (user) => {
                                         onBlur={generarBenficiarioAndCargas}
                                         value={valuesForm.cardHolder}
                                         onChange={(event) => {
-
                                             setValuesForm({ ...valuesForm, cardHolder: formatRut(event.target.value) });
                                         }}
                                     />
                                 </Grid>
-                                <Grid xs={4}>
+                                <Grid xs={6}>
                                     <FormLabel >Nombre titular</FormLabel>
                                     <TextField
                                         id="cardHolder"
@@ -472,7 +472,7 @@ const AutorizacionPreviaAdd = (user) => {
                                         }}
                                     />
                                 </Grid>
-                                <Grid xs={3}>
+                                <Grid xs={7}>
                                     <FormLabel>Detalle de producto</FormLabel>
                                     <TextField
                                         id="cardHolder"

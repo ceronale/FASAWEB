@@ -57,6 +57,7 @@ const DataTablePoliza = props => {
         setTitleAlert("Error")
         setMsjAlert("Todos los campos deben contener datos")
         setShowModalAlert(true);
+        setLoading(false);
         setShowModalConfirmar(false);
 
       } else {
@@ -132,6 +133,7 @@ const DataTablePoliza = props => {
 
   //validate that rut has at least 8 digits
   const validateRut = (rut) => {
+
     if (rut.length >= 8) {
       return true;
     } else {
@@ -241,7 +243,7 @@ const DataTablePoliza = props => {
     },
     {
       accessorKey: 'rutEmpresa',
-      header: 'RUT',
+      header: 'Rut (Sin puntos,ni guion)',
       size: 120,
       muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
         ...getCommonEditTextFieldProps(cell),
@@ -255,10 +257,12 @@ const DataTablePoliza = props => {
       muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
         ...getCommonEditTextFieldProps(cell),
         type: 'date',
-        value: row.original.terminoBeneficio.split("-").reverse().join("-"),
+        value: row.original.terminoBeneficio ? row.original.terminoBeneficio.split("-").reverse().join("-") : "",
         onChange: (event) => {
           const { value } = event.target;
-          row.original.terminoBeneficio = value.split("-").reverse().join("-");
+          if (typeof value === "string" && value.includes("-")) {
+            row.original.terminoBeneficio = value.split("-").reverse().join("-");
+          }
         },
       }),
     },
@@ -343,7 +347,9 @@ const DataTablePoliza = props => {
       row.original.terminoBeneficio = " ";
 
     } else {
-      row.original.terminoBeneficio = row.original.terminoBeneficio.replace(/-/g, "");
+      if (row.original.terminoBeneficio) {
+        row.original.terminoBeneficio = row.original.terminoBeneficio.replace(/-/g, "");
+      }
     }
     if (row.original.cuentaLiquidador === undefined) {
       row.original.cuentaLiquidador = " ";

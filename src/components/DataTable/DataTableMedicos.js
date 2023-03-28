@@ -134,7 +134,7 @@ const DataTableAutorizacionPrevia = props => {
                 ...getCommonEditTextFieldProps(cell),
                 inputProps: { maxLength: 10 },
                 type: 'date',
-                value: row.original.fechaDesde.split("-").reverse().join("-"),
+                value: row.original.fechaDesde ? row.original.fechaDesde.split("-").reverse().join("-") : "",
                 onChange: (event) => {
                     const { value } = event.target;
                     row.original.fechaDesde = value.split("-").reverse().join("-");
@@ -214,6 +214,10 @@ const DataTableAutorizacionPrevia = props => {
             setShowModalConfirmar(false);
             if (resp.response[0].codigo === 0) {
                 props.showData();
+            } else if (resp.response[0].codigo === 3) {
+                setTitleAlert("Error")
+                setMsjAlert("Medico no registrado en el sistema")
+                setShowModalAlert(true);
             } else {
                 setTitleAlert("Error")
                 setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
@@ -272,7 +276,6 @@ const DataTableAutorizacionPrevia = props => {
                     setTitleAlert("Sesión expirada")
                     setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
                     setShowModalAlert(true)
-
                     //set time out to logout of 5 seconds
                     setTimeout(() => {
                         localStorage.removeItem("user");
@@ -280,7 +283,6 @@ const DataTableAutorizacionPrevia = props => {
                     }, 3000);
                     return;
                 }
-
 
                 if (resp.name === 'AxiosError' && resp.code === 'ERR_NETWORK') {
                     setTitleAlert("Error");
@@ -297,6 +299,10 @@ const DataTableAutorizacionPrevia = props => {
                     setMsjAlert(resp.response[0].detalle)
                     tableData[row.index] = values;
                     setTableData([...tableData]);
+                    setShowModalAlert(true);
+                } else if (resp.response[0].codigo === 3) {
+                    setTitleAlert("Error")
+                    setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
                     setShowModalAlert(true);
                 } else {
                     setTitleAlert("Error")
@@ -370,8 +376,9 @@ const DataTableAutorizacionPrevia = props => {
                 row.original[key] = " ";
             }
         });
-
-        row.original.fechaDesde = row.original.fechaDesde.replace(/-/g, "");
+        if (row.original.fechaDesde) {
+            row.original.fechaDesde = row.original.fechaDesde.replace(/-/g, "");
+        }
 
         const reorderedRow = {
             rutMedico: row.original.rutMedico,
@@ -641,6 +648,7 @@ export const CreateNewAccountModal = ({ open, columns, onClose, onSubmit }) => {
                                 key={"rutMedico"}
                                 name={"rutMedico"}
                                 variant="standard"
+                                inputProps={{ maxLength: 9 }}
                                 onChange={(e) =>
                                     setValues({ ...values, [e.target.name]: e.target.value })
                                 }

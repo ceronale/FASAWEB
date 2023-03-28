@@ -59,7 +59,7 @@ const ListarBeneficiarios = (user) => {
       setLoading(true);
 
       const response = await getBeneficiarios(data);
-      console.log(response.response.length)
+
 
       if (response?.response?.status === 403
       ) {
