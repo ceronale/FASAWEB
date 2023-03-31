@@ -59,9 +59,18 @@ const DataTablePoliza = props => {
         setShowModalAlert(true);
         setLoading(false);
         setShowModalConfirmar(false);
-
       } else {
         values.terminoBeneficio = values.terminoBeneficio.split("-").reverse().join("-");
+        //make a copy of values 
+        const copyValues = { ...values };
+        //check if values.polizaAceptaBioequivalente is "Si" and set it to 1 and if it is "No" set it to 0
+        if (values.polizaAceptaBioequivalente === "Si") {
+          values.polizaAceptaBioequivalente = 1;
+        } else {
+          values.polizaAceptaBioequivalente = 0;
+        }
+
+
         setShowModalConfirmar(false);
         const resp = await PolizaServiceUpdate(
           values.grupoAhumada,
@@ -97,7 +106,7 @@ const DataTablePoliza = props => {
         if (resp.response1[0].codigoRespuesta === 0) {
           setTitleAlert("Exito")
           setMsjAlert(resp.response1[0].detalleRespuest)
-          tableData[row.index] = values;
+          tableData[row.index] = copyValues;
           setTableData([...tableData]);
           setShowModalAlert(true);
         } else {
@@ -109,16 +118,11 @@ const DataTablePoliza = props => {
 
       }
     } catch (error) {
-
       setLoading(false);
-
       setTitleAlert("Error")
       setMsjAlert("Ha ocurrido un error en la actualizacion de los datos")
       setShowModalAlert(true);
     }
-
-
-
   }
 
   const validateRequired = (value) => !!value.length;
@@ -177,11 +181,11 @@ const DataTablePoliza = props => {
   //set values of example for bio 
   const bio = [
     {
-      value: "0",
+      value: "No",
       label: "No",
     },
     {
-      value: "1",
+      value: "Si",
       label: "Si",
     },
   ];
@@ -233,9 +237,9 @@ const DataTablePoliza = props => {
         ...getCommonEditTextFieldProps(cell),
         select: true,
         children: bio.map((state) => (
-          <MenuItem key={state.value} value={state.value}>
+          <MenuItem MenuItem key={state.value} value={state.value} >
             {state.label}
-          </MenuItem>
+          </MenuItem >
         )),
         inputProps: { maxLength: 1, pattern: '[0-1]' },
       }),
@@ -257,6 +261,9 @@ const DataTablePoliza = props => {
       muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
         ...getCommonEditTextFieldProps(cell),
         type: 'date',
+        InputLabelProps: {
+          shrink: true // prevent label from overlapping with input when input is empty
+        },
         value: row.original.terminoBeneficio ? row.original.terminoBeneficio.split("-").reverse().join("-") : "",
         onChange: (event) => {
           const { value } = event.target;

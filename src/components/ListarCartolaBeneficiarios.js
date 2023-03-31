@@ -149,16 +149,19 @@ const ListarCartolaBeneficiarios = (user) => {
         setLoading(false);
 
       } else {
-        if (!convenio || !desde || !hasta || !rutNoFormat) {
+        if (!convenio || !desde || !hasta) {
           // show error message in modal if any of the fields is empty
           setTitle("Error");
           setMsj("Debe completar todos los campos.");
           setShowModal(true);
-        } else if (rutNoFormat.length < 8) {
-          // show error message in modal if rut have less than 7 digits 
-          setTitle("Error");
-          setMsj("El rut debe tener al menos 8 caracteres.");
-          setShowModal(true);
+        } else if (rutNoFormat.length) {
+          if (rutNoFormat.length < 8) {
+            // show error message in modal if rut have less than 7 digits 
+            setTitle("Error");
+            setMsj("El rut debe tener al menos 8 caracteres.");
+            setShowModal(true);
+          }
+
         } else if (desde > hasta) {
           // show error message in modal if date range is not valid
           setTitle("Error");

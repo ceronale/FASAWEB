@@ -26,6 +26,9 @@ import {
     TextField,
 } from '@mui/material';
 import { useNavigate, } from 'react-router-dom';
+import { set } from "react-hook-form";
+import 'dayjs/locale/es';
+
 
 
 const DataTableBeneficiarios = props => {
@@ -113,6 +116,7 @@ const DataTableBeneficiarios = props => {
             return false;
         }
     }
+
     const getCommonEditTextFieldProps = useCallback(
         (cell) => {
             return {
@@ -292,6 +296,9 @@ const DataTableBeneficiarios = props => {
             muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
                 ...getCommonEditTextFieldProps(cell),
                 type: 'date',
+                InputLabelProps: {
+                    shrink: true // prevent label from overlapping with input when input is empty
+                },
                 value: row.original.fechaNacimiento ? row.original.fechaNacimiento.split("-").reverse().join("-") : "",
                 onChange: (event) => {
                     const { value } = event.target;
@@ -327,6 +334,9 @@ const DataTableBeneficiarios = props => {
             muiTableBodyCellEditTextFieldProps: ({ cell, row }) => ({
                 ...getCommonEditTextFieldProps(cell),
                 type: 'date',
+                InputLabelProps: {
+                    shrink: true // prevent label from overlapping with input when input is empty
+                },
                 value: row.original.vigencia ? row.original.vigencia.split("-").reverse().join("-") : "",
                 onChange: (event) => {
                     const { value } = event.target;
@@ -342,6 +352,9 @@ const DataTableBeneficiarios = props => {
                 ...getCommonEditTextFieldProps(cell),
                 type: 'date',
                 value: row.original.termino ? row.original.termino.split("-").reverse().join("-") : "",
+                InputLabelProps: {
+                    shrink: true // prevent label from overlapping with input when input is empty
+                },
                 onChange: (event) => {
                     const { value } = event.target;
                     row.original.termino = value.split("-").reverse().join("-");
@@ -354,7 +367,6 @@ const DataTableBeneficiarios = props => {
             header: 'Correo Electronico',
             size: 100,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-                ...getCommonEditTextFieldProps(cell),
                 inputProps: { maxLength: 80 },
             }),
         },
@@ -363,7 +375,6 @@ const DataTableBeneficiarios = props => {
             header: 'Direccion',
             size: 100,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-                ...getCommonEditTextFieldProps(cell),
                 inputProps: { maxLength: 60 },
             }),
         },
@@ -373,7 +384,6 @@ const DataTableBeneficiarios = props => {
             header: 'Comuna',
             size: 100,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-                ...getCommonEditTextFieldProps(cell),
                 inputProps: { maxLength: 20 },
             }),
         },
@@ -382,7 +392,7 @@ const DataTableBeneficiarios = props => {
             header: 'Ciudad',
             size: 100,
             muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
-                ...getCommonEditTextFieldProps(cell),
+
                 inputProps: { maxLength: 20 },
             }),
         },
@@ -403,9 +413,15 @@ const DataTableBeneficiarios = props => {
         let valuesCopy = { ...values };
 
         // Format date and gender fields to match API requirements
-        values.fechaNacimiento = values.fechaNacimiento.split("-").reverse().join("");
-        values.vigencia = values.vigencia.split("-").reverse().join("");
-        values.termino = values.termino.split("-").reverse().join("");
+        if (values.fechaNacimiento && values.fechaNacimiento.includes("-")) {
+            values.fechaNacimiento = values.fechaNacimiento.split("-").reverse().join("");
+        }
+        if (values.vigencia && values.vigencia.includes("-")) {
+            values.vigencia = values.vigencia.split("-").reverse().join("");
+        }
+        if (values.termino && values.termino.includes("-")) {
+            values.termino = values.termino.split("-").reverse().join("");
+        }
         if (values.rutBeneficiario && values.rutBeneficiario.replace) {
             values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9]/g, '');
         }
@@ -474,11 +490,29 @@ const DataTableBeneficiarios = props => {
         setLoading(true);
         setValues(values);
         setRow(row);
+
+
+
         if (!Object.keys(validationErrors).length) {
+
+            //Make a iteration to validate id the values are not empty 
+            for (let key in values) {
+                if (key !== "mail" && key !== "direccion" && key !== "comuna" && key !== "ciudad") {
+
+                    if (values[key] === "") {
+                        //If the values are empty, set the error message
+                        setShowModalAlert(true)
+                        setTitleAlert("Error")
+                        setMsjAlert("El campo " + key + " no puede estar vacío");
+                        setLoading(false);
+                        exitEditingMode();
+                        return;
+                    }
+                }
+            }
             //create a  variable to store the values of values to do not change the original values
             let valuesCopy = { ...values };
             setShowModalConfirmar(false);
-
 
             if (valuesCopy.genero === "1") {
                 valuesCopy.genero = "Masculino";
@@ -498,9 +532,15 @@ const DataTableBeneficiarios = props => {
                 values.genero = 2;
             }
 
-            valuesCopy.fechaNacimiento = values.fechaNacimiento.split("-").reverse().join("-");
-            valuesCopy.vigencia = values.vigencia.split("-").reverse().join("-");
-            valuesCopy.termino = values.termino.split("-").reverse().join("-");
+            if (values.fechaNacimiento && values.fechaNacimiento.includes("-")) {
+                valuesCopy.fechaNacimiento = values.fechaNacimiento.split("-").reverse().join("-");
+            }
+            if (values.vigencia && values.vigencia.includes("-")) {
+                valuesCopy.vigencia = values.vigencia.split("-").reverse().join("-");
+            }
+            if (values.termino && values.termino.includes("-")) {
+                valuesCopy.termino = values.termino.split("-").reverse().join("-");
+            }
 
 
             // Format date and gender fields to match API requirements
@@ -520,8 +560,6 @@ const DataTableBeneficiarios = props => {
                 values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9]/g, '');
             }
 
-
-
             if (values.rutTitular && values.rutTitular.replace) {
                 values.rutTitular = values.rutTitular.replace(/[^0-9]/g, '');
             }
@@ -535,7 +573,6 @@ const DataTableBeneficiarios = props => {
                     setShowModalAlert(true)
                     setTitleAlert("Sesión expirada")
                     setMsjAlert("Su sesión ha expirado, por favor vuelva a ingresar")
-
                     //set time out to logout of 5 seconds
                     setTimeout(() => {
                         localStorage.removeItem("user");
@@ -553,7 +590,8 @@ const DataTableBeneficiarios = props => {
                 } else {
                     setLoading(false);
                 }
-
+                console.log(values)
+                console.log(response)
                 // Handle successful update
                 if (response.actualizaResponse[0].codigoError === 0) {
                     setTitleAlert("Éxito")
@@ -576,6 +614,7 @@ const DataTableBeneficiarios = props => {
 
             exitEditingMode();
         }
+        setLoading(false);
     };
 
     // Method to handle canceling row edits
@@ -619,8 +658,6 @@ const DataTableBeneficiarios = props => {
             row.original.termino = row.original.termino.replace(/-/g, "");
         }
 
-
-
         const reorderedRow = {
             codigoConvenio: row.original.codigoConvenio,
             grupo: row.original.grupo,
@@ -652,7 +689,6 @@ const DataTableBeneficiarios = props => {
         (row, table) => {
             setRows(row);
             setValues(row.original);
-
             setCreateModalOpen(true)
         },
         [tableData],
@@ -677,11 +713,11 @@ const DataTableBeneficiarios = props => {
                     </div>
                 )}
                 <ModalAlert zIndex={9999999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
-                <div className="boxTable">
+                <div className="boxTable" >
 
                     {tableData === undefined ? null :
                         <MaterialReactTable
-                            zIndex={5}
+                            zIndex={6}
                             columns={columns}
                             data={tableData}
                             positionToolbarAlertBanner="bottom"
@@ -710,7 +746,6 @@ const DataTableBeneficiarios = props => {
                             )}
                             renderBottomToolbarCustomActions={({ table }) => (
                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
-
                                     <Button
                                         variant="contained"
                                         onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
@@ -773,9 +808,15 @@ export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) =>
     }
 
 
-    const parts = values.termino.split('-');
-    const datex = new Date(parts[1] + '/' + parts[0] + '/' + parts[2]);
-    const [date, setDate] = useState(datex);
+    const [date, setDate] = useState();
+
+    useEffect(() => {
+        if (values.termino) {
+            const parts = values.termino.split('-');
+            const datex = new Date(parts[1] + '/' + parts[0] + '/' + parts[2]);
+            setDate(datex);
+        }
+    }, [values.termino]);
 
     const handleSubmit = () => {
         var dd = String(date.$d.getDate()).padStart(2, '0');
@@ -796,7 +837,7 @@ export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) =>
 
     return (
         <>
-            <Dialog open={open} style={{ zIndex: 2 }}>
+            <Dialog open={open} style={{ zIndex: 1 }}>
 
                 <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
                 <DialogTitle textAlign="center">Actualizar fecha termino</DialogTitle>
@@ -818,7 +859,7 @@ export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) =>
                                         <CircularProgress />
                                     </div>
                                 )}
-                                <LocalizationProvider dateAdapter={AdapterDayjs} >
+                                <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={"es"}>
                                     <DatePicker
                                         value={date}
                                         sx={{ width: '100%' }}

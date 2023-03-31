@@ -77,12 +77,23 @@ const PolizasGrupos = ({ user }) => {
             } else {
                 setLoading(false);
                 setDataTable(undefined)
+
+                if (Array.isArray(response.response)) {
+                    response.response.map((item) => {
+                        if (item.polizaAceptaBioequivalente === 1) {
+                            item.polizaAceptaBioequivalente = "Si"
+                        } else {
+                            item.polizaAceptaBioequivalente = "No"
+                        }
+                    })
+                }
                 setDataTable(response.response);
                 setIsButtonDisabled(false);
             }
 
         } catch (error) {
             setLoading(false);
+            console.log(error)
             handleModal("Error", "Ha ocurrido un error, por favor vuelva a intentarlo");
         }
     };

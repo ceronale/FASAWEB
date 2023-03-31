@@ -134,6 +134,9 @@ const DataTableAutorizacionPrevia = props => {
                 ...getCommonEditTextFieldProps(cell),
                 inputProps: { maxLength: 10 },
                 type: 'date',
+                InputLabelProps: {
+                    shrink: true // prevent label from overlapping with input when input is empty
+                },
                 value: row.original.fechaDesde ? row.original.fechaDesde.split("-").reverse().join("-") : "",
                 onChange: (event) => {
                     const { value } = event.target;

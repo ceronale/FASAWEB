@@ -64,7 +64,7 @@ const AutorizacionPrevia = (user) => {
             }
 
             const data = {
-                convenio: convenioSelected.value,
+                convenio: convenioSelected,
                 //eslint-disable-next-line
                 rut: rut.replace(/\./g, '').replace(/\-/g, ''),
             }

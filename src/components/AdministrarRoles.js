@@ -25,8 +25,19 @@ const AdministrarRoles = (user) => {
     useEffect(() => {
         setLoading(true);
         getRoles().then((response) => {
+            console.log(response);
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setTitle("Error");
+                setMsj("Error de conexión");
+                setShowModal(true);
+                console.log("Error de conexión");
+                setLoading(false);
+                return;
+            }
+
             setRoles(undefined);
             setRoles(response.roles);
+
             setLoading(false);
         }).catch((error) => {
             setTitle("Error");
@@ -39,6 +50,14 @@ const AdministrarRoles = (user) => {
     //method to get the roles
     const getRols = async () => {
         getRoles().then((response) => {
+            if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
+                setTitle("Error");
+                setMsj("Error de conexión");
+                setShowModal(true);
+                setLoading(false);
+                return;
+            }
+
             setRoles(undefined);
             setRoles(response.roles);
             setLoading(false);

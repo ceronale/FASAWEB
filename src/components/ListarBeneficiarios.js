@@ -98,8 +98,6 @@ const ListarBeneficiarios = (user) => {
         setIsButtonDisabled(false)
         return
       }
-      console.log(response)
-      console.log("a")
       if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
         setLoading(false);
         setDataTable(undefined)
