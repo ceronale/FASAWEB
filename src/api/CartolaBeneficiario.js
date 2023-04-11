@@ -7,7 +7,7 @@ export const getCartola = async (data) => {
         url: 'http://150.100.253.61:8181/cxf/cartola/services/ver/cartola',
         headers: {
             'Tipo': data.tipo,
-            'codigoConvenio': data.codigoConvenio,
+            'codigoConvenio': data.convenio,
             'rut': data.rut,
             'fechaIni': data.fechaIni,
             'fechaFin': data.fechaFin,

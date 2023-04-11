@@ -490,9 +490,6 @@ const DataTableBeneficiarios = props => {
         setLoading(true);
         setValues(values);
         setRow(row);
-
-
-
         if (!Object.keys(validationErrors).length) {
 
             //Make a iteration to validate id the values are not empty 

@@ -231,7 +231,7 @@ const DataTablePoliza = props => {
     },
     {
       accessorKey: 'polizaAceptaBioequivalente',
-      header: 'Bioequivalente (0 o 1)',
+      header: 'Bioequivalente',
       size: 10,
       muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
         ...getCommonEditTextFieldProps(cell),

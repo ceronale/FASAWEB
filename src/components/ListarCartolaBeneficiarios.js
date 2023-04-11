@@ -17,10 +17,6 @@ import { getCartola } from "../api/CartolaBeneficiario";
 import CircularProgress from '@mui/material/CircularProgress';
 import 'dayjs/locale/es';
 
-
-
-
-
 const ListarCartolaBeneficiarios = (user) => {
   //Obetner usuario
   const usuario = (JSON.parse(user.user));
@@ -41,7 +37,7 @@ const ListarCartolaBeneficiarios = (user) => {
   const [showModal, setShowModal] = useState(false);
 
   // Define the columns of the table
-  const columns = [{ accessorKey: 'estado', header: 'Estado', }, { accessorKey: 'fecha', header: 'Fecha', }, { accessorKey: 'farmacia', header: 'Farmacia', }, { accessorKey: 'id_receta', header: 'Id Receta', }, { accessorKey: 'direccion', header: 'Direccion', }, { accessorKey: 'comuna', header: 'Comuna', }, { accessorKey: 'boleta', header: 'Boleta', }, { accessorKey: 'guia', header: 'Guia', }, { accessorKey: 'SAP', header: 'SAP', }, { accessorKey: 'decripcion_producto', header: 'Descripcion', }, { accessorKey: 'tipo', header: 'Tipo', }, { accessorKey: 'cantidad', header: 'Cantidad', }, { accessorKey: 'precio', header: 'Precio', }, { accessorKey: 'descto', header: 'Descuento', }, { accessorKey: 'bonificado', header: 'Bonificado', }, { accessorKey: 'copago', header: 'Copago', }, { accessorKey: 'total', header: 'Total', },]; // Function to handle closing the modal
+  const columns = [{ accessorKey: 'titular', header: 'Rut Titular', }, { accessorKey: 'beneficiario', header: 'Rut Beneficiario', }, { accessorKey: 'estado', header: 'Estado', }, { accessorKey: 'fecha', header: 'Fecha', }, { accessorKey: 'farmacia', header: 'Farmacia', }, { accessorKey: 'id_receta', header: 'Id Receta', }, { accessorKey: 'direccion', header: 'Direccion', }, { accessorKey: 'comuna', header: 'Comuna', }, { accessorKey: 'boleta', header: 'Boleta', }, { accessorKey: 'guia', header: 'Guia', }, { accessorKey: 'SAP', header: 'SAP', }, { accessorKey: 'decripcion_producto', header: 'Descripcion', }, { accessorKey: 'tipo', header: 'Tipo', }, { accessorKey: 'cantidad', header: 'Cantidad', }, { accessorKey: 'precio', header: 'Precio', }, { accessorKey: 'descto', header: 'Descuento', }, { accessorKey: 'bonificado', header: 'Bonificado', }, { accessorKey: 'copago', header: 'Copago', }, { accessorKey: 'total', header: 'Total', },]; // Function to handle closing the modal
   const handleClose = () => {
     setShowModal(false);
   }
@@ -53,7 +49,6 @@ const ListarCartolaBeneficiarios = (user) => {
   const showData = async () => {
 
     try {
-
       setLoading(true);
       setDataTable({});
       //format rut without dots or hyhen
@@ -73,8 +68,6 @@ const ListarCartolaBeneficiarios = (user) => {
           const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
           const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
           let data = {}
-
-
           data = {
             rut: usuario.rut,
             convenio: "",
@@ -82,10 +75,8 @@ const ListarCartolaBeneficiarios = (user) => {
             fechaFin: formattedHasta,
             tipo: usuario.idRol,
           };
-          console.log(data)
 
           const response = await getCartola(data);
-
           if (response?.response?.status === 403) {
             setShowModal(true)
             setTitle("Sesión expirada")
@@ -149,18 +140,18 @@ const ListarCartolaBeneficiarios = (user) => {
         setLoading(false);
 
       } else {
+
         if (!convenio || !desde || !hasta) {
           // show error message in modal if any of the fields is empty
           setTitle("Error");
           setMsj("Debe completar todos los campos.");
           setShowModal(true);
-        } else if (rutNoFormat.length) {
-          if (rutNoFormat.length < 8) {
-            // show error message in modal if rut have less than 7 digits 
-            setTitle("Error");
-            setMsj("El rut debe tener al menos 8 caracteres.");
-            setShowModal(true);
-          }
+        } else if (rutNoFormat.length && rutNoFormat.length < 8) {
+
+          // show error message in modal if rut have less than 7 digits 
+          setTitle("Error");
+          setMsj("El rut debe tener al menos 8 caracteres.");
+          setShowModal(true);
 
         } else if (desde > hasta) {
           // show error message in modal if date range is not valid
@@ -168,6 +159,7 @@ const ListarCartolaBeneficiarios = (user) => {
           setMsj("La fecha desde es mayor a la fecha hasta.");
           setShowModal(true);
         } else {
+
           const formattedDesde = `${desde.$y}-${desde.$M + 1}-${desde.$D}`;
           const formattedHasta = `${hasta.$y}-${hasta.$M + 1}-${hasta.$D}`;
           let data = {}
@@ -243,6 +235,7 @@ const ListarCartolaBeneficiarios = (user) => {
 
       };
       setLoading(false);
+
 
     } catch (error) {
       setShowModal(true)
