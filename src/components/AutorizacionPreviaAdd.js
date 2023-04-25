@@ -305,8 +305,10 @@ const AutorizacionPreviaAdd = (user) => {
                     setNombreTitular(first.apellido1 + ' ' + first.apellido2 + ' ' + first.nombre);
                     //cargas must be array of objects value and label the value must the object rest and the label must be the concatenation of apellido1, apellido2 and nombre
 
-                    console.log(response)
-                    setCargas(rest.response.map((item) => {
+                    console.log(response.response)
+                    console.log(first)
+                    console.log(rest)
+                    setCargas(response.response.map((item) => {
                         return {
                             value: item,
                             label: item.apellido1 + ' ' + item.apellido2 + ' ' + item.nombre
