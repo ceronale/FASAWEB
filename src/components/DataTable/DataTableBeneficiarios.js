@@ -554,7 +554,7 @@ const DataTableBeneficiarios = props => {
             }
 
             if (values.rutBeneficiario && values.rutBeneficiario.replace) {
-                values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9]/g, '');
+                values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9Kk]/g, '');
             }
 
             if (values.rutTitular && values.rutTitular.replace) {
