@@ -558,7 +558,7 @@ const DataTableBeneficiarios = props => {
             }
 
             if (values.rutTitular && values.rutTitular.replace) {
-                values.rutTitular = values.rutTitular.replace(/[^0-9]/g, '');
+                values.rutTitular = values.rutTitular.replace(/[^0-9Kk]/g, '');
             }
 
             //add a try and catch to handle the error
