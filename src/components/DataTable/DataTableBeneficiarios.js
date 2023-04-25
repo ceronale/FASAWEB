@@ -423,11 +423,11 @@ const DataTableBeneficiarios = props => {
             values.termino = values.termino.split("-").reverse().join("");
         }
         if (values.rutBeneficiario && values.rutBeneficiario.replace) {
-            values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9]/g, '');
+            values.rutBeneficiario = values.rutBeneficiario.replace(/[^0-9Kk]/g, '');
         }
 
         if (values.rutTitular && values.rutTitular.replace) {
-            values.rutTitular = values.rutTitular.replace(/[^0-9]/g, '');
+            values.rutTitular = values.rutTitular.replace(/[^0-9Kk]/g, '');
         }
 
         if (values.genero === "Masculino" || values.genero === "masculino") {
