@@ -563,9 +563,12 @@ const DataTableBeneficiarios = props => {
 
             //add a try and catch to handle the error
             try {
+                console.log(values)
+                console.log(response)
                 // Make API call to update beneficiario
                 const response = await updateBeneficiario(values, props.user.correo);
                 if (response?.response?.status === 403
+                
                 ) {
                     setShowModalAlert(true)
                     setTitleAlert("Sesión expirada")
@@ -682,13 +685,18 @@ const DataTableBeneficiarios = props => {
     };
 
     // Metodo para eliminar
+   
+
     const handleDeleteRow = useCallback(
+        
         (row, table) => {
+            
             setRows(row);
             setValues(row.original);
             setCreateModalOpen(true)
         },
         [tableData],
+    
     );
 
     const handleEditRow = useCallback(
@@ -834,6 +842,7 @@ export const CreateNewAccountModal = ({ allValues, open, onClose, onSubmit }) =>
 
     return (
         <>
+            
             <Dialog open={open} style={{ zIndex: 1 }}>
 
                 <ModalAlert zIndex={99999} title={titleAlert} show={showModalAlert} handleClose={handleCloseAlert} msj={msjAlert} />
