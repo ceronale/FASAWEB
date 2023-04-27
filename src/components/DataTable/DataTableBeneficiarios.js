@@ -6,6 +6,7 @@ import ModalAlert from "../Modals/ModalAlert";
 import { MRT_Localization_ES } from 'material-react-table/locales/es';
 import "../../styles/PolizasGrupos.css";
 import { updateBeneficiario } from "../../api/BeneficiarioService";
+import { updateBeneficiarioTermino } from "../../api/BeneficiarioService";
 import ModalUploadFileBeneficiarios from "../Modals/ModalUploadFileBeneficiarios";
 import * as XLSX from 'xlsx/xlsx.mjs';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
@@ -443,7 +444,8 @@ const DataTableBeneficiarios = props => {
 
         try {
             // Make API call to update beneficiario
-            const response = await updateBeneficiario(values, props.user.correo);
+            const response = await updateBeneficiarioTermino(values, props.user.correo);
+            
             if (response?.response?.status === 403
             ) {
                 setShowModalAlert(true)
@@ -456,6 +458,9 @@ const DataTableBeneficiarios = props => {
                 }, 3000);
                 return;
             }
+
+           
+            
             // Handle network error
             if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
                 setLoading(false);
@@ -468,13 +473,13 @@ const DataTableBeneficiarios = props => {
             // Handle successful update
             if (response.actualizaResponse[0].codigoError === 0) {
                 setTitleAlert("Éxito")
-                setMsjAlert("Beneficiario actualizado correctamente")
+                setMsjAlert(response.actualizaResponse[0].detalle)
                 setShowModalAlert(true);
                 tableData[rows.index] = valuesCopy;
                 setTableData([...tableData]);
             } else {
                 setTitleAlert("Error")
-                setMsjAlert("Error al actualizar beneficiario");
+                setMsjAlert(response.actualizaResponse[0].detalle);
                 setShowModalAlert(true);
             }
         } catch (error) {
@@ -564,9 +569,9 @@ const DataTableBeneficiarios = props => {
             //add a try and catch to handle the error
             try {
                 console.log(values)
-                console.log(response)
                 // Make API call to update beneficiario
                 const response = await updateBeneficiario(values, props.user.correo);
+                console.log(response)
                 if (response?.response?.status === 403
                 
                 ) {
@@ -580,7 +585,7 @@ const DataTableBeneficiarios = props => {
                     }, 3000);
                     return;
                 }
-
+                
                 // Handle network error
                 if (response.name === 'AxiosError' && response.code === 'ERR_NETWORK') {
                     setLoading(false);
@@ -589,20 +594,22 @@ const DataTableBeneficiarios = props => {
                     setShowModalAlert(true);
                 } else {
                     setLoading(false);
+                    
                 }
-                console.log(values)
+
                 console.log(response)
                 // Handle successful update
                 if (response.actualizaResponse[0].codigoError === 0) {
                     setTitleAlert("Éxito")
-                    setMsjAlert("Beneficiario actualizado correctamente")
+                    setMsjAlert(response.actualizaResponse[0].detalle)
                     setShowModalAlert(true);
                     tableData[row.index] = valuesCopy;
                     setTableData([...tableData]);
                 } else {
                     setTitleAlert("Error")
-                    setMsjAlert("Error al actualizar beneficiario");
+                    setMsjAlert(response.actualizaResponse[0].detalle);
                     setShowModalAlert(true);
+                    console.log(response)
                 }
 
             } catch (error) {
@@ -610,7 +617,9 @@ const DataTableBeneficiarios = props => {
                 setTitleAlert("Error")
                 setMsjAlert("Error al actualizar beneficiario");
                 setShowModalAlert(true);
+                
             }
+            
 
             exitEditingMode();
         }
