@@ -198,7 +198,9 @@ const AutorizacionPreviaAdd = (user) => {
         }
     }
 
-
+       
+    
+    
     const formatRut = (rut) => {
         // Eliminar caracteres no numéricos
         rut = rut.replace(/[^\dkK]/g, '');
@@ -214,6 +216,8 @@ const AutorizacionPreviaAdd = (user) => {
         setMsj(msj);
         setShowModal(true);
     }
+
+    
 
     //Fill the value of Detalle Producto
     const generarDetalleProducto = async () => {
@@ -502,6 +506,8 @@ const AutorizacionPreviaAdd = (user) => {
                                             <FormControlLabel value="I" control={<Radio />} label="Inclusión" />
                                             <FormControlLabel value="E" control={<Radio />} label="Exclusión" />
                                         </RadioGroup>
+                                        
+
                                     </FormControl>
                                 </Grid>
                             </Grid>
@@ -538,6 +544,8 @@ const AutorizacionPreviaAdd = (user) => {
                                         >
                                             <FormControlLabel value="I" control={<Radio />} label="Inclusión" />
                                             <FormControlLabel value="E" control={<Radio />} label="Exclusión" />
+                                            <FormControlLabel value={null} control={<Radio />} label="Ninguno" />
+
                                         </RadioGroup>
                                     </FormControl>
                                 </Grid>
