@@ -198,9 +198,9 @@ const AutorizacionPreviaAdd = (user) => {
         }
     }
 
-       
-    
-    
+
+
+
     const formatRut = (rut) => {
         // Eliminar caracteres no numéricos
         rut = rut.replace(/[^\dkK]/g, '');
@@ -217,7 +217,7 @@ const AutorizacionPreviaAdd = (user) => {
         setShowModal(true);
     }
 
-    
+
 
     //Fill the value of Detalle Producto
     const generarDetalleProducto = async () => {
@@ -373,7 +373,7 @@ const AutorizacionPreviaAdd = (user) => {
                                     />
                                 </Grid>
                                 <Grid xs={2}>
-                                    <FormLabel >Rut</FormLabel>
+                                    <FormLabel >Rut titular</FormLabel>
                                     <TextField
                                         id="cardHolder"
                                         variant="outlined"
@@ -492,22 +492,19 @@ const AutorizacionPreviaAdd = (user) => {
                                 </Grid>
                                 <Grid xs={4} style={{ marginTop: '5px' }}>
                                     <FormControl>
-                                        <FormLabel >Inclusión/Exclusión</FormLabel>
+                                        <FormLabel>Inclusión/Exclusión</FormLabel>
                                         <RadioGroup
                                             row
                                             aria-labelledby="demo-row-radio-buttons-group-label"
                                             name="row-radio-buttons-group"
-                                            value={valuesForm.inEx}
+                                            value={valuesForm.inEx || "I"} // set the default value to "I" if it's undefined or null
                                             onChange={(event) => {
                                                 setValuesForm({ ...valuesForm, inEx: event.target.value });
-
                                             }}
                                         >
                                             <FormControlLabel value="I" control={<Radio />} label="Inclusión" />
                                             <FormControlLabel value="E" control={<Radio />} label="Exclusión" />
                                         </RadioGroup>
-                                        
-
                                     </FormControl>
                                 </Grid>
                             </Grid>
