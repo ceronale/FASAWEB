@@ -396,6 +396,7 @@ const DataTablePoliza = props => {
                   variant="contained"
                   onClick={() => { setShowModalUpload(true) }}
                   disabled={props.isButtonDisabled}
+                  
                 >
                   Importar
                 </Button>
@@ -414,7 +415,7 @@ const DataTablePoliza = props => {
 
         <ModalUploadFile
           title={"Cargar datos masivos"}
-          msj={"Cargue el archivo xlsx con el cual desea actualizar los registros"}
+          msj={"Cargue el archivo xlsx con el cual desea actualizar los registros, max. 5000 registros."}
           show={showModalUpload}
           handleClose={handleCloseUpload}
           convenio={props.convenio}
