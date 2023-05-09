@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ContenedorTitulo, Titulo } from './Formularios';
 import ModalAlert from './Modals/ModalAlert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -56,7 +56,7 @@ const AutorizacionPreviaAdd = (user) => {
     const [carga, setCarga] = useState();
     const [nombreTitular, setNombreTitular] = useState([]);
     const [codigoDeCarga, setCodigoDeCarga] = useState();
-
+    const [reRenderAuto, setReRenderAuto] = useState(1);
     //Values of not editable fields
     const [detalleProducto, setDetalleProducto] = useState();
 
@@ -269,7 +269,7 @@ const AutorizacionPreviaAdd = (user) => {
         setNombreTitular('');
         setCargas([]);
         setCarga(null);
-        setCodigoDeCarga('');
+
         if (valuesForm.cardHolder && valuesForm.convenio) {
 
             //replace valuesForm.cardHolder - and . with nothing
@@ -297,46 +297,53 @@ const AutorizacionPreviaAdd = (user) => {
                 return;
             }
 
-            //if response.response array is larger than 0 splice it get the first elemente in a variable and the other ones in another variable 
+            //if response.response array is larger than 0 splice it get the first element in a variable and the other ones in another variable 
             if (response.response.length > 0) {
 
                 if (response.response.length === 1) {
                     setNombreTitular(response.response[0].apellido1 + ' ' + response.response[0].apellido2 + ' ' + response.response[0].nombre);
-                    setValuesForm({ ...valuesForm, personCode: response.response[0].codigoCarga });
+                    setValuesForm((prevValues) => ({ ...prevValues, personCode: response.response[0].codigoCarga }));
                     setCargas([]);
                 } else {
                     const [first, ...rest] = response.response;
-                    setNombreTitular(first.apellido1 + ' ' + first.apellido2 + ' ' + first.nombre);
-                    //cargas must be array of objects value and label the value must the object rest and the label must be the concatenation of apellido1, apellido2 and nombre
-
-                    console.log(response.response)
-                    console.log(first)
-                    console.log(rest)
-                    setCargas(response.response.map((item) => {
-                        return {
-                            value: item,
-                            label: item.apellido1 + ' ' + item.apellido2 + ' ' + item.nombre
-                        }
-                    }));
+                    var num = parseInt(valuesForm.cardHolder.replace(/[.-]/g, ""));
+                    if (num === first.rutTitular) {
+                        setNombreTitular(first.apellido1 + ' ' + first.apellido2 + ' ' + first.nombre);
+                        setCargas(response.response.map((item) => {
+                            return {
+                                value: item,
+                                label: item.apellido1 + ' ' + item.apellido2 + ' ' + item.nombre
+                            }
+                        }));
+                    } else {
+                        setCargas([]);
+                        setReRenderAuto(null)
+                        setReRenderAuto(1)
+                        setValuesForm((prevValues) => ({ ...prevValues, personCode: '' }));
+                        setShowModal(true)
+                        setTitle("Información")
+                        setMsj("Debe ingresar un rut de un titular");
+                    }
                 }
 
             } else if (response.response.length === 0) {
+                setCargas([]);
+                setReRenderAuto(null)
+                setReRenderAuto(1)
+                setValuesForm((prevValues) => ({ ...prevValues, personCode: '' }));
                 setShowModal(true)
                 setTitle("Información")
                 setMsj("No se encontraron resultados");
-
             } else {
                 setNombreTitular(response.response[0]);
                 setCargas([]);
             }
 
-
-
         } else {
             setNombreTitular('');
             setCargas([]);
         }
-    }
+    };
 
 
     return (
@@ -402,19 +409,23 @@ const AutorizacionPreviaAdd = (user) => {
                             <Grid container spacing={2} style={{ marginTop: '5px' }}>
                                 <Grid xs={4}>
                                     <FormLabel >Seleccione carga</FormLabel>
-                                    <Autocomplete
-                                        value={carga}
-                                        variant="outlined"
-                                        onChange={(event, newValue) => {
-                                            setCarga(newValue);
-                                            setValuesForm({ ...valuesForm, personCode: newValue?.value?.codigoCarga });
-                                        }}
+                                    {
+                                        (reRenderAuto === null)
+                                            ?
+                                            null
+                                            : <Autocomplete
+                                                value={carga}
+                                                variant="outlined"
+                                                onChange={(event, newValue) => {
+                                                    setCarga(newValue);
+                                                    setValuesForm({ ...valuesForm, personCode: newValue?.value?.codigoCarga });
+                                                }}
+                                                id="controllable-states-demo"
+                                                options={cargas}
+                                                renderInput={(params) => <TextField {...params} />}
+                                            />
+                                    }
 
-
-                                        id="controllable-states-demo"
-                                        options={cargas}
-                                        renderInput={(params) => <TextField {...params} />}
-                                    />
                                 </Grid>
                                 <Grid xs={4}>
                                     <FormLabel >Codigo de carga</FormLabel>
