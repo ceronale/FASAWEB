@@ -792,7 +792,7 @@ const DataTableBeneficiarios = props => {
 
                 <ModalUploadFileBeneficiarios
                     title={"Cargar datos masivos"}
-                    msj={"Cargue el archivo xlx con el cual desea actualizar los registros"}
+                    msj={"Cargue el archivo xlsx con el cual desea actualizar los registros, max. 5000 registros."}
                     show={showModalUpload}
                     handleClose={handleCloseUpload}
                     convenio={props.convenio}
