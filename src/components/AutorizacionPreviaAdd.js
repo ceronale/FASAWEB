@@ -41,12 +41,15 @@ const AutorizacionPreviaAdd = (user) => {
         valorCampo: '',
         rutMedico: '',
         personCode: '',
-        inEx: '',
+        inEx: 'I',
         inExMedico: '',
         desde: null,
         hasta: null,
         maxEnvases: '',
     })
+
+   
+
 
     const [title, setTitle] = useState();
     const [msj, setMsj] = useState();
@@ -345,6 +348,9 @@ const AutorizacionPreviaAdd = (user) => {
         }
     };
 
+    
+      
+       
 
     return (
         <main>
@@ -501,6 +507,7 @@ const AutorizacionPreviaAdd = (user) => {
                                         value={detalleProducto}
                                     />
                                 </Grid>
+                                
                                 <Grid xs={4} style={{ marginTop: '5px' }}>
                                     <FormControl>
                                         <FormLabel>Inclusión/Exclusión</FormLabel>

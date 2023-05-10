@@ -86,8 +86,12 @@ const ListaDocumentos = (user) => {
                     <Titulo>Visualización de documentos</Titulo>
                 </ContenedorTitulo>
                 <div className='textl'>
-                    En esta sección se encuentran listados los documentos por convenio, los cuales pueden ser eliminados, visualizados y descargados.
+                    En esta sección se encuentran listados los documentos por convenio, los cuales pueden ser eliminados, visualizados y descargados. 
                 </div>
+                <div className='text2'>
+                     Los archivos permanecerán por un periodo max. De 6 meses.
+                </div>
+                <br/>
                 <div>
                     <Typography variant="subtitle1">Convenios</Typography>
                     {CreateTabs(convenios)}
