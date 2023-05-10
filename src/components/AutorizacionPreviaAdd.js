@@ -433,18 +433,18 @@ const AutorizacionPreviaAdd = (user) => {
                                     }
 
                                 </Grid>
-                                <Grid xs={4}>
+                                <Grid  xs={4}>
                                     <FormLabel >Codigo de carga</FormLabel>
                                     <TextField
                                         id="personCode"
                                         variant="outlined"
-                                        sx={{ width: '100%' }}
+                                        sx={{ width: '65%' }}
                                         inputProps={{ maxLength: 60 }}
                                         value={valuesForm.personCode}
                                         disabled
                                     />
                                 </Grid>
-                                <Grid xs={4}>
+                                <Grid  style={{marginLeft:'-90px'}} xs={4}>
                                     <FormLabel >Protocolo</FormLabel>
                                     <TextField
                                         id="Protocolo"
