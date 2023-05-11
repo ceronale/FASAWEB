@@ -510,7 +510,7 @@ const AutorizacionPreviaAdd = (user) => {
                                 
                                 <Grid xs={4} style={{ marginTop: '5px' }}>
                                     <FormControl>
-                                        <FormLabel>Inclusión/Exclusión</FormLabel>
+                                        <FormLabel>Inclusión/Exclusión Producto</FormLabel>
                                         <RadioGroup
                                             row
                                             aria-labelledby="demo-row-radio-buttons-group-label"
