@@ -163,7 +163,7 @@ const AutorizacionPreviaAdd = (user) => {
                 }
 
                 if (response.response[0].codigo === 0) {
-                    handleShowModal('Éxito', 'Autorización previa creada correctamente');
+                    handleShowModal('Éxito', 'Datos guardados correctamente');
                     //set all valuesForm to empty
                     setValuesForm({
                         cardHolder: '',
