@@ -141,6 +141,7 @@ const AutorizacionPreviaAdd = (user) => {
                 }
 
                 const response = await setAutorizaciones(data, usuario.correo);
+                console.log(response)
                 if (response?.response?.status === 403
                 ) {
                     setShowModal(true)
@@ -163,7 +164,8 @@ const AutorizacionPreviaAdd = (user) => {
                 }
 
                 if (response.response[0].codigo === 0) {
-                    handleShowModal('Éxito', 'Datos guardados correctamente');
+
+                    handleShowModal('Éxito', response.response[0].descripcion);
                     //set all valuesForm to empty
                     setValuesForm({
                         cardHolder: '',
@@ -189,7 +191,7 @@ const AutorizacionPreviaAdd = (user) => {
 
 
                 } else {
-                    handleShowModal('Error', 'Error al crear la autorización previa');
+                    handleShowModal('Error', response.response[0].descripcion);
                 }
                 setLoading(false);
             }

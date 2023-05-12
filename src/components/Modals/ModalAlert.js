@@ -19,4 +19,6 @@ const ModalAlert = ({ show, handleClose, msj, title }) => {
     );
 };
 
+
+
 export default ModalAlert;

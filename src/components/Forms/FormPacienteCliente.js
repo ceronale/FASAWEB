@@ -6,9 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { Label, LabelReq, Inputs, Inputp, GrupoInput, RestriccionPass, DivTitulos, Titulo, } from "../Formularios";
 import { NavLink } from "react-router-dom";
 import ModalAlert from '../Modals/ModalAlert';
+import ModalTerminos from "../Modals/ModalTerminos";
 import "../../styles/FormPacienteCliente.css";
 import { HomeService, familiaAhumadaService } from "../../api/HomeService";
 import CircularProgress from '@mui/material/CircularProgress';
+
+
 
 const initialForm = {
 	rut: '',
@@ -21,6 +24,9 @@ const initialForm = {
 	passwd: '',
 	passwd2: '',
 };
+
+
+
 
 const FormPacienteCliente = () => {
 
@@ -46,12 +52,24 @@ const FormPacienteCliente = () => {
 	const [tokenIsValid, setTokenIsValid] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 
+	const [showModalTerminos, setShowModalTerminos] = useState(false);
+	const [titleTerminos, setTitleTerminos] = useState();
+	const [msjTerminos, setMsjTerminos] = useState();
+	
+
+
+
 	const handleCloseToken = () => {
 		setShowModal(false);
 		if (tokenIsValid) {
 			navigate(`/`);
 			handleClear();
 		}
+	}
+
+	const handleCloseTerminos = () => {
+		setShowModalTerminos(false);
+		
 	}
 
 	const [checkToken, setcheckToken] = useState(false);
@@ -151,6 +169,20 @@ const FormPacienteCliente = () => {
 		}
 
 	};
+
+	const handleClickTerminos = async (e) => {
+		setShowModalTerminos(true);
+		setTitleTerminos("Términos y condiciones");
+		setMsjTerminos(`
+		  1. ASPECTOS GENERALES
+		  Estos Términos y Condiciones aplican y se entenderán incorporados en todas las consultas realizadas a través del Sitio desarrollado para Convenios ABF (en adelante indistintamente el “Sitio” o la “Página Web”), www.farmaciasahumada.cl. El acceso, uso y todas las transacciones realizadas en el Sitio implican la aceptación de estos Términos y Condiciones.<br><br>
+		  2. REQUISITOS PARA EL USO DEL SITIO PORTAL CONVENIOS<br>
+		  El servicio se encuentra disponible para Clientes que realizan sus compras en Farmacias Ahumada haciendo uso de los Beneficios que se ponen a su disposición y para aquellas empresas que otorgan beneficios a sus afiliados (en adelante también “Usuarios”).
+		  La información proporcionada por el Usuario para el registro debe ser correcta y corresponder a la realidad.
+		  El Usuario, al hacer uso del Sitio Portal Convenios, acepta y es de su responsabilidad cumplir con estos Términos y Condiciones.
+		`);
+	  };
+	  
 
 	const onChangeToken = (event) => {
 		setToken(event.target.value);
@@ -445,7 +477,7 @@ const FormPacienteCliente = () => {
 												required
 											/>
 											<div className="aceptoTerminos">
-												<p> Acepto los <NavLink className="navTerminos" to="">Terminos y condiciones</NavLink></p>
+												<p> Acepto los <NavLink className="navTerminos" to="" onClick={handleClickTerminos}>Terminos y condiciones</NavLink></p>
 											</div>
 										</div>
 										<div className="CrearPaciente">
@@ -482,6 +514,7 @@ const FormPacienteCliente = () => {
 					</div>
 				</form>
 				<ModalAlert title={title} show={showModal} handleClose={handleCloseToken} msj={msj} />
+				<ModalTerminos title={titleTerminos} msj={msjTerminos} show={showModalTerminos} handleClose={handleCloseTerminos} />
 			</main >
 		</div>
 	);
