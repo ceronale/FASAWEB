@@ -763,7 +763,7 @@ const DataTableBeneficiarios = props => {
                                     <Button
                                         variant="contained"
                                         onClick={() => { downloadExcel(table.getPrePaginationRowModel().rows) }}
-                                        disabled={props.isButtonDisabled}
+                                        disabled={props.isButtonDisabledExport}
                                     >
                                         Exportar
 
@@ -775,12 +775,18 @@ const DataTableBeneficiarios = props => {
                                     >
                                         Importar
                                     </Button>
+
                                 </div>
+                                
 
                             )}
                         />
                     }
                 </div>
+
+                
+
+                
 
                 <ModalConfirmar
                     title={title}

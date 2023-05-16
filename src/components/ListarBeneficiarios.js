@@ -9,6 +9,7 @@ import ModalAlert from "./Modals/ModalAlert";
 import CircularProgress from "@mui/material/CircularProgress";
 import Form from 'react-bootstrap/Form';
 import { useNavigate, } from 'react-router-dom';
+import { PhoneEnabled } from "@material-ui/icons";
 
 
 
@@ -34,6 +35,10 @@ const ListarBeneficiarios = (user) => {
   const [formattedRut, setFormattedRut] = useState('');
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const navigate = useNavigate();
+
+  const [showModalUpload, setShowModalUpload] = useState(false);
+
+
 
   const showData = async () => {
     try {
@@ -122,6 +127,8 @@ const ListarBeneficiarios = (user) => {
   };
 
 
+
+
   //create function to handle the modal
   const handleModal = (title, msj) => {
     setTitle(title);
@@ -161,6 +168,12 @@ const ListarBeneficiarios = (user) => {
         <div id="notaLogin">
           En esta sección podrás listar, editar y actualizar la fecha de termino de los beneficiarios.
         </div>
+
+
+        
+        
+
+
         <Form >
           <Box sx={{ flexGrow: 1, marginBottom: 2 }}>
             <Grid container spacing={2}>
@@ -197,18 +210,26 @@ const ListarBeneficiarios = (user) => {
             </Grid>
           </Box>
         </Form>
+       
         {
           (dataTable === undefined)
             ?
             null
-            : <DataTableBeneficiarios data={dataTable} user={usuario} isButtonDisabled={isButtonDisabled} updateData={showData} convenio={convenio} />
+            : <DataTableBeneficiarios data={dataTable} user={usuario} isButtonDisabled={!convenio} isButtonDisabledExport={isButtonDisabled} updateData={showData} convenio={convenio} />
         }
+
+
+          
 
       </div>
     </main >
 
+    
+
   );
 }
+
+
 
 
 
