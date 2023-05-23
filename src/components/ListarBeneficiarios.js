@@ -48,10 +48,10 @@ const ListarBeneficiarios = (user) => {
         return;
       }
       //Check if the rut is empty
-      if (rut === '') {
-        handleModal("Error", "Debe ingresar un rut");
-        return;
-      }
+      //if (rut === '') {
+      //  handleModal("Error", "Debe ingresar un rut");
+      //  return;
+      //}
 
       const data = {
         codigoCliente: convenio.value,
@@ -109,20 +109,32 @@ const ListarBeneficiarios = (user) => {
         setDataTable({})
         handleModal("Error", "Error de conexión");
       } else if (response.response[0].codigoError === 1 || response.response.length === 0) {
-        setLoading(false);
-        setDataTable(undefined)
-        setDataTable({})
-        handleModal("Información", "No se pudo obtener información de los beneficiarios");
+        
+        if (convenio !== '' & rut === '' ){
+          setLoading(false);
+          setDataTable(undefined)
+          setDataTable({})
+        }
+        else{
+          setLoading(false);
+          setDataTable(undefined)
+          setDataTable({})
+          handleModal("Información", "No se encuentra información de beneficiario");
+        }
+        
+        
       } else {
         setLoading(false);
         setDataTable(undefined)
         setDataTable(response.response);
         setIsButtonDisabled(false)
+        
       }
     } catch (error) {
       setLoading(false);
       console.log(error)
       handleModal("Error", "Ha ocurrido un error, por favor vuelva a intentarlo");
+      
     }
   };
 
